@@ -1,14 +1,14 @@
 {
   "main": {
-    "id": "d1fd37b218ba23b7",
+    "id": "5a2713d745286165",
     "type": "split",
     "children": [
       {
-        "id": "bcbb5df4a804956b",
+        "id": "c166b9c82c9fe295",
         "type": "tabs",
         "children": [
           {
-            "id": "c8087c252d7ba3ff",
+            "id": "5a0e3bfa06d45040",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -27,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "d4468a489f10c792",
+    "id": "9a20724b6009d52e",
     "type": "split",
     "children": [
       {
-        "id": "43bc8acbf29f84f7",
+        "id": "5157d0bcd480d3f0",
         "type": "tabs",
         "children": [
           {
-            "id": "fc3af16e82e4a157",
+            "id": "dbbbc5cdcc3c891e",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -48,7 +48,7 @@
             }
           },
           {
-            "id": "983a1b40668a9115",
+            "id": "ee808b4d869c1a05",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -65,7 +65,7 @@
             }
           },
           {
-            "id": "dcc088c3f1b1ccfb",
+            "id": "2a9833ff427bb68d",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -81,15 +81,15 @@
     "width": 300
   },
   "right": {
-    "id": "871d8388a2e8ae1e",
+    "id": "be50cc0ee1d50921",
     "type": "split",
     "children": [
       {
-        "id": "5636ecb85feb3d9e",
+        "id": "08cc649edec5da1e",
         "type": "tabs",
         "children": [
           {
-            "id": "8b55f83be8b363ff",
+            "id": "8a52ceb11e339032",
             "type": "leaf",
             "state": {
               "type": "backlink",
@@ -108,7 +108,7 @@
             }
           },
           {
-            "id": "4ab47223f9b3e3fa",
+            "id": "acb5100d601eb0c8",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
@@ -122,7 +122,7 @@
             }
           },
           {
-            "id": "23d458de0bf3929d",
+            "id": "fc22c04f77e9223d",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -137,7 +137,7 @@
             }
           },
           {
-            "id": "90ed6d877d27049e",
+            "id": "7550a10a44202542",
             "type": "leaf",
             "state": {
               "type": "outline",
@@ -168,13 +168,8 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "c8087c252d7ba3ff",
+  "active": "5a0e3bfa06d45040",
   "lastOpenFiles": [
-    "Untitled 1.md",
-    "Legacy — Home.png",
-    "Legacy — Book.png",
-    "Legacy — Activities.png",
-    "Global — Splash.png",
     "Versioning.md"
   ]
 }

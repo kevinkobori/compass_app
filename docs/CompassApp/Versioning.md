@@ -1,0 +1,3 @@
+- [x] 0.1.0; feat: add Google Compass App project following new official Flutter app architecture.
+	- Based on: https://docs.flutter.dev/app-architecture
+- [x] 0.1.1; docs: move Obsidian notes to dedicated 'CompassApp' folder
