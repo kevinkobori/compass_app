@@ -51,6 +51,7 @@ class AppLocalization {
   String get evening => _strings.evening;
   String get login => _strings.login;
   String nameTrips(String name) => _strings.nameTrips(name);
+  String get save => _strings.save;
   String get search => _strings.search;
   String get searchDestination => _strings.searchDestination;
   String selected(int value) => _strings.selected(value);

@@ -33,6 +33,7 @@ class SearchFormDate extends StatelessWidget {
             context: context,
             firstDate: DateTime.now(),
             lastDate: DateTime.now().add(const Duration(days: 365)),
+            saveText: AppLocalization.of(context).save,
           ).then((dateRange) => viewModel.dateRange = dateRange);
         },
         child: Container(

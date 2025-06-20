@@ -28,6 +28,7 @@ abstract class AppStrings {
   String get when;
   String get who;
   String get yourChosenActivities;
+  String get save;
 }
 
 class AppStringsEnUs implements AppStrings {
@@ -55,6 +56,7 @@ class AppStringsEnUs implements AppStrings {
   @override String get search => 'Search';
   @override String get searchDestination => 'Search destination';
   @override String selected(int value) => '$value selected';
+  @override String get save => 'Save';
   @override String get shareTrip => 'Share Trip';
   @override String get tryAgain => 'Try again';
   @override String get when => 'When';
@@ -84,6 +86,7 @@ class AppStringsPtBr implements AppStrings {
   @override String get evening => 'Noite';
   @override String get login => 'Entrar';
   @override String nameTrips(String name) => 'Viagens de $name';
+  @override String get save => 'Salvar';
   @override String get search => 'Pesquisar';
   @override String get searchDestination => 'Pesquisar destino';
   @override String selected(int value) => '$value selecionado(s)';

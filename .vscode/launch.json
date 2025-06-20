@@ -1,17 +1,23 @@
 {
   "configurations": [
     {
-      "name": "Web Development",
+      "name": "Development",
       "type": "dart",
       "request": "launch",
-      "program": "app/lib/main_development.dart",
-      "args": ["-d", "chrome", "--web-experimental-hot-reload"]
+      "program": "app/lib/main_development.dart"
     },
     {
       "name": "Staging",
       "type": "dart",
       "request": "launch",
       "program": "app/lib/main_staging.dart"
+    },
+    {
+      "name": "Web Development",
+      "type": "dart",
+      "request": "launch",
+      "program": "app/lib/main_development.dart",
+      "args": ["-d", "chrome", "--web-experimental-hot-reload"]
     }
   ]
 }
