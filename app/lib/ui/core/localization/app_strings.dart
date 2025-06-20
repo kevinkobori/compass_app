@@ -1,0 +1,95 @@
+abstract class AppStrings {
+  String get activities;
+  String get addDates;
+  String get bookingDeleted;
+  String get bookNewTrip;
+  String get close;
+  String get confirm;
+  String get daytime;
+  String get errorWhileDeletingBooking;
+  String get errorWhileLoadingActivities;
+  String get errorWhileLoadingBooking;
+  String get errorWhileLoadingContinents;
+  String get errorWhileLoadingDestinations;
+  String get errorWhileLoadingHome;
+  String get errorWhileLogin;
+  String get errorWhileLogout;
+  String get errorWhileSavingActivities;
+  String get errorWhileSavingItinerary;
+  String get errorWhileSharing;
+  String get evening;
+  String get login;
+  String nameTrips(String name);
+  String get search;
+  String get searchDestination;
+  String selected(int value);
+  String get shareTrip;
+  String get tryAgain;
+  String get when;
+  String get who;
+  String get yourChosenActivities;
+}
+
+class AppStringsEnUs implements AppStrings {
+  @override String get activities => 'Activities';
+  @override String get addDates => 'Add Dates';
+  @override String get bookingDeleted => 'Booking deleted';
+  @override String get bookNewTrip => 'Book New Trip';
+  @override String get close => 'Close';
+  @override String get confirm => 'Confirm';
+  @override String get daytime => 'Daytime';
+  @override String get errorWhileDeletingBooking => 'Error while deleting booking';
+  @override String get errorWhileLoadingActivities => 'Error while loading activities';
+  @override String get errorWhileLoadingBooking => 'Error while loading booking';
+  @override String get errorWhileLoadingContinents => 'Error while loading continents';
+  @override String get errorWhileLoadingDestinations => 'Error while loading destinations';
+  @override String get errorWhileLoadingHome => 'Error while loading home';
+  @override String get errorWhileLogin => 'Error while trying to login';
+  @override String get errorWhileLogout => 'Error while trying to logout';
+  @override String get errorWhileSavingActivities => 'Error while saving activities';
+  @override String get errorWhileSavingItinerary => 'Error while saving itinerary';
+  @override String get errorWhileSharing => 'Error while sharing booking';
+  @override String get evening => 'Evening';
+  @override String get login => 'Login';
+  @override String nameTrips(String name) => "$name's Trips";
+  @override String get search => 'Search';
+  @override String get searchDestination => 'Search destination';
+  @override String selected(int value) => '$value selected';
+  @override String get shareTrip => 'Share Trip';
+  @override String get tryAgain => 'Try again';
+  @override String get when => 'When';
+  @override String get who => 'Who';
+  @override String get yourChosenActivities => 'Your chosen activities';
+}
+
+class AppStringsPtBr implements AppStrings {
+  @override String get activities => 'Atividades';
+  @override String get addDates => 'Adicionar datas';
+  @override String get bookingDeleted => 'Reserva excluída';
+  @override String get bookNewTrip => 'Reservar nova viagem';
+  @override String get close => 'Fechar';
+  @override String get confirm => 'Confirmar';
+  @override String get daytime => 'Durante o dia';
+  @override String get errorWhileDeletingBooking => 'Erro ao excluir a reserva';
+  @override String get errorWhileLoadingActivities => 'Erro ao carregar as atividades';
+  @override String get errorWhileLoadingBooking => 'Erro ao carregar a reserva';
+  @override String get errorWhileLoadingContinents => 'Erro ao carregar os continentes';
+  @override String get errorWhileLoadingDestinations => 'Erro ao carregar os destinos';
+  @override String get errorWhileLoadingHome => 'Erro ao carregar a tela inicial';
+  @override String get errorWhileLogin => 'Erro ao tentar fazer login';
+  @override String get errorWhileLogout => 'Erro ao tentar fazer logout';
+  @override String get errorWhileSavingActivities => 'Erro ao salvar as atividades';
+  @override String get errorWhileSavingItinerary => 'Erro ao salvar o itinerário';
+  @override String get errorWhileSharing => 'Erro ao compartilhar a reserva';
+  @override String get evening => 'Noite';
+  @override String get login => 'Entrar';
+  @override String nameTrips(String name) => 'Viagens de $name';
+  @override String get search => 'Pesquisar';
+  @override String get searchDestination => 'Pesquisar destino';
+  @override String selected(int value) => '$value selecionado(s)';
+  @override String get shareTrip => 'Compartilhar viagem';
+  @override String get tryAgain => 'Tentar novamente';
+  @override String get when => 'Quando';
+  @override String get who => 'Quem';
+  @override String get yourChosenActivities => 'Suas atividades escolhidas';
+}

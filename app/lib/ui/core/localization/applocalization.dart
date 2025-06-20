@@ -5,112 +5,69 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'app_strings.dart';
+
 class AppLocalization {
-  static AppLocalization of(BuildContext context) {
-    return Localizations.of(context, AppLocalization);
+  final Locale locale;
+  late final AppStrings _strings;
+
+  AppLocalization(this.locale) {
+    switch (locale.toString()) {
+      case 'pt_BR':
+        _strings = AppStringsPtBr();
+        break;
+      case 'en_US':
+      default:
+        _strings = AppStringsEnUs();
+    }
   }
 
-  static const _strings = <String, String>{
-    'activities': 'Activities',
-    'addDates': 'Add Dates',
-    'bookingDeleted': 'Booking deleted',
-    'bookNewTrip': 'Book New Trip',
-    'close': 'Close',
-    'confirm': 'Confirm',
-    'daytime': 'Daytime',
-    'errorWhileDeletingBooking': 'Error while deleting booking',
-    'errorWhileLoadingActivities': 'Error while loading activities',
-    'errorWhileLoadingBooking': 'Error while loading booking',
-    'errorWhileLoadingContinents': 'Error while loading continents',
-    'errorWhileLoadingDestinations': 'Error while loading destinations',
-    'errorWhileLoadingHome': 'Error while loading home',
-    'errorWhileLogin': 'Error while trying to login',
-    'errorWhileLogout': 'Error while trying to logout',
-    'errorWhileSavingActivities': 'Error while saving activities',
-    'errorWhileSavingItinerary': 'Error while saving itinerary',
-    'errorWhileSharing': 'Error while sharing booking',
-    'evening': 'Evening',
-    'login': 'Login',
-    'nameTrips': '{name}\'s Trips',
-    'search': 'Search',
-    'searchDestination': 'Search destination',
-    'selected': '{1} selected',
-    'shareTrip': 'Share Trip',
-    'tryAgain': 'Try again',
-    'yourChosenActivities': 'Your chosen activities',
-    'when': 'When',
-  };
+  static AppLocalization of(BuildContext context) {
+    return Localizations.of(context, AppLocalization)!;
+  }
 
-  // If string for "label" does not exist, will show "[LABEL]"
-  static String _get(String label) =>
-      _strings[label] ?? '[${label.toUpperCase()}]';
-
-  String get activities => _get('activities');
-
-  String get addDates => _get('addDates');
-
-  String get confirm => _get('confirm');
-
-  String get daytime => _get('daytime');
-
-  String get errorWhileLoadingActivities => _get('errorWhileLoadingActivities');
-
-  String get errorWhileLoadingBooking => _get('errorWhileLoadingBooking');
-
-  String get errorWhileLoadingContinents => _get('errorWhileLoadingContinents');
-
+  // Getters delegando para a classe interna
+  String get activities => _strings.activities;
+  String get addDates => _strings.addDates;
+  String get bookingDeleted => _strings.bookingDeleted;
+  String get bookNewTrip => _strings.bookNewTrip;
+  String get close => _strings.close;
+  String get confirm => _strings.confirm;
+  String get daytime => _strings.daytime;
+  String get errorWhileDeletingBooking => _strings.errorWhileDeletingBooking;
+  String get errorWhileLoadingActivities =>
+      _strings.errorWhileLoadingActivities;
+  String get errorWhileLoadingBooking => _strings.errorWhileLoadingBooking;
+  String get errorWhileLoadingContinents =>
+      _strings.errorWhileLoadingContinents;
   String get errorWhileLoadingDestinations =>
-      _get('errorWhileLoadingDestinations');
-
-  String get errorWhileSavingActivities => _get('errorWhileSavingActivities');
-
-  String get errorWhileSavingItinerary => _get('errorWhileSavingItinerary');
-
-  String get evening => _get('evening');
-
-  String get search => _get('search');
-
-  String get searchDestination => _get('searchDestination');
-
-  String get shareTrip => _get('shareTrip');
-
-  String get tryAgain => _get('tryAgain');
-
-  String get yourChosenActivities => _get('yourChosenActivities');
-
-  String get when => _get('when');
-
-  String get errorWhileLogin => _get('errorWhileLogin');
-
-  String get login => _get('login');
-
-  String get errorWhileLogout => _get('errorWhileLogout');
-
-  String get close => _get('close');
-
-  String get errorWhileSharing => _get('errorWhileSharing');
-
-  String get bookNewTrip => _get('bookNewTrip');
-
-  String get errorWhileLoadingHome => _get('errorWhileLoadingHome');
-
-  String get bookingDeleted => _get('bookingDeleted');
-
-  String get errorWhileDeletingBooking => _get('errorWhileDeletingBooking');
-
-  String nameTrips(String name) => _get('nameTrips').replaceAll('{name}', name);
-
-  String selected(int value) =>
-      _get('selected').replaceAll('{1}', value.toString());
+      _strings.errorWhileLoadingDestinations;
+  String get errorWhileLoadingHome => _strings.errorWhileLoadingHome;
+  String get errorWhileLogin => _strings.errorWhileLogin;
+  String get errorWhileLogout => _strings.errorWhileLogout;
+  String get errorWhileSavingActivities => _strings.errorWhileSavingActivities;
+  String get errorWhileSavingItinerary => _strings.errorWhileSavingItinerary;
+  String get errorWhileSharing => _strings.errorWhileSharing;
+  String get evening => _strings.evening;
+  String get login => _strings.login;
+  String nameTrips(String name) => _strings.nameTrips(name);
+  String get search => _strings.search;
+  String get searchDestination => _strings.searchDestination;
+  String selected(int value) => _strings.selected(value);
+  String get shareTrip => _strings.shareTrip;
+  String get tryAgain => _strings.tryAgain;
+  String get when => _strings.when;
+  String get who => _strings.who;
+  String get yourChosenActivities => _strings.yourChosenActivities;
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {
   @override
-  bool isSupported(Locale locale) => locale.languageCode == 'en';
+  bool isSupported(Locale locale) => ['en', 'pt'].contains(locale.languageCode);
 
   @override
   Future<AppLocalization> load(Locale locale) {
-    return SynchronousFuture(AppLocalization());
+    return SynchronousFuture(AppLocalization(locale));
   }
 
   @override

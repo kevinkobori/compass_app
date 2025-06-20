@@ -1,0 +1,9 @@
+- [x] 0.1.0; feat: add Google Compass App project following new official Flutter app architecture.
+	- Based on: https://docs.flutter.dev/app-architecture
+- [x] 0.1.1; docs: move Obsidian notes to dedicated 'CompassApp' folder
+- [x] 0.1.2; refactor(localization): migrate localization logic from Map-based to strongly-typed language classes
+	- Replace translation maps with language-specific classes implementing the AppStrings interface.
+	- Update AppLocalization to delegate lookups to typed classes.
+	- Delegate and public interface remain compatible.
+	- Improves IDE autocomplete, reduces typos, and eases refactoring.
+	- Note: Suitable for small projects. For large-scale or production apps, prefer the .arb standard and codegen.

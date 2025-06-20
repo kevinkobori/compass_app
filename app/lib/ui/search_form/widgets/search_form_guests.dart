@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../../core/localization/applocalization.dart';
 import '../../core/themes/colors.dart';
 import '../../core/themes/dimens.dart';
 import '../view_models/search_form_viewmodel.dart';
@@ -41,7 +42,10 @@ class SearchFormGuests extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Who', style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                AppLocalization.of(context).who,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               _QuantitySelector(viewModel),
             ],
           ),
