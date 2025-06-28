@@ -57,17 +57,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         body: ListenableBuilder(
           listenable: widget.viewModel.loadActivities,
           builder: (context, child) {
-            if (widget.viewModel.loadActivities.completed) {
+            if (widget.viewModel.loadActivities.value.isSuccess) { // The getter 'completed' isn't defined for the type 'Command0<Object>'.
+// Try importing the library that defines 'completed', correcting the name to the name of an existing getter, or defining a getter or field named 'completed'.
               return child!;
             }
             return Column(
               children: [
                 const ActivitiesHeader(),
-                if (widget.viewModel.loadActivities.running)
+                if (widget.viewModel.loadActivities.value.isRunning)
                   const Expanded(
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                if (widget.viewModel.loadActivities.error)
+                if (widget.viewModel.loadActivities.value.isFailure)
                   Expanded(
                     child: Center(
                       child: ErrorIndicator(
@@ -122,13 +123,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   void _onResult() {
-    if (widget.viewModel.saveActivities.completed) {
-      widget.viewModel.saveActivities.clearResult();
+    if (widget.viewModel.saveActivities.value.isSuccess) {
+      widget.viewModel.saveActivities.reset();
       context.go(Routes.booking);
     }
 
-    if (widget.viewModel.saveActivities.error) {
-      widget.viewModel.saveActivities.clearResult();
+    if (widget.viewModel.saveActivities.value.isFailure) {
+      widget.viewModel.saveActivities.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalization.of(context).errorWhileSavingActivities),

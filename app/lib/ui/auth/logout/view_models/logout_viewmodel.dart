@@ -1,35 +1,30 @@
-// Copyright 2024 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import '../../../../data/repositories/auth/auth_repository.dart';
 import '../../../../data/repositories/itinerary_config/itinerary_config_repository.dart';
 import '../../../../domain/models/itinerary_config/itinerary_config.dart';
-import '../../../../utils/command.dart';
-import '../../../../utils/result.dart';
+
+import 'package:result_dart/result_dart.dart';
+import 'package:result_command/result_command.dart';
 
 class LogoutViewModel {
   LogoutViewModel({
     required AuthRepository authRepository,
     required ItineraryConfigRepository itineraryConfigRepository,
-  }) : _authLogoutRepository = authRepository,
-       _itineraryConfigRepository = itineraryConfigRepository {
+  })  : _authLogoutRepository = authRepository,
+        _itineraryConfigRepository = itineraryConfigRepository {
     logout = Command0(_logout);
   }
+
   final AuthRepository _authLogoutRepository;
   final ItineraryConfigRepository _itineraryConfigRepository;
   late Command0 logout;
 
-  Future<Result> _logout() async {
+  Future<Result<Unit>> _logout() async {
     final result = await _authLogoutRepository.logout();
-    switch (result) {
-      case Ok<void>():
-        // clear stored itinerary config
-        return _itineraryConfigRepository.setItineraryConfig(
-          const ItineraryConfig(),
-        );
-      case Error<void>():
-        return result;
+    if (result.isError()) {
+      return Failure(result.exceptionOrNull() ?? Exception('Logout failed'));
     }
+    // Limpa o ItineraryConfig após logout bem-sucedido
+    return await _itineraryConfigRepository.setItineraryConfig(const ItineraryConfig())
+      .then((res) => res.map((_) => unit)); // Garante retorno do tipo Result<Unit>
   }
 }

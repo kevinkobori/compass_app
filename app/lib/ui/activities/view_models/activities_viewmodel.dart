@@ -1,7 +1,3 @@
-// Copyright 2024 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
@@ -9,8 +5,9 @@ import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/itinerary_config/itinerary_config_repository.dart';
 import '../../../domain/models/activity/activity.dart';
 import '../../../domain/models/itinerary_config/itinerary_config.dart';
-import '../../../utils/command.dart';
-import '../../../utils/result.dart';
+
+import 'package:result_dart/result_dart.dart';
+import 'package:result_command/result_command.dart';
 
 class ActivitiesViewModel extends ChangeNotifier {
   ActivitiesViewModel({
@@ -44,63 +41,66 @@ class ActivitiesViewModel extends ChangeNotifier {
   /// Save list [selectedActivities] into itinerary configuration.
   late final Command0 saveActivities;
 
-  Future<Result<void>> _loadActivities() async {
+  Future<Result<Unit>> _loadActivities() async {
     final result = await _itineraryConfigRepository.getItineraryConfig();
-    switch (result) {
-      case Error<ItineraryConfig>():
-        _log.warning('Failed to load stored ItineraryConfig', result.error);
-        return result;
-      case Ok<ItineraryConfig>():
+    if (result.isError()) {
+      _log.warning(
+        'Failed to load stored ItineraryConfig',
+        result.exceptionOrNull(),
+      );
+      return Failure(
+        result.exceptionOrNull() ?? Exception('Unknown ItineraryConfig error'),
+      );
     }
 
-    final destinationRef = result.value.destination;
+    final itineraryConfig = result.getOrThrow();
+    final destinationRef = itineraryConfig.destination;
     if (destinationRef == null) {
       _log.severe('Destination missing in ItineraryConfig');
-      return Result.error(Exception('Destination not found'));
+      return Failure(Exception('Destination not found'));
     }
 
-    _selectedActivities.addAll(result.value.activities);
+    _selectedActivities.addAll(itineraryConfig.activities);
 
     final resultActivities = await _activityRepository.getByDestination(
       destinationRef,
     );
-    switch (resultActivities) {
-      case Ok():
-        {
-          _daytimeActivities =
-              resultActivities.value
-                  .where(
-                    (activity) => [
-                      TimeOfDay.any,
-                      TimeOfDay.morning,
-                      TimeOfDay.afternoon,
-                    ].contains(activity.timeOfDay),
-                  )
-                  .toList();
+    if (resultActivities.isSuccess()) {
+      final activities = resultActivities.getOrThrow();
+      _daytimeActivities =
+          activities
+              .where(
+                (activity) => [
+                  TimeOfDay.any,
+                  TimeOfDay.morning,
+                  TimeOfDay.afternoon,
+                ].contains(activity.timeOfDay),
+              )
+              .toList();
 
-          _eveningActivities =
-              resultActivities.value
-                  .where(
-                    (activity) => [
-                      TimeOfDay.evening,
-                      TimeOfDay.night,
-                    ].contains(activity.timeOfDay),
-                  )
-                  .toList();
+      _eveningActivities =
+          activities
+              .where(
+                (activity) => [
+                  TimeOfDay.evening,
+                  TimeOfDay.night,
+                ].contains(activity.timeOfDay),
+              )
+              .toList();
 
-          _log.fine(
-            'Activities (daytime: ${_daytimeActivities.length}, '
-            'evening: ${_eveningActivities.length}) loaded',
-          );
-        }
-      case Error():
-        {
-          _log.warning('Failed to load activities', resultActivities.error);
-        }
+      _log.fine(
+        'Activities (daytime: ${_daytimeActivities.length}, '
+        'evening: ${_eveningActivities.length}) loaded',
+      );
+    } else {
+      _log.warning(
+        'Failed to load activities',
+        resultActivities.exceptionOrNull(),
+      );
     }
 
     notifyListeners();
-    return resultActivities;
+    return resultActivities.map((_) => unit);
   }
 
   /// Add [Activity] to selected list.
@@ -129,25 +129,27 @@ class ActivitiesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Result<void>> _saveActivities() async {
+  Future<Result<Unit>> _saveActivities() async {
     final resultConfig = await _itineraryConfigRepository.getItineraryConfig();
-    switch (resultConfig) {
-      case Error<ItineraryConfig>():
-        _log.warning(
-          'Failed to load stored ItineraryConfig',
-          resultConfig.error,
-        );
-        return resultConfig;
-      case Ok<ItineraryConfig>():
+    if (resultConfig.isError()) {
+      _log.warning(
+        'Failed to load stored ItineraryConfig',
+        resultConfig.exceptionOrNull(),
+      );
+      return Failure(
+        resultConfig.exceptionOrNull() ??
+            Exception('Unknown ItineraryConfig error'),
+      );
     }
 
-    final itineraryConfig = resultConfig.value;
+    final itineraryConfig = resultConfig.getOrThrow();
     final result = await _itineraryConfigRepository.setItineraryConfig(
       itineraryConfig.copyWith(activities: _selectedActivities.toList()),
     );
-    if (result is Error) {
-      _log.warning('Failed to store ItineraryConfig', result.error);
+    if (result.isError()) {
+      _log.warning('Failed to store ItineraryConfig', result.exceptionOrNull());
     }
-    return result;
+
+    return result.map((_) => unit);
   }
 }

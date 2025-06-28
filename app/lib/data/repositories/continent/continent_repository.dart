@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../domain/models/continent/continent.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 /// Data source with all possible continents.
 abstract class ContinentRepository {

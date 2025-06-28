@@ -31,10 +31,10 @@ class SearchFormContinent extends StatelessWidget {
       child: ListenableBuilder(
         listenable: viewModel.load,
         builder: (context, child) {
-          if (viewModel.load.running) {
+          if (viewModel.load.value.isRunning) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (viewModel.load.error) {
+          if (viewModel.load.value.isFailure) {
             return Center(
               child: ErrorIndicator(
                 title: AppLocalization.of(context).errorWhileLoadingContinents,

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../domain/models/activity/activity.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 /// Data source for activities.
 abstract class ActivityRepository {

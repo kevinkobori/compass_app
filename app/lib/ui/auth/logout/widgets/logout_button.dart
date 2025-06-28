@@ -69,8 +69,8 @@ class _LogoutButtonState extends State<LogoutButton> {
     // We do not need to navigate to `/login` on logout,
     // it is done automatically by GoRouter.
 
-    if (widget.viewModel.logout.error) {
-      widget.viewModel.logout.clearResult();
+    if (widget.viewModel.logout.value.isFailure) {
+      widget.viewModel.logout.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalization.of(context).errorWhileLogout),

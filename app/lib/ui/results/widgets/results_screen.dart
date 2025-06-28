@@ -53,17 +53,17 @@ class _ResultsScreenState extends State<ResultsScreen> {
         body: ListenableBuilder(
           listenable: widget.viewModel.search,
           builder: (context, child) {
-            if (widget.viewModel.search.completed) {
+            if (widget.viewModel.search.value.isSuccess) {
               return child!;
             }
             return Column(
               children: [
                 _AppSearchBar(widget: widget),
-                if (widget.viewModel.search.running)
+                if (widget.viewModel.search.value.isRunning)
                   const Expanded(
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                if (widget.viewModel.search.error)
+                if (widget.viewModel.search.value.isFailure)
                   Expanded(
                     child: Center(
                       child: ErrorIndicator(
@@ -99,13 +99,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
   }
 
   void _onResult() {
-    if (widget.viewModel.updateItineraryConfig.completed) {
-      widget.viewModel.updateItineraryConfig.clearResult();
+    if (widget.viewModel.updateItineraryConfig.value.isSuccess) {
+      widget.viewModel.updateItineraryConfig.reset();
       context.go(Routes.activities);
     }
 
-    if (widget.viewModel.updateItineraryConfig.error) {
-      widget.viewModel.updateItineraryConfig.clearResult();
+    if (widget.viewModel.updateItineraryConfig.value.isFailure) {
+      widget.viewModel.updateItineraryConfig.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalization.of(context).errorWhileSavingItinerary),

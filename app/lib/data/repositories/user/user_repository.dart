@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../domain/models/user/user.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 /// Data source for user related data
 abstract class UserRepository {

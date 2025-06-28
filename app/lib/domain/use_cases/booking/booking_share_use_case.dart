@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../ui/core/ui/date_format_start_end.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import '../../models/booking/booking.dart';
 
 typedef ShareFunction = Future<void> Function(String text);
@@ -27,7 +27,7 @@ class BookingShareUseCase {
   final ShareFunction _share;
   final _log = Logger('BookingShareUseCase');
 
-  Future<Result<void>> shareBooking(Booking booking) async {
+  Future<Result<Unit>> shareBooking(Booking booking) async {
     final text =
         'Trip to ${booking.destination.name}\n'
         'on ${dateFormatStartEnd(DateTimeRange(start: booking.startDate, end: booking.endDate))}\n'
@@ -38,10 +38,10 @@ class BookingShareUseCase {
     try {
       await _share(text);
       _log.fine('Shared booking');
-      return const Result.ok(null);
+      return const Success(unit);
     } on Exception catch (error) {
       _log.severe('Failed to share booking', error);
-      return Result.error(error);
+      return Failure(error);
     }
   }
 }
