@@ -27,7 +27,7 @@ Future<void> testApp(
           GlobalMaterialLocalizations.delegate,
           AppLocalizationDelegate(),
         ],
-        locale: Locale('en', 'US'),
+        locale: const Locale('en', 'US'),
         // locale: Locale('pt', 'BR'),
         supportedLocales: const [Locale('en', 'US'), Locale('pt', 'BR')],
         theme: AppTheme.lightTheme,

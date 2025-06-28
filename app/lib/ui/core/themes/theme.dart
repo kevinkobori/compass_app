@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/ui/tag_chip.dart';
 import 'package:flutter/material.dart';
-
-import '../ui/tag_chip.dart';
-import 'colors.dart';
 
 abstract final class AppTheme {
   static const _textTheme = TextTheme(
@@ -35,7 +34,7 @@ abstract final class AppTheme {
     hintStyle: TextStyle(
       // grey3 works for both light and dark themes
       color: AppColors.grey3,
-      fontSize: 18.0,
+      fontSize: 18,
       fontWeight: FontWeight.w400,
     ),
   );

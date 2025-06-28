@@ -4,8 +4,8 @@
 
 import 'package:compass_app/data/repositories/activity/activity_repository.dart';
 import 'package:compass_app/data/repositories/activity/activity_repository_remote.dart';
-import 'package:result_dart/result_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
 

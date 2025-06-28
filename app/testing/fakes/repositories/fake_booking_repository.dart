@@ -15,7 +15,7 @@ class FakeBookingRepository implements BookingRepository {
   Future<Result<Unit>> createBooking(Booking booking) async {
     final bookingWithId = booking.copyWith(id: sequentialId++);
     bookings.add(bookingWithId);
-    return Success(unit);
+    return const Success(unit);
   }
 
   @override
@@ -45,6 +45,6 @@ class FakeBookingRepository implements BookingRepository {
   @override
   Future<Result<Unit>> delete(int id) async {
     bookings.removeWhere((booking) => booking.id == id);
-    return Success(unit);
+    return const Success(unit);
   }
 }

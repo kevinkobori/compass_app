@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/data/repositories/auth/auth_repository.dart';
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/activities/view_models/activities_viewmodel.dart';
+import 'package:compass_app/ui/activities/widgets/activities_screen.dart';
+import 'package:compass_app/ui/auth/login/view_models/login_viewmodel.dart';
+import 'package:compass_app/ui/auth/login/widgets/login_screen.dart';
+import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
+import 'package:compass_app/ui/booking/widgets/booking_screen.dart';
+import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
+import 'package:compass_app/ui/home/widgets/home_screen.dart';
+import 'package:compass_app/ui/results/view_models/results_viewmodel.dart';
+import 'package:compass_app/ui/results/widgets/results_screen.dart';
+import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
+import 'package:compass_app/ui/search_form/widgets/search_form_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
-import '../data/repositories/auth/auth_repository.dart';
-import '../ui/activities/view_models/activities_viewmodel.dart';
-import '../ui/activities/widgets/activities_screen.dart';
-import '../ui/auth/login/view_models/login_viewmodel.dart';
-import '../ui/auth/login/widgets/login_screen.dart';
-import '../ui/booking/view_models/booking_viewmodel.dart';
-import '../ui/booking/widgets/booking_screen.dart';
-import '../ui/home/view_models/home_viewmodel.dart';
-import '../ui/home/widgets/home_screen.dart';
-import '../ui/results/view_models/results_viewmodel.dart';
-import '../ui/results/widgets/results_screen.dart';
-import '../ui/search_form/view_models/search_form_viewmodel.dart';
-import '../ui/search_form/widgets/search_form_screen.dart';
-import 'routes.dart';
 
 /// Top go_router entry point.
 ///
@@ -34,9 +33,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     GoRoute(
       path: Routes.login,
       builder: (context, state) {
-        return LoginScreen(
-          viewModel: LoginViewModel(authRepository: context.read()),
-        );
+        final viewModel = LoginViewModel(authRepository: context.read());
+        return LoginScreen(viewModel: viewModel);
       },
     ),
     GoRoute(

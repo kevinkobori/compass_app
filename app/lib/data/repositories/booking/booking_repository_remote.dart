@@ -1,11 +1,10 @@
-import '../../../domain/models/activity/activity.dart';
-import '../../../domain/models/booking/booking.dart';
-import '../../../domain/models/booking/booking_summary.dart';
-import '../../../domain/models/destination/destination.dart';
+import 'package:compass_app/data/repositories/booking/booking_repository.dart';
+import 'package:compass_app/data/services/api/api_client.dart';
+import 'package:compass_app/data/services/api/model/booking/booking_api_model.dart';
+import 'package:compass_app/domain/models/booking/booking.dart';
+import 'package:compass_app/domain/models/booking/booking_summary.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../services/api/api_client.dart';
-import '../../services/api/model/booking/booking_api_model.dart';
-import 'booking_repository.dart';
 
 class BookingRepositoryRemote implements BookingRepository {
   BookingRepositoryRemote({required ApiClient apiClient})

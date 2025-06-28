@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
+import 'package:compass_app/ui/booking/widgets/booking_body.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/ui/error_indicator.dart';
-import '../view_models/booking_viewmodel.dart';
-import 'booking_body.dart';
-
 class BookingScreen extends StatefulWidget {
-  const BookingScreen({super.key, required this.viewModel});
+  const BookingScreen({required this.viewModel, super.key});
 
   final BookingViewModel viewModel;
 

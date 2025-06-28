@@ -1,7 +1,7 @@
-import '../../../domain/models/continent/continent.dart';
+import 'package:compass_app/data/repositories/continent/continent_repository.dart';
+import 'package:compass_app/data/services/api/api_client.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../services/api/api_client.dart';
-import 'continent_repository.dart';
 
 /// Remote data source for [Continent].
 /// Implements basic local caching.

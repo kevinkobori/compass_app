@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import '../../../domain/models/itinerary_config/itinerary_config.dart';
+import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:result_dart/result_dart.dart';
-import 'itinerary_config_repository.dart';
 
 /// In-memory implementation of [ItineraryConfigRepository].
 class ItineraryConfigRepositoryMemory implements ItineraryConfigRepository {
@@ -18,6 +18,6 @@ class ItineraryConfigRepositoryMemory implements ItineraryConfigRepository {
     ItineraryConfig itineraryConfig,
   ) async {
     _itineraryConfig = itineraryConfig;
-    return Success(unit);
+    return const Success(unit);
   }
 }

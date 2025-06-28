@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../domain/models/activity/activity.dart';
+import 'package:compass_app/data/repositories/activity/activity_repository.dart';
+import 'package:compass_app/data/services/api/api_client.dart';
+import 'package:compass_app/domain/models/activity/activity.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../services/api/api_client.dart';
-import 'activity_repository.dart';
 
 /// Remote data source for [Activity].
 /// Implements basic local caching.

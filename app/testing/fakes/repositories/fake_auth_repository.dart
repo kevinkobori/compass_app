@@ -18,13 +18,13 @@ class FakeAuthRepository extends AuthRepository {
   }) async {
     token = 'TOKEN';
     notifyListeners();
-    return Success(unit);
+    return const Success(unit);
   }
 
   @override
   Future<Result<Unit>> logout() async {
     token = null;
     notifyListeners();
-    return Success(unit);
+    return const Success(unit);
   }
 }

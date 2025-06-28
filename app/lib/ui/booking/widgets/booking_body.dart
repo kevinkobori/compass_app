@@ -3,16 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:compass_app/domain/models/activity/activity.dart';
+import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
+import 'package:compass_app/ui/booking/widgets/booking_header.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
 
-import '../../../domain/models/activity/activity.dart';
-import '../../../utils/image_error_listener.dart';
-import '../../core/themes/dimens.dart';
-import '../view_models/booking_viewmodel.dart';
-import 'booking_header.dart';
-
 class BookingBody extends StatelessWidget {
-  const BookingBody({super.key, required this.viewModel});
+  const BookingBody({required this.viewModel, super.key});
 
   final BookingViewModel viewModel;
 
@@ -68,7 +67,6 @@ class _Activity extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   activity.timeOfDay.name.toUpperCase(),

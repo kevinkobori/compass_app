@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/auth/auth_repository_remote.dart';
-import 'package:result_dart/result_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
 import '../../../../testing/fakes/services/fake_auth_api_client.dart';

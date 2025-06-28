@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/data/repositories/auth/auth_repository.dart';
+import 'package:compass_app/data/services/api/api_client.dart';
+import 'package:compass_app/data/services/api/auth_api_client.dart';
+import 'package:compass_app/data/services/api/model/login_request/login_request.dart';
+import 'package:compass_app/data/services/shared_preferences_service.dart';
 import 'package:logging/logging.dart';
-
 import 'package:result_dart/result_dart.dart';
-import '../../services/api/api_client.dart';
-import '../../services/api/auth_api_client.dart';
-import '../../services/api/model/login_request/login_request.dart';
-import '../../services/api/model/login_response/login_response.dart';
-import '../../services/shared_preferences_service.dart';
-import 'auth_repository.dart';
 
 class AuthRepositoryRemote extends AuthRepository {
   AuthRepositoryRemote({

@@ -1,14 +1,12 @@
 import 'dart:async';
 
+import 'package:compass_app/data/repositories/booking/booking_repository.dart';
+import 'package:compass_app/data/repositories/user/user_repository.dart';
+import 'package:compass_app/domain/models/booking/booking_summary.dart';
+import 'package:compass_app/domain/models/user/user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
-
-import '../../../data/repositories/booking/booking_repository.dart';
-import '../../../data/repositories/user/user_repository.dart';
-import '../../../domain/models/booking/booking_summary.dart';
-import '../../../domain/models/user/user.dart';
-
 import 'package:result_dart/result_dart.dart';
 
 class HomeViewModel extends ChangeNotifier {
@@ -94,7 +92,7 @@ class HomeViewModel extends ChangeNotifier {
       _bookings = resultLoadBookings.getOrThrow();
       _log.fine('Loaded bookings');
 
-      return Success(unit);
+      return const Success(unit);
     } finally {
       notifyListeners();
     }

@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/activities/view_models/activities_viewmodel.dart';
+import 'package:compass_app/ui/activities/widgets/activities_header.dart';
+import 'package:compass_app/ui/activities/widgets/activities_list.dart';
+import 'package:compass_app/ui/activities/widgets/activities_title.dart';
+import 'package:compass_app/ui/activities/widgets/activity_time_of_day.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/error_indicator.dart';
-import '../view_models/activities_viewmodel.dart';
-import 'activities_header.dart';
-import 'activities_list.dart';
-import 'activities_title.dart';
-import 'activity_time_of_day.dart';
 
 const String confirmButtonKey = 'confirm-button';
 
 class ActivitiesScreen extends StatefulWidget {
-  const ActivitiesScreen({super.key, required this.viewModel});
+  const ActivitiesScreen({required this.viewModel, super.key});
 
   final ActivitiesViewModel viewModel;
 
@@ -152,7 +151,6 @@ class _BottomArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      bottom: true,
       child: Material(
         elevation: 8,
         child: Padding(

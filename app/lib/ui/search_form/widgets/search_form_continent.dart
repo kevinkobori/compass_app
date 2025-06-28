@@ -3,16 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
+import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
+import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../../../domain/models/continent/continent.dart';
-import '../../../utils/image_error_listener.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/colors.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/error_indicator.dart';
-import '../view_models/search_form_viewmodel.dart';
 
 /// Continent selection carousel
 ///
@@ -20,7 +19,7 @@ import '../view_models/search_form_viewmodel.dart';
 /// Users can tap one item to select it.
 /// Tapping again the same item will deselect it.
 class SearchFormContinent extends StatelessWidget {
-  const SearchFormContinent({super.key, required this.viewModel});
+  const SearchFormContinent({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 
@@ -74,10 +73,10 @@ class SearchFormContinent extends StatelessWidget {
 
 class _CarouselItem extends StatelessWidget {
   const _CarouselItem({
-    super.key,
     required this.imageUrl,
     required this.name,
     required this.viewModel,
+    super.key,
   });
 
   final String imageUrl;
@@ -111,9 +110,8 @@ class _CarouselItem extends StatelessWidget {
               },
             ),
             Align(
-              alignment: Alignment.center,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Text(
                   name,
                   textAlign: TextAlign.center,

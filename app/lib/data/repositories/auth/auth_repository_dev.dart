@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/data/repositories/auth/auth_repository.dart';
 import 'package:result_dart/result_dart.dart';
-import 'auth_repository.dart';
 
 class AuthRepositoryDev extends AuthRepository {
   /// User is always authenticated in dev scenarios

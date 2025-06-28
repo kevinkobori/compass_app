@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/auth/logout/view_models/logout_viewmodel.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/localization/applocalization.dart';
-import '../../../core/themes/colors.dart';
-import '../view_models/logout_viewmodel.dart';
-
 class LogoutButton extends StatefulWidget {
-  const LogoutButton({super.key, required this.viewModel});
+  const LogoutButton({required this.viewModel, super.key});
 
   final LogoutViewModel viewModel;
 
@@ -40,22 +39,22 @@ class _LogoutButtonState extends State<LogoutButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40.0,
-      width: 40.0,
+      height: 40,
+      width: 40,
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border.all(color: AppColors.grey1),
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(8),
           color: Colors.transparent,
         ),
         child: InkResponse(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(8),
           onTap: () {
             widget.viewModel.logout.execute();
           },
           child: Center(
             child: Icon(
-              size: 24.0,
+              size: 24,
               Icons.logout,
               color: Theme.of(context).colorScheme.onSurface,
             ),

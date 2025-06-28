@@ -11,6 +11,6 @@ import '../../models/user.dart';
 class FakeUserRepository implements UserRepository {
   @override
   Future<Result<User>> getUser() async {
-    return Success(user);
+    return const Success(user);
   }
 }

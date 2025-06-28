@@ -4,15 +4,14 @@
 
 import 'dart:ui';
 
+import 'package:compass_app/ui/core/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../themes/colors.dart';
-
 class TagChip extends StatelessWidget {
   const TagChip({
-    super.key,
     required this.tag,
+    super.key,
     this.fontSize = 10,
     this.height = 20,
     this.chipColor,
@@ -42,9 +41,8 @@ class TagChip extends StatelessWidget {
           child: SizedBox(
             height: height,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+              padding: const EdgeInsets.symmetric(horizontal: 6),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
@@ -113,10 +111,9 @@ class TagChip extends StatelessWidget {
 }
 
 class TagChipTheme extends ThemeExtension<TagChipTheme> {
+  TagChipTheme({required this.chipColor, required this.onChipColor});
   final Color chipColor;
   final Color onChipColor;
-
-  TagChipTheme({required this.chipColor, required this.onChipColor});
 
   @override
   ThemeExtension<TagChipTheme> copyWith({

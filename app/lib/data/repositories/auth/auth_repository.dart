@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-
 import 'package:result_dart/result_dart.dart';
 
 abstract class AuthRepository extends ChangeNotifier {

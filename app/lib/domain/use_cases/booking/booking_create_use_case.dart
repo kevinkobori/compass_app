@@ -1,13 +1,11 @@
+import 'package:compass_app/data/repositories/activity/activity_repository.dart';
+import 'package:compass_app/data/repositories/booking/booking_repository.dart';
+import 'package:compass_app/data/repositories/destination/destination_repository.dart';
+import 'package:compass_app/domain/models/booking/booking.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
+import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:logging/logging.dart';
-
-import '../../../data/repositories/activity/activity_repository.dart';
-import '../../../data/repositories/booking/booking_repository.dart';
-import '../../../data/repositories/destination/destination_repository.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../models/activity/activity.dart';
-import '../../models/booking/booking.dart';
-import '../../models/destination/destination.dart';
-import '../../models/itinerary_config/itinerary_config.dart';
 
 class BookingCreateUseCase {
   BookingCreateUseCase({

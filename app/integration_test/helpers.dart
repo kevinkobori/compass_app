@@ -32,7 +32,6 @@ Future<void> pumpMainAppWithLocale(WidgetTester tester, Locale locale) async {
         scrollBehavior: AppCustomScrollBehavior(),
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
         routerConfig: router(FakeAuthRepository()),
       ),
     ),

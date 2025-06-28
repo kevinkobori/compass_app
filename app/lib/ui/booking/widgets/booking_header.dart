@@ -3,19 +3,18 @@
 // found in the LICENSE file.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:compass_app/domain/models/booking/booking.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/date_format_start_end.dart';
+import 'package:compass_app/ui/core/ui/home_button.dart';
+import 'package:compass_app/ui/core/ui/tag_chip.dart';
+import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
 
-import '../../../domain/models/booking/booking.dart';
-import '../../../utils/image_error_listener.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/colors.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/date_format_start_end.dart';
-import '../../core/ui/home_button.dart';
-import '../../core/ui/tag_chip.dart';
-
 class BookingHeader extends StatelessWidget {
-  const BookingHeader({super.key, required this.booking});
+  const BookingHeader({required this.booking, super.key});
 
   final Booking booking;
 
@@ -65,7 +64,7 @@ class _Top extends StatelessWidget {
           Positioned(
             right: Dimens.of(context).paddingScreenHorizontal,
             top: Dimens.of(context).paddingScreenVertical,
-            child: const SafeArea(top: true, child: HomeButton(blur: true)),
+            child: const SafeArea(child: HomeButton(blur: true)),
           ),
         ],
       ),

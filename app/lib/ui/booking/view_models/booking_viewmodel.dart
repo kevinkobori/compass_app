@@ -1,16 +1,12 @@
+import 'package:compass_app/data/repositories/booking/booking_repository.dart';
+import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/domain/models/booking/booking.dart';
+import 'package:compass_app/domain/use_cases/booking/booking_create_use_case.dart';
+import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
-
-import '../../../data/repositories/booking/booking_repository.dart';
-import '../../../data/repositories/itinerary_config/itinerary_config_repository.dart';
-import '../../../domain/models/booking/booking.dart';
-import '../../../domain/models/itinerary_config/itinerary_config.dart';
-import '../../../domain/use_cases/booking/booking_create_use_case.dart';
-import '../../../domain/use_cases/booking/booking_share_use_case.dart';
-
 import 'package:result_dart/result_dart.dart';
-import 'package:result_dart/functions.dart';
 
 class BookingViewModel extends ChangeNotifier {
   BookingViewModel({
@@ -75,7 +71,7 @@ class BookingViewModel extends ChangeNotifier {
     _log.fine('Created Booking');
     _booking = bookingResult.getOrThrow();
     notifyListeners();
-    return Success(unit);
+    return const Success(unit);
   }
 
   Future<Result<Unit>> _load(int id) async {
@@ -89,6 +85,6 @@ class BookingViewModel extends ChangeNotifier {
     _log.fine('Loaded booking $id');
     _booking = result.getOrThrow();
     notifyListeners();
-    return Success(unit);
+    return const Success(unit);
   }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../domain/models/itinerary_config/itinerary_config.dart';
+import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:result_dart/result_dart.dart';
 
 /// Data source for the current [ItineraryConfig]

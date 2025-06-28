@@ -1,8 +1,7 @@
-import '../../../domain/models/user/user.dart';
+import 'package:compass_app/data/repositories/user/user_repository.dart';
+import 'package:compass_app/data/services/api/api_client.dart';
+import 'package:compass_app/domain/models/user/user.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../services/api/api_client.dart';
-import '../../services/api/model/user/user_api_model.dart';
-import 'user_repository.dart';
 
 class UserRepositoryRemote implements UserRepository {
   UserRepositoryRemote({required ApiClient apiClient}) : _apiClient = apiClient;

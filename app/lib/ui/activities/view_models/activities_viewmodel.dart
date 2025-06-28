@@ -1,13 +1,12 @@
+import 'package:compass_app/data/repositories/activity/activity_repository.dart';
+import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/domain/models/activity/activity.dart';
+import 'package:compass_app/domain/models/destination/destination.dart'
+    show Destination;
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-
-import '../../../data/repositories/activity/activity_repository.dart';
-import '../../../data/repositories/itinerary_config/itinerary_config_repository.dart';
-import '../../../domain/models/activity/activity.dart';
-import '../../../domain/models/itinerary_config/itinerary_config.dart';
-
-import 'package:result_dart/result_dart.dart';
 import 'package:result_command/result_command.dart';
+import 'package:result_dart/result_dart.dart';
 
 class ActivitiesViewModel extends ChangeNotifier {
   ActivitiesViewModel({
@@ -109,7 +108,7 @@ class ActivitiesViewModel extends ChangeNotifier {
       (_daytimeActivities + _eveningActivities).any(
         (activity) => activity.ref == activityRef,
       ),
-      "Activity $activityRef not found",
+      'Activity $activityRef not found',
     );
     _selectedActivities.add(activityRef);
     _log.finest('Activity $activityRef added');
@@ -122,7 +121,7 @@ class ActivitiesViewModel extends ChangeNotifier {
       (_daytimeActivities + _eveningActivities).any(
         (activity) => activity.ref == activityRef,
       ),
-      "Activity $activityRef not found",
+      'Activity $activityRef not found',
     );
     _selectedActivities.remove(activityRef);
     _log.finest('Activity $activityRef removed');

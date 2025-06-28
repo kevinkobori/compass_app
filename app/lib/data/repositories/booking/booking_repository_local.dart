@@ -4,11 +4,11 @@
 
 import 'dart:async';
 
-import '../../../domain/models/booking/booking.dart';
-import '../../../domain/models/booking/booking_summary.dart';
+import 'package:compass_app/data/repositories/booking/booking_repository.dart';
+import 'package:compass_app/data/services/local/local_data_service.dart';
+import 'package:compass_app/domain/models/booking/booking.dart';
+import 'package:compass_app/domain/models/booking/booking_summary.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../services/local/local_data_service.dart';
-import 'booking_repository.dart';
 
 class BookingRepositoryLocal implements BookingRepository {
   BookingRepositoryLocal({required LocalDataService localDataService})
@@ -77,8 +77,8 @@ class BookingRepositoryLocal implements BookingRepository {
       _bookings.add(
         Booking(
           id: _sequentialId++,
-          startDate: DateTime(2024, 1, 1),
-          endDate: DateTime(2024, 2, 1),
+          startDate: DateTime(2024),
+          endDate: DateTime(2024, 2),
           destination: destination,
           activity: activities,
         ),

@@ -1,14 +1,11 @@
+import 'package:compass_app/data/repositories/destination/destination_repository.dart';
+import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
+import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
-
-import '../../../data/repositories/destination/destination_repository.dart';
-import '../../../data/repositories/itinerary_config/itinerary_config_repository.dart';
-import '../../../domain/models/destination/destination.dart';
-import '../../../domain/models/itinerary_config/itinerary_config.dart';
-
 import 'package:result_dart/result_dart.dart';
-import 'package:result_dart/functions.dart';
 
 class ResultsViewModel extends ChangeNotifier {
   ResultsViewModel({
@@ -70,7 +67,7 @@ class ResultsViewModel extends ChangeNotifier {
   }
 
   Future<Result<Unit>> _updateItineraryConfig(String destinationRef) async {
-    assert(destinationRef.isNotEmpty, "destinationRef should not be empty");
+    assert(destinationRef.isNotEmpty, 'destinationRef should not be empty');
 
     final resultConfig = await _itineraryConfigRepository.getItineraryConfig();
     if (resultConfig.isError()) {

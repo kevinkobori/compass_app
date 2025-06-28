@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/core/themes/colors.dart';
 import 'package:flutter/material.dart';
-
-import '../themes/colors.dart';
 
 class ErrorIndicator extends StatelessWidget {
   const ErrorIndicator({
-    super.key,
     required this.title,
     required this.label,
     required this.onPressed,
+    super.key,
   });
 
   final String title;
@@ -22,11 +21,10 @@ class ErrorIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IntrinsicWidth(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: Center(
               child: Row(
                 children: [

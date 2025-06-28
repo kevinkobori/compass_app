@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/results/widgets/results_screen.dart';
+import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/dimens.dart';
-import '../../results/widgets/results_screen.dart';
-import '../view_models/search_form_viewmodel.dart';
 
 const String searchFormSubmitButtonKey = 'submit-button';
 
@@ -19,7 +18,7 @@ const String searchFormSubmitButtonKey = 'submit-button';
 /// When tapped, it navigates to the [ResultsScreen]
 /// passing the search options as query parameters.
 class SearchFormSubmit extends StatefulWidget {
-  const SearchFormSubmit({super.key, required this.viewModel});
+  const SearchFormSubmit({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 

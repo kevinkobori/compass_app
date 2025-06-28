@@ -4,8 +4,8 @@
 
 import 'package:compass_app/data/services/api/api_client.dart';
 import 'package:compass_app/domain/models/continent/continent.dart';
-import 'package:result_dart/result_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/mocks.dart';
 import '../../../../testing/models/activity.dart';

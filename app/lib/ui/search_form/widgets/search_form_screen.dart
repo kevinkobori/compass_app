@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/search_bar.dart';
+import 'package:compass_app/ui/results/widgets/results_screen.dart';
+import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
+import 'package:compass_app/ui/search_form/widgets/search_form_continent.dart';
+import 'package:compass_app/ui/search_form/widgets/search_form_date.dart';
+import 'package:compass_app/ui/search_form/widgets/search_form_guests.dart';
+import 'package:compass_app/ui/search_form/widgets/search_form_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../routing/routes.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/search_bar.dart';
-import '../../results/widgets/results_screen.dart';
-import '../view_models/search_form_viewmodel.dart';
-import 'search_form_continent.dart';
-import 'search_form_date.dart';
-import 'search_form_guests.dart';
-import 'search_form_submit.dart';
 
 /// Search form screen
 ///
@@ -21,7 +20,7 @@ import 'search_form_submit.dart';
 /// Tapping on the submit button opens the [ResultsScreen] screen
 /// passing the search options as query parameters.
 class SearchFormScreen extends StatelessWidget {
-  const SearchFormScreen({super.key, required this.viewModel});
+  const SearchFormScreen({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 
@@ -37,7 +36,6 @@ class SearchFormScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SafeArea(
-              top: true,
               bottom: false,
               child: Padding(
                 padding: EdgeInsets.only(

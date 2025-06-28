@@ -17,7 +17,7 @@ void main() {
         sharedText = text;
       });
       final booking = Booking(
-        startDate: DateTime(2024, 01, 01),
+        startDate: DateTime(2024),
         endDate: DateTime(2024, 02, 12),
         destination: kDestination1,
         activity: [kActivity],

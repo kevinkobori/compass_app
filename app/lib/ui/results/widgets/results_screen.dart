@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
+import 'package:compass_app/ui/core/ui/search_bar.dart';
+import 'package:compass_app/ui/results/view_models/results_viewmodel.dart';
+import 'package:compass_app/ui/results/widgets/result_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/error_indicator.dart';
-import '../../core/ui/search_bar.dart';
-import '../view_models/results_viewmodel.dart';
-import 'result_card.dart';
-
 class ResultsScreen extends StatefulWidget {
-  const ResultsScreen({super.key, required this.viewModel});
+  const ResultsScreen({required this.viewModel, super.key});
 
   final ResultsViewModel viewModel;
 
@@ -123,7 +122,6 @@ class _AppSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: true,
       bottom: false,
       child: Padding(
         padding: EdgeInsets.only(
@@ -152,8 +150,8 @@ class _Grid extends StatelessWidget {
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 8.0,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
         childAspectRatio: 182 / 222,
       ),
       delegate: SliverChildBuilderDelegate((context, index) {

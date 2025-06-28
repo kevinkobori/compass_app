@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/data/repositories/auth/auth_repository.dart';
 import 'package:logging/logging.dart';
-
-import '../../../../data/repositories/auth/auth_repository.dart';
-import 'package:result_dart/result_dart.dart';
 import 'package:result_command/result_command.dart';
+import 'package:result_dart/result_dart.dart';
 
 class LoginViewModel {
   LoginViewModel({required AuthRepository authRepository})

@@ -20,6 +20,6 @@ class FakeSharedPreferencesService implements SharedPreferencesService {
   @override
   Future<Result<Unit>> saveToken(String? token) async {
     this.token = token;
-    return Success(unit);
+    return const Success(unit);
   }
 }

@@ -21,18 +21,18 @@ class FakeApiClient implements ApiClient {
   @override
   Future<Result<List<Continent>>> getContinents() async {
     requestCount++;
-    return Success([
-      const Continent(name: 'CONTINENT', imageUrl: 'URL'),
-      const Continent(name: 'CONTINENT2', imageUrl: 'URL'),
-      const Continent(name: 'CONTINENT3', imageUrl: 'URL'),
+    return const Success([
+      Continent(name: 'CONTINENT', imageUrl: 'URL'),
+      Continent(name: 'CONTINENT2', imageUrl: 'URL'),
+      Continent(name: 'CONTINENT3', imageUrl: 'URL'),
     ]);
   }
 
   @override
   Future<Result<List<Destination>>> getDestinations() async {
     requestCount++;
-    return Success([
-      const Destination(
+    return const Success([
+      Destination(
         ref: 'ref1',
         name: 'name1',
         country: 'country1',
@@ -41,7 +41,7 @@ class FakeApiClient implements ApiClient {
         tags: ['tags1'],
         imageUrl: 'imageUrl1',
       ),
-      const Destination(
+      Destination(
         ref: 'ref2',
         name: 'name2',
         country: 'country2',
@@ -58,8 +58,8 @@ class FakeApiClient implements ApiClient {
     requestCount++;
 
     if (ref == 'alaska') {
-      return Success([
-        const Activity(
+      return const Success([
+        Activity(
           name: 'Glacier Trekking and Ice Climbing',
           description:
               'Embark on a thrilling adventure exploring the awe-inspiring glaciers of Alaska. Hike across the icy terrain, marvel at the deep blue crevasses, and even try your hand at ice climbing for an unforgettable experience.',
@@ -77,10 +77,10 @@ class FakeApiClient implements ApiClient {
     }
 
     if (ref == kBooking.destination.ref) {
-      return Success([kActivity]);
+      return const Success([kActivity]);
     }
 
-    return Success([]);
+    return const Success([]);
   }
 
   @override
@@ -107,12 +107,12 @@ class FakeApiClient implements ApiClient {
 
   @override
   Future<Result<UserApiModel>> getUser() async {
-    return Success(userApiModel);
+    return const Success(userApiModel);
   }
 
   @override
   Future<Result<Unit>> deleteBooking(int id) async {
     bookings.removeWhere((booking) => booking.id == id);
-    return Success(unit);
+    return const Success(unit);
   }
 }

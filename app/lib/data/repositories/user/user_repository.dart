@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../domain/models/user/user.dart';
+import 'package:compass_app/domain/models/user/user.dart';
 import 'package:result_dart/result_dart.dart';
 
 /// Data source for user related data
-abstract class UserRepository {
+mixin UserRepository {
   /// Get current user
   Future<Result<User>> getUser();
 }

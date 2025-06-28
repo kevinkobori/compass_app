@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/auth/login/view_models/login_viewmodel.dart';
+import 'package:compass_app/ui/auth/login/widgets/tilted_cards.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../routing/routes.dart';
-import '../../../core/localization/applocalization.dart';
-import '../../../core/themes/dimens.dart';
-import '../view_models/login_viewmodel.dart';
-import 'tilted_cards.dart';
-
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key, required this.viewModel});
+  const LoginScreen({required this.viewModel, super.key});
 
   final LoginViewModel viewModel;
 
@@ -51,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           const TiltedCards(),

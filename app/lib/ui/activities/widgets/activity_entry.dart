@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:compass_app/domain/models/activity/activity.dart';
+import 'package:compass_app/ui/core/ui/custom_checkbox.dart';
+import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
-
-import '../../../domain/models/activity/activity.dart';
-import '../../../utils/image_error_listener.dart';
-import '../../core/ui/custom_checkbox.dart';
 
 class ActivityEntry extends StatelessWidget {
   const ActivityEntry({
-    super.key,
     required this.activity,
     required this.selected,
     required this.onChanged,
+    super.key,
   });
 
   final Activity activity;
@@ -40,7 +39,6 @@ class ActivityEntry extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   activity.timeOfDay.name.toUpperCase(),

@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/auth/logout/view_models/logout_viewmodel.dart';
+import 'package:compass_app/ui/auth/logout/widgets/logout_button.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../auth/logout/view_models/logout_viewmodel.dart';
-import '../../auth/logout/widgets/logout_button.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/dimens.dart';
-import '../view_models/home_viewmodel.dart';
-
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key, required this.viewModel});
+  const HomeHeader({required this.viewModel, super.key});
 
   final HomeViewModel viewModel;
 

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/data/repositories/activity/activity_repository.dart';
+import 'package:compass_app/data/services/local/local_data_service.dart';
+import 'package:compass_app/domain/models/activity/activity.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../../domain/models/activity/activity.dart';
-import '../../services/local/local_data_service.dart';
-import 'activity_repository.dart';
 
 /// Local implementation of ActivityRepository
 /// Uses data from assets folder

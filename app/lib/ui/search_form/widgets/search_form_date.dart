@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/date_format_start_end.dart';
+import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/colors.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/date_format_start_end.dart';
-import '../view_models/search_form_viewmodel.dart';
 
 /// Date selection form field.
 ///
 /// Opens a date range picker dialog when tapped.
 class SearchFormDate extends StatelessWidget {
-  const SearchFormDate({super.key, required this.viewModel});
+  const SearchFormDate({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 
@@ -27,7 +26,7 @@ class SearchFormDate extends StatelessWidget {
         right: Dimens.of(context).paddingScreenHorizontal,
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(16),
         onTap: () {
           showDateRangePicker(
             context: context,
@@ -40,7 +39,7 @@ class SearchFormDate extends StatelessWidget {
           height: 64,
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.grey1),
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(

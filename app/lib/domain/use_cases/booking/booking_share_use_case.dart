@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/domain/models/booking/booking.dart';
+import 'package:compass_app/ui/core/ui/date_format_start_end.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:share_plus/share_plus.dart';
-
-import '../../../ui/core/ui/date_format_start_end.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../models/booking/booking.dart';
+import 'package:share_plus/share_plus.dart';
 
 typedef ShareFunction = Future<void> Function(String text);
 
