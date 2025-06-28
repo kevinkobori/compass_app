@@ -9,7 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
 
-
 void main() {
   group('ActivityRepositoryRemote tests', () {
     late FakeApiClient apiClient;

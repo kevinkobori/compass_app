@@ -57,8 +57,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         body: ListenableBuilder(
           listenable: widget.viewModel.loadActivities,
           builder: (context, child) {
-            if (widget.viewModel.loadActivities.value.isSuccess) { // The getter 'completed' isn't defined for the type 'Command0<Object>'.
-// Try importing the library that defines 'completed', correcting the name to the name of an existing getter, or defining a getter or field named 'completed'.
+            if (widget.viewModel.loadActivities.value.isSuccess) {
+              // The getter 'completed' isn't defined for the type 'Command0<Object>'.
+              // Try importing the library that defines 'completed', correcting the name to the name of an existing getter, or defining a getter or field named 'completed'.
               return child!;
             }
             return Column(

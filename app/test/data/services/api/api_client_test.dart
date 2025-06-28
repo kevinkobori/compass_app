@@ -13,7 +13,6 @@ import '../../../../testing/models/booking.dart';
 import '../../../../testing/models/destination.dart';
 import '../../../../testing/models/user.dart';
 
-
 void main() {
   group('ApiClient', () {
     late MockHttpClient mockHttpClient;

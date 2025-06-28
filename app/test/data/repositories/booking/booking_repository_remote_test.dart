@@ -10,7 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../../testing/fakes/services/fake_api_client.dart';
 import '../../../../testing/models/booking.dart';
 
-
 void main() {
   group('BookingRepositoryRemote tests', () {
     late BookingRepository bookingRepository;

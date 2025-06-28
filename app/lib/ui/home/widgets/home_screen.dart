@@ -109,7 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               widget.viewModel.bookings[index].id,
                             );
                             // if command completed successfully, return true
-                            if (widget.viewModel.deleteBooking.value.isSuccess) {
+                            if (widget
+                                .viewModel
+                                .deleteBooking
+                                .value
+                                .isSuccess) {
                               // removes the dismissable from the list
                               return true;
                             } else {

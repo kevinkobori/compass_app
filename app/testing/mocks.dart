@@ -15,22 +15,28 @@ class MockHttpClient extends Mock implements http.Client {}
 
 extension HttpMethodMocks on MockHttpClient {
   void mockGet(String path, Object object) {
-    when(() => get(Uri.http('localhost:8080', path), headers: any(named: 'headers')))
-        .thenAnswer((_) async => http.Response(jsonEncode(object), 200));
+    when(
+      () =>
+          get(Uri.http('localhost:8080', path), headers: any(named: 'headers')),
+    ).thenAnswer((_) async => http.Response(jsonEncode(object), 200));
   }
 
   void mockPost(String path, Object object, [int statusCode = 201]) {
-    when(() => post(
-          Uri.http('localhost:8080', path),
-          headers: any(named: 'headers'),
-          body: any(named: 'body'),
-        )).thenAnswer(
-      (_) async => http.Response(jsonEncode(object), statusCode),
-    );
+    when(
+      () => post(
+        Uri.http('localhost:8080', path),
+        headers: any(named: 'headers'),
+        body: any(named: 'body'),
+      ),
+    ).thenAnswer((_) async => http.Response(jsonEncode(object), statusCode));
   }
 
   void mockDelete(String path) {
-    when(() => delete(Uri.http('localhost:8080', path), headers: any(named: 'headers')))
-        .thenAnswer((_) async => http.Response('', 204));
+    when(
+      () => delete(
+        Uri.http('localhost:8080', path),
+        headers: any(named: 'headers'),
+      ),
+    ).thenAnswer((_) async => http.Response('', 204));
   }
 }

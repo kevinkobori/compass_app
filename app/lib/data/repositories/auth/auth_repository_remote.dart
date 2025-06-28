@@ -90,9 +90,7 @@ class AuthRepositoryRemote extends AuthRepository {
     _log.info('User logged out');
     try {
       // Limpa o token salvo
-      final result = await _sharedPreferencesService.saveToken(
-        null,
-      );
+      final result = await _sharedPreferencesService.saveToken(null);
       if (result.isError()) {
         _log.severe(
           'Failed to clear stored auth token: ${result.exceptionOrNull()}',

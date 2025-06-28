@@ -14,8 +14,8 @@ class SearchFormViewModel extends ChangeNotifier {
   SearchFormViewModel({
     required ContinentRepository continentRepository,
     required ItineraryConfigRepository itineraryConfigRepository,
-  })  : _continentRepository = continentRepository,
-        _itineraryConfigRepository = itineraryConfigRepository {
+  }) : _continentRepository = continentRepository,
+       _itineraryConfigRepository = itineraryConfigRepository {
     updateItineraryConfig = Command0(_updateItineraryConfig);
     load = Command0(_load)..execute();
   }
@@ -60,7 +60,9 @@ class SearchFormViewModel extends ChangeNotifier {
   Future<Result<Unit>> _load() async {
     final result = await _loadContinents();
     if (result.isError()) {
-      return Failure(result.exceptionOrNull() ?? Exception('Failed to load continents'));
+      return Failure(
+        result.exceptionOrNull() ?? Exception('Failed to load continents'),
+      );
     }
     return await _loadItineraryConfig();
   }
@@ -82,7 +84,8 @@ class SearchFormViewModel extends ChangeNotifier {
     if (result.isSuccess()) {
       final itineraryConfig = result.getOrThrow();
       _selectedContinent = itineraryConfig.continent;
-      if (itineraryConfig.startDate != null && itineraryConfig.endDate != null) {
+      if (itineraryConfig.startDate != null &&
+          itineraryConfig.endDate != null) {
         _dateRange = DateTimeRange(
           start: itineraryConfig.startDate!,
           end: itineraryConfig.endDate!,
@@ -92,7 +95,10 @@ class SearchFormViewModel extends ChangeNotifier {
       _log.fine('ItineraryConfig loaded');
       notifyListeners();
     } else {
-      _log.warning('Failed to load stored ItineraryConfig', result.exceptionOrNull());
+      _log.warning(
+        'Failed to load stored ItineraryConfig',
+        result.exceptionOrNull(),
+      );
     }
     return result.map((_) => unit);
   }

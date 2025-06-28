@@ -15,8 +15,8 @@ class HomeViewModel extends ChangeNotifier {
   HomeViewModel({
     required BookingRepository bookingRepository,
     required UserRepository userRepository,
-  })  : _bookingRepository = bookingRepository,
-        _userRepository = userRepository {
+  }) : _bookingRepository = bookingRepository,
+       _userRepository = userRepository {
     load = Command0(_load)..execute();
     deleteBooking = Command1(_deleteBooking);
   }
@@ -39,7 +39,9 @@ class HomeViewModel extends ChangeNotifier {
       final result = await _bookingRepository.getBookingsList();
       if (result.isError()) {
         _log.warning('Failed to load bookings', result.exceptionOrNull());
-        return Failure(result.exceptionOrNull() ?? Exception('Failed to load bookings'));
+        return Failure(
+          result.exceptionOrNull() ?? Exception('Failed to load bookings'),
+        );
       }
       _bookings = result.getOrThrow();
       _log.fine('Loaded bookings');
@@ -48,7 +50,9 @@ class HomeViewModel extends ChangeNotifier {
       final userResult = await _userRepository.getUser();
       if (userResult.isError()) {
         _log.warning('Failed to load user', userResult.exceptionOrNull());
-        return Failure(userResult.exceptionOrNull() ?? Exception('Failed to load user'));
+        return Failure(
+          userResult.exceptionOrNull() ?? Exception('Failed to load user'),
+        );
       }
       _user = userResult.getOrThrow();
       _log.fine('Loaded user');
@@ -64,16 +68,28 @@ class HomeViewModel extends ChangeNotifier {
       // Deletar booking
       final resultDelete = await _bookingRepository.delete(id);
       if (resultDelete.isError()) {
-        _log.warning('Failed to delete booking $id', resultDelete.exceptionOrNull());
-        return Failure(resultDelete.exceptionOrNull() ?? Exception('Failed to delete booking'));
+        _log.warning(
+          'Failed to delete booking $id',
+          resultDelete.exceptionOrNull(),
+        );
+        return Failure(
+          resultDelete.exceptionOrNull() ??
+              Exception('Failed to delete booking'),
+        );
       }
       _log.fine('Deleted booking $id');
 
       // Atualizar lista de bookings
       final resultLoadBookings = await _bookingRepository.getBookingsList();
       if (resultLoadBookings.isError()) {
-        _log.warning('Failed to load bookings', resultLoadBookings.exceptionOrNull());
-        return Failure(resultLoadBookings.exceptionOrNull() ?? Exception('Failed to load bookings'));
+        _log.warning(
+          'Failed to load bookings',
+          resultLoadBookings.exceptionOrNull(),
+        );
+        return Failure(
+          resultLoadBookings.exceptionOrNull() ??
+              Exception('Failed to load bookings'),
+        );
       }
       _bookings = resultLoadBookings.getOrThrow();
       _log.fine('Loaded bookings');

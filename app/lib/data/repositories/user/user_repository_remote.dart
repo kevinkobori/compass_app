@@ -19,14 +19,13 @@ class UserRepositoryRemote implements UserRepository {
 
     final result = await _apiClient.getUser();
     if (result.isError()) {
-      return Failure(result.exceptionOrNull() ?? Exception('Unknown user error'));
+      return Failure(
+        result.exceptionOrNull() ?? Exception('Unknown user error'),
+      );
     }
 
     final userApiModel = result.getOrThrow();
-    final user = User(
-      name: userApiModel.name,
-      picture: userApiModel.picture,
-    );
+    final user = User(name: userApiModel.name, picture: userApiModel.picture);
     _cachedData = user;
     return Success(user);
   }

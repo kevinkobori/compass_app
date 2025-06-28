@@ -9,8 +9,8 @@ class LogoutViewModel {
   LogoutViewModel({
     required AuthRepository authRepository,
     required ItineraryConfigRepository itineraryConfigRepository,
-  })  : _authLogoutRepository = authRepository,
-        _itineraryConfigRepository = itineraryConfigRepository {
+  }) : _authLogoutRepository = authRepository,
+       _itineraryConfigRepository = itineraryConfigRepository {
     logout = Command0(_logout);
   }
 
@@ -24,7 +24,10 @@ class LogoutViewModel {
       return Failure(result.exceptionOrNull() ?? Exception('Logout failed'));
     }
     // Limpa o ItineraryConfig após logout bem-sucedido
-    return await _itineraryConfigRepository.setItineraryConfig(const ItineraryConfig())
-      .then((res) => res.map((_) => unit)); // Garante retorno do tipo Result<Unit>
+    return await _itineraryConfigRepository
+        .setItineraryConfig(const ItineraryConfig())
+        .then(
+          (res) => res.map((_) => unit),
+        ); // Garante retorno do tipo Result<Unit>
   }
 }

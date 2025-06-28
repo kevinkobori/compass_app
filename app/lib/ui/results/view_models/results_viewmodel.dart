@@ -14,8 +14,8 @@ class ResultsViewModel extends ChangeNotifier {
   ResultsViewModel({
     required DestinationRepository destinationRepository,
     required ItineraryConfigRepository itineraryConfigRepository,
-  })  : _destinationRepository = destinationRepository,
-        _itineraryConfigRepository = itineraryConfigRepository {
+  }) : _destinationRepository = destinationRepository,
+       _itineraryConfigRepository = itineraryConfigRepository {
     updateItineraryConfig = Command1<Unit, String>(_updateItineraryConfig);
     search = Command0(_search)..execute();
   }
@@ -42,17 +42,24 @@ class ResultsViewModel extends ChangeNotifier {
         'Failed to load stored ItineraryConfig',
         resultConfig.exceptionOrNull(),
       );
-      return Failure(resultConfig.exceptionOrNull() ?? Exception('Unknown ItineraryConfig error'));
+      return Failure(
+        resultConfig.exceptionOrNull() ??
+            Exception('Unknown ItineraryConfig error'),
+      );
     }
     _itineraryConfig = resultConfig.getOrThrow();
     notifyListeners();
 
     final result = await _destinationRepository.getDestinations();
     if (result.isSuccess()) {
-      _destinations = result
-          .getOrThrow()
-          .where((destination) => destination.continent == _itineraryConfig!.continent)
-          .toList();
+      _destinations =
+          result
+              .getOrThrow()
+              .where(
+                (destination) =>
+                    destination.continent == _itineraryConfig!.continent,
+              )
+              .toList();
       _log.fine('Destinations (${_destinations.length}) loaded');
     } else {
       _log.warning('Failed to load destinations', result.exceptionOrNull());
@@ -71,7 +78,10 @@ class ResultsViewModel extends ChangeNotifier {
         'Failed to load stored ItineraryConfig',
         resultConfig.exceptionOrNull(),
       );
-      return Failure(resultConfig.exceptionOrNull() ?? Exception('Unknown ItineraryConfig error'));
+      return Failure(
+        resultConfig.exceptionOrNull() ??
+            Exception('Unknown ItineraryConfig error'),
+      );
     }
 
     final itineraryConfig = resultConfig.getOrThrow();

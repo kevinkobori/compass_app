@@ -8,7 +8,7 @@ import 'continent_repository.dart';
 /// See: https://docs.flutter.dev/get-started/fwe/local-caching
 class ContinentRepositoryRemote implements ContinentRepository {
   ContinentRepositoryRemote({required ApiClient apiClient})
-      : _apiClient = apiClient;
+    : _apiClient = apiClient;
 
   final ApiClient _apiClient;
 

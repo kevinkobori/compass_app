@@ -9,7 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../testing/mocks.dart';
 
-
 void main() {
   group('AuthApiClient', () {
     late MockHttpClient mockHttpClient;

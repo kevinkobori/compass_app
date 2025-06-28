@@ -18,10 +18,10 @@ class BookingViewModel extends ChangeNotifier {
     required BookingShareUseCase shareBookingUseCase,
     required ItineraryConfigRepository itineraryConfigRepository,
     required BookingRepository bookingRepository,
-  })  : _createUseCase = createBookingUseCase,
-        _shareUseCase = shareBookingUseCase,
-        _itineraryConfigRepository = itineraryConfigRepository,
-        _bookingRepository = bookingRepository {
+  }) : _createUseCase = createBookingUseCase,
+       _shareUseCase = shareBookingUseCase,
+       _itineraryConfigRepository = itineraryConfigRepository,
+       _bookingRepository = bookingRepository {
     createBooking = Command0(_createBooking);
     shareBooking = Command0(() => _shareUseCase.shareBooking(_booking!));
     loadBooking = Command1(_load);
@@ -48,19 +48,29 @@ class BookingViewModel extends ChangeNotifier {
 
   Future<Result<Unit>> _createBooking() async {
     _log.fine('Loading booking');
-    final itineraryResult = await _itineraryConfigRepository.getItineraryConfig();
+    final itineraryResult =
+        await _itineraryConfigRepository.getItineraryConfig();
     if (itineraryResult.isError()) {
-      _log.warning('ItineraryConfig error: ${itineraryResult.exceptionOrNull()}');
+      _log.warning(
+        'ItineraryConfig error: ${itineraryResult.exceptionOrNull()}',
+      );
       notifyListeners();
-      return Failure(itineraryResult.exceptionOrNull() ?? Exception('Unknown ItineraryConfig error'));
+      return Failure(
+        itineraryResult.exceptionOrNull() ??
+            Exception('Unknown ItineraryConfig error'),
+      );
     }
     _log.fine('Loaded stored ItineraryConfig');
 
-    final bookingResult = await _createUseCase.createFrom(itineraryResult.getOrThrow());
+    final bookingResult = await _createUseCase.createFrom(
+      itineraryResult.getOrThrow(),
+    );
     if (bookingResult.isError()) {
       _log.warning('Booking error: ${bookingResult.exceptionOrNull()}');
       notifyListeners();
-      return Failure(bookingResult.exceptionOrNull() ?? Exception('Unknown Booking error'));
+      return Failure(
+        bookingResult.exceptionOrNull() ?? Exception('Unknown Booking error'),
+      );
     }
     _log.fine('Created Booking');
     _booking = bookingResult.getOrThrow();
@@ -72,7 +82,9 @@ class BookingViewModel extends ChangeNotifier {
     final result = await _bookingRepository.getBooking(id);
     if (result.isError()) {
       _log.warning('Failed to load booking $id: ${result.exceptionOrNull()}');
-      return Failure(result.exceptionOrNull() ?? Exception('Failed to load booking'));
+      return Failure(
+        result.exceptionOrNull() ?? Exception('Failed to load booking'),
+      );
     }
     _log.fine('Loaded booking $id');
     _booking = result.getOrThrow();
