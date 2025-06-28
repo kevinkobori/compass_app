@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../domain/models/destination/destination.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 /// Data source with all possible destinations
 abstract class DestinationRepository {

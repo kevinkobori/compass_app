@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../domain/models/destination/destination.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import '../../services/local/local_data_service.dart';
 import 'destination_repository.dart';
 
@@ -19,9 +19,9 @@ class DestinationRepositoryLocal implements DestinationRepository {
   @override
   Future<Result<List<Destination>>> getDestinations() async {
     try {
-      return Result.ok(await _localDataService.getDestinations());
+      return Success(await _localDataService.getDestinations());
     } on Exception catch (error) {
-      return Result.error(error);
+      return Failure(error);
     }
   }
 }

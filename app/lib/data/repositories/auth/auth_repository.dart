@@ -4,7 +4,7 @@
 
 import 'package:flutter/foundation.dart';
 
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 abstract class AuthRepository extends ChangeNotifier {
   /// Returns true when the user is logged in
@@ -12,8 +12,8 @@ abstract class AuthRepository extends ChangeNotifier {
   Future<bool> get isAuthenticated;
 
   /// Perform login
-  Future<Result<void>> login({required String email, required String password});
+  Future<Result<Unit>> login({required String email, required String password});
 
   /// Perform logout
-  Future<Result<void>> logout();
+  Future<Result<Unit>> logout();
 }

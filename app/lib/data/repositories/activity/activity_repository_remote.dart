@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../domain/models/activity/activity.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import '../../services/api/api_client.dart';
 import 'activity_repository.dart';
 
@@ -23,13 +23,13 @@ class ActivityRepositoryRemote implements ActivityRepository {
     if (!_cachedData.containsKey(ref)) {
       // No cached data, request activities
       final result = await _apiClient.getActivityByDestination(ref);
-      if (result is Ok<List<Activity>>) {
-        _cachedData[ref] = result.value;
+      if (result.isSuccess()) {
+        _cachedData[ref] = result.getOrThrow();
       }
       return result;
     } else {
       // Return cached data if available
-      return Result.ok(_cachedData[ref]!);
+      return Success(_cachedData[ref]!);
     }
   }
 }

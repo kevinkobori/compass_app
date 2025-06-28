@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:result_dart/result_dart.dart';
 import '../../../domain/models/activity/activity.dart';
-import '../../../utils/result.dart';
 import '../../services/local/local_data_service.dart';
 import 'activity_repository.dart';
 
@@ -23,9 +23,9 @@ class ActivityRepositoryLocal implements ActivityRepository {
               .where((activity) => activity.destinationRef == ref)
               .toList();
 
-      return Result.ok(activities);
+      return Success(activities);
     } on Exception catch (error) {
-      return Result.error(error);
+      return Failure(error);
     }
   }
 }

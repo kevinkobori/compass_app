@@ -63,11 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListenableBuilder(
           listenable: widget.viewModel.load,
           builder: (context, child) {
-            if (widget.viewModel.load.running) {
+            if (widget.viewModel.load.value.isRunning) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (widget.viewModel.load.error) {
+            if (widget.viewModel.load.value.isFailure) {
               return ErrorIndicator(
                 title: AppLocalization.of(context).errorWhileLoadingHome,
                 label: AppLocalization.of(context).tryAgain,
@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               widget.viewModel.bookings[index].id,
                             );
                             // if command completed successfully, return true
-                            if (widget.viewModel.deleteBooking.completed) {
+                            if (widget.viewModel.deleteBooking.value.isSuccess) {
                               // removes the dismissable from the list
                               return true;
                             } else {
@@ -129,15 +129,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onResult() {
-    if (widget.viewModel.deleteBooking.completed) {
-      widget.viewModel.deleteBooking.clearResult();
+    if (widget.viewModel.deleteBooking.value.isSuccess) {
+      widget.viewModel.deleteBooking.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalization.of(context).bookingDeleted)),
       );
     }
 
-    if (widget.viewModel.deleteBooking.error) {
-      widget.viewModel.deleteBooking.clearResult();
+    if (widget.viewModel.deleteBooking.value.isFailure) {
+      widget.viewModel.deleteBooking.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalization.of(context).errorWhileDeletingBooking),

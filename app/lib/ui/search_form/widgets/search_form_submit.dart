@@ -77,13 +77,13 @@ class _SearchFormSubmitState extends State<SearchFormSubmit> {
   }
 
   void _onResult() {
-    if (widget.viewModel.updateItineraryConfig.completed) {
-      widget.viewModel.updateItineraryConfig.clearResult();
+    if (widget.viewModel.updateItineraryConfig.value.isSuccess) {
+      widget.viewModel.updateItineraryConfig.reset();
       context.go(Routes.results);
     }
 
-    if (widget.viewModel.updateItineraryConfig.error) {
-      widget.viewModel.updateItineraryConfig.clearResult();
+    if (widget.viewModel.updateItineraryConfig.value.isFailure) {
+      widget.viewModel.updateItineraryConfig.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalization.of(context).errorWhileSavingItinerary),

@@ -1,9 +1,5 @@
-// Copyright 2024 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import '../../../domain/models/destination/destination.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import '../../services/api/api_client.dart';
 import 'destination_repository.dart';
 
@@ -12,7 +8,7 @@ import 'destination_repository.dart';
 /// See: https://docs.flutter.dev/get-started/fwe/local-caching
 class DestinationRepositoryRemote implements DestinationRepository {
   DestinationRepositoryRemote({required ApiClient apiClient})
-    : _apiClient = apiClient;
+      : _apiClient = apiClient;
 
   final ApiClient _apiClient;
 
@@ -23,14 +19,14 @@ class DestinationRepositoryRemote implements DestinationRepository {
     if (_cachedData == null) {
       // No cached data, request destinations
       final result = await _apiClient.getDestinations();
-      if (result is Ok<List<Destination>>) {
-        // Store value if result Ok
-        _cachedData = result.value;
+      if (result.isSuccess()) {
+        // Store value if result Success
+        _cachedData = result.getOrThrow();
       }
       return result;
     } else {
       // Return cached data if available
-      return Result.ok(_cachedData!);
+      return Success(_cachedData!);
     }
   }
 }

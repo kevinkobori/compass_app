@@ -87,13 +87,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _onResult() {
-    if (widget.viewModel.login.completed) {
-      widget.viewModel.login.clearResult();
+    if (widget.viewModel.login.value.isSuccess) {
+      widget.viewModel.login.reset();
       context.go(Routes.home);
     }
 
-    if (widget.viewModel.login.error) {
-      widget.viewModel.login.clearResult();
+    if (widget.viewModel.login.value.isFailure) {
+      widget.viewModel.login.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalization.of(context).errorWhileLogin),

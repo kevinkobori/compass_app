@@ -5,13 +5,13 @@
 import 'package:logging/logging.dart';
 
 import '../../../../data/repositories/auth/auth_repository.dart';
-import '../../../../utils/command.dart';
-import '../../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
+import 'package:result_command/result_command.dart';
 
 class LoginViewModel {
   LoginViewModel({required AuthRepository authRepository})
     : _authRepository = authRepository {
-    login = Command1<void, (String email, String password)>(_login);
+    login = Command1<Unit, (String email, String password)>(_login);
   }
 
   final AuthRepository _authRepository;
@@ -19,14 +19,14 @@ class LoginViewModel {
 
   late Command1 login;
 
-  Future<Result<void>> _login((String, String) credentials) async {
+  Future<Result<Unit>> _login((String, String) credentials) async {
     final (email, password) = credentials;
     final result = await _authRepository.login(
       email: email,
       password: password,
     );
-    if (result is Error<void>) {
-      _log.warning('Login failed! ${result.error}');
+    if (result.isError()) {
+      _log.warning('Login failed! ${result.exceptionOrNull()}');
     }
     return result;
   }

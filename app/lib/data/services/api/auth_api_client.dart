@@ -6,7 +6,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import 'model/login_request/login_request.dart';
 import 'model/login_response/login_response.dart';
 
@@ -23,7 +23,7 @@ class AuthApiClient {
   final int _port;
   final http.Client Function() _clientFactory;
 
-  Future<Result<T>> _send<T>(
+  Future<Result<T>> _send<T extends Object>(
     Future<http.Response> Function(http.Client) requestFn,
     T Function(String body) parse,
     int expectedStatus,
@@ -32,12 +32,12 @@ class AuthApiClient {
     try {
       final response = await requestFn(client);
       if (response.statusCode == expectedStatus) {
-        return Result.ok(parse(response.body));
+        return Success(parse(response.body));
       } else {
-        return Result.error(Exception('Login error'));
+        return Failure(Exception('Login error'));
       }
     } on Exception catch (error) {
-      return Result.error(error);
+      return Failure(error);
     } finally {
       client.close();
     }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../domain/models/continent/continent.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import '../../services/local/local_data_service.dart';
 import 'continent_repository.dart';
 
@@ -16,6 +16,6 @@ class ContinentRepositoryLocal implements ContinentRepository {
 
   @override
   Future<Result<List<Continent>>> getContinents() async {
-    return Future.value(Result.ok(_localDataService.getContinents()));
+    return Future.value(Success(_localDataService.getContinents()));
   }
 }

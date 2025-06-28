@@ -65,12 +65,12 @@ class _BookingScreenState extends State<BookingScreen> {
           ]),
           builder: (context, child) {
             // If either command is running, show progress indicator
-            if (widget.viewModel.createBooking.running ||
-                widget.viewModel.loadBooking.running) {
+            if (widget.viewModel.createBooking.value.isRunning ||
+                widget.viewModel.loadBooking.value.isRunning) {
               return const Center(child: CircularProgressIndicator());
             }
             // If fails to create booking, tap to try again
-            if (widget.viewModel.createBooking.error) {
+            if (widget.viewModel.createBooking.value.isFailure) {
               return Center(
                 child: ErrorIndicator(
                   title: AppLocalization.of(context).errorWhileLoadingBooking,
@@ -80,7 +80,7 @@ class _BookingScreenState extends State<BookingScreen> {
               );
             }
             // If existing booking fails to load, tap to go /home
-            if (widget.viewModel.loadBooking.error) {
+            if (widget.viewModel.loadBooking.value.isFailure) {
               return Center(
                 child: ErrorIndicator(
                   title: AppLocalization.of(context).errorWhileLoadingBooking,
@@ -98,8 +98,8 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   void _listener() {
-    if (widget.viewModel.shareBooking.error) {
-      widget.viewModel.shareBooking.clearResult();
+    if (widget.viewModel.shareBooking.value.isFailure) {
+      widget.viewModel.shareBooking.reset();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalization.of(context).errorWhileSharing),

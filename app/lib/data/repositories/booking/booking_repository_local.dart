@@ -6,7 +6,7 @@ import 'dart:async';
 
 import '../../../domain/models/booking/booking.dart';
 import '../../../domain/models/booking/booking_summary.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import '../../services/local/local_data_service.dart';
 import 'booking_repository.dart';
 
@@ -23,20 +23,20 @@ class BookingRepositoryLocal implements BookingRepository {
   final LocalDataService _localDataService;
 
   @override
-  Future<Result<void>> createBooking(Booking booking) async {
+  Future<Result<Unit>> createBooking(Booking booking) async {
     // Bookings created come without id, we need to assign one
     final bookingWithId = booking.copyWith(id: _sequentialId++);
     _bookings.add(bookingWithId);
-    return const Result.ok(null);
+    return const Success(unit);
   }
 
   @override
   Future<Result<Booking>> getBooking(int id) async {
     final booking = _bookings.where((booking) => booking.id == id).firstOrNull;
     if (booking == null) {
-      return Result.error(Exception('Booking not found'));
+      return Failure(Exception('Booking not found'));
     }
-    return Result.ok(booking);
+    return Success(booking);
   }
 
   @override
@@ -47,7 +47,7 @@ class BookingRepositoryLocal implements BookingRepository {
       _isInitialized = true;
     }
 
-    return Result.ok(_createSummaries());
+    return Success(_createSummaries());
   }
 
   List<BookingSummary> _createSummaries() {
@@ -87,8 +87,8 @@ class BookingRepositoryLocal implements BookingRepository {
   }
 
   @override
-  Future<Result<void>> delete(int id) async {
+  Future<Result<Unit>> delete(int id) async {
     _bookings.removeWhere((booking) => booking.id == id);
-    return const Result.ok(null);
+    return const Success(unit);
   }
 }

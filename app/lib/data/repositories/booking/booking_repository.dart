@@ -4,7 +4,7 @@
 
 import '../../../domain/models/booking/booking.dart';
 import '../../../domain/models/booking/booking_summary.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 abstract class BookingRepository {
   /// Returns the list of [BookingSummary] for the current user.
@@ -14,8 +14,8 @@ abstract class BookingRepository {
   Future<Result<Booking>> getBooking(int id);
 
   /// Creates a new [Booking].
-  Future<Result<void>> createBooking(Booking booking);
+  Future<Result<Unit>> createBooking(Booking booking);
 
   /// Delete booking
-  Future<Result<void>> delete(int id);
+  Future<Result<Unit>> delete(int id);
 }

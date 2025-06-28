@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../domain/models/user/user.dart';
-import '../../../utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import '../../services/local/local_data_service.dart';
 import 'user_repository.dart';
 
@@ -15,6 +15,6 @@ class UserRepositoryLocal implements UserRepository {
 
   @override
   Future<Result<User>> getUser() async {
-    return Result.ok(_localDataService.getUser());
+    return Success(_localDataService.getUser());
   }
 }
