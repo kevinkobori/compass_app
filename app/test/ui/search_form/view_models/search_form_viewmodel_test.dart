@@ -67,7 +67,7 @@ void main() {
 
       expect(viewModel.valid, true);
       await viewModel.updateItineraryConfig.execute();
-      expect(viewModel.updateItineraryConfig.completed, true);
+      expect(viewModel.updateItineraryConfig.value.isSuccess, true);
     });
   });
 }

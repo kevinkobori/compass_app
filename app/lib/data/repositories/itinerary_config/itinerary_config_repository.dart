@@ -13,6 +13,5 @@ abstract class ItineraryConfigRepository {
 
   /// Sets [ItineraryConfig], overrides the previous one stored.
   /// Returns Result.Ok if set is successful.
-  // Future<Result<Unit>> setItineraryConfig(ItineraryConfig itineraryConfig);
-  Future<Result<bool>> setItineraryConfig(ItineraryConfig itineraryConfig);
+  Future<Result<Unit>> setItineraryConfig(ItineraryConfig itineraryConfig);
 }

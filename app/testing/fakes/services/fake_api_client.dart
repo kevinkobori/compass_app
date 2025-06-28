@@ -8,7 +8,7 @@ import 'package:compass_app/data/services/api/model/user/user_api_model.dart';
 import 'package:compass_app/domain/models/activity/activity.dart';
 import 'package:compass_app/domain/models/continent/continent.dart';
 import 'package:compass_app/domain/models/destination/destination.dart';
-import 'package:compass_app/utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../models/activity.dart';
 import '../../models/booking.dart';
@@ -21,7 +21,7 @@ class FakeApiClient implements ApiClient {
   @override
   Future<Result<List<Continent>>> getContinents() async {
     requestCount++;
-    return Result.ok([
+    return Success([
       const Continent(name: 'CONTINENT', imageUrl: 'URL'),
       const Continent(name: 'CONTINENT2', imageUrl: 'URL'),
       const Continent(name: 'CONTINENT3', imageUrl: 'URL'),
@@ -31,7 +31,7 @@ class FakeApiClient implements ApiClient {
   @override
   Future<Result<List<Destination>>> getDestinations() async {
     requestCount++;
-    return Result.ok([
+    return Success([
       const Destination(
         ref: 'ref1',
         name: 'name1',
@@ -58,7 +58,7 @@ class FakeApiClient implements ApiClient {
     requestCount++;
 
     if (ref == 'alaska') {
-      return Result.ok([
+      return Success([
         const Activity(
           name: 'Glacier Trekking and Ice Climbing',
           description:
@@ -77,10 +77,10 @@ class FakeApiClient implements ApiClient {
     }
 
     if (ref == kBooking.destination.ref) {
-      return Result.ok([kActivity]);
+      return Success([kActivity]);
     }
 
-    return Result.ok([]);
+    return Success([]);
   }
 
   @override
@@ -88,12 +88,12 @@ class FakeApiClient implements ApiClient {
 
   @override
   Future<Result<BookingApiModel>> getBooking(int id) async {
-    return Result.ok(kBookingApiModel);
+    return Success(kBookingApiModel);
   }
 
   @override
   Future<Result<List<BookingApiModel>>> getBookings() async {
-    return Result.ok([kBookingApiModel]);
+    return Success([kBookingApiModel]);
   }
 
   List<BookingApiModel> bookings = [];
@@ -102,17 +102,17 @@ class FakeApiClient implements ApiClient {
   Future<Result<BookingApiModel>> postBooking(BookingApiModel booking) async {
     final bookingWithId = booking.copyWith(id: bookings.length);
     bookings.add(bookingWithId);
-    return Result.ok(bookingWithId);
+    return Success(bookingWithId);
   }
 
   @override
   Future<Result<UserApiModel>> getUser() async {
-    return Result.ok(userApiModel);
+    return Success(userApiModel);
   }
 
   @override
-  Future<Result<void>> deleteBooking(int id) async {
+  Future<Result<Unit>> deleteBooking(int id) async {
     bookings.removeWhere((booking) => booking.id == id);
-    return Result.ok(null);
+    return Success(unit);
   }
 }

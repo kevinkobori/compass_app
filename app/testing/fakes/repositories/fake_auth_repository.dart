@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/auth/auth_repository.dart';
-import 'package:compass_app/utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 class FakeAuthRepository extends AuthRepository {
   String? token;
@@ -12,19 +12,19 @@ class FakeAuthRepository extends AuthRepository {
   Future<bool> get isAuthenticated async => token != null;
 
   @override
-  Future<Result<void>> login({
+  Future<Result<Unit>> login({
     required String email,
     required String password,
   }) async {
     token = 'TOKEN';
     notifyListeners();
-    return Result.ok(null);
+    return Success(unit);
   }
 
   @override
-  Future<Result<void>> logout() async {
+  Future<Result<Unit>> logout() async {
     token = null;
     notifyListeners();
-    return Result.ok(null);
+    return Success(unit);
   }
 }
