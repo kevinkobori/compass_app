@@ -8,6 +8,7 @@ import 'dart:io';
 import '../../../domain/models/activity/activity.dart';
 import '../../../domain/models/continent/continent.dart';
 import '../../../domain/models/destination/destination.dart';
+import '../../../utils/json_isolate.dart';
 import '../../../utils/result.dart';
 import 'model/booking/booking_api_model.dart';
 import 'model/user/user_api_model.dart';
@@ -46,10 +47,11 @@ class ApiClient {
       final response = await request.close();
       if (response.statusCode == 200) {
         final stringData = await response.transform(utf8.decoder).join();
-        final json = jsonDecode(stringData) as List<dynamic>;
-        return Result.ok(
-          json.map((element) => Continent.fromJson(element)).toList(),
+        final continents = await parseJsonListInIsolate(
+          stringData,
+          Continent.fromJson,
         );
+        return Result.ok(continents);
       } else {
         return const Result.error(HttpException("Invalid response"));
       }
@@ -68,10 +70,11 @@ class ApiClient {
       final response = await request.close();
       if (response.statusCode == 200) {
         final stringData = await response.transform(utf8.decoder).join();
-        final json = jsonDecode(stringData) as List<dynamic>;
-        return Result.ok(
-          json.map((element) => Destination.fromJson(element)).toList(),
+        final destinations = await parseJsonListInIsolate(
+          stringData,
+          Destination.fromJson,
         );
+        return Result.ok(destinations);
       } else {
         return const Result.error(HttpException("Invalid response"));
       }
@@ -94,9 +97,10 @@ class ApiClient {
       final response = await request.close();
       if (response.statusCode == 200) {
         final stringData = await response.transform(utf8.decoder).join();
-        final json = jsonDecode(stringData) as List<dynamic>;
-        final activities =
-            json.map((element) => Activity.fromJson(element)).toList();
+        final activities = await parseJsonListInIsolate(
+          stringData,
+          Activity.fromJson,
+        );
         return Result.ok(activities);
       } else {
         return const Result.error(HttpException("Invalid response"));
@@ -116,9 +120,10 @@ class ApiClient {
       final response = await request.close();
       if (response.statusCode == 200) {
         final stringData = await response.transform(utf8.decoder).join();
-        final json = jsonDecode(stringData) as List<dynamic>;
-        final bookings =
-            json.map((element) => BookingApiModel.fromJson(element)).toList();
+        final bookings = await parseJsonListInIsolate(
+          stringData,
+          BookingApiModel.fromJson,
+        );
         return Result.ok(bookings);
       } else {
         return const Result.error(HttpException("Invalid response"));
@@ -138,7 +143,10 @@ class ApiClient {
       final response = await request.close();
       if (response.statusCode == 200) {
         final stringData = await response.transform(utf8.decoder).join();
-        final booking = BookingApiModel.fromJson(jsonDecode(stringData));
+        final booking = await parseJsonMapInIsolate(
+          stringData,
+          BookingApiModel.fromJson,
+        );
         return Result.ok(booking);
       } else {
         return const Result.error(HttpException("Invalid response"));
@@ -159,7 +167,10 @@ class ApiClient {
       final response = await request.close();
       if (response.statusCode == 201) {
         final stringData = await response.transform(utf8.decoder).join();
-        final booking = BookingApiModel.fromJson(jsonDecode(stringData));
+        final booking = await parseJsonMapInIsolate(
+          stringData,
+          BookingApiModel.fromJson,
+        );
         return Result.ok(booking);
       } else {
         return const Result.error(HttpException("Invalid response"));
@@ -179,7 +190,10 @@ class ApiClient {
       final response = await request.close();
       if (response.statusCode == 200) {
         final stringData = await response.transform(utf8.decoder).join();
-        final user = UserApiModel.fromJson(jsonDecode(stringData));
+        final user = await parseJsonMapInIsolate(
+          stringData,
+          UserApiModel.fromJson,
+        );
         return Result.ok(user);
       } else {
         return const Result.error(HttpException("Invalid response"));
