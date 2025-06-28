@@ -3,33 +3,38 @@
 // found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:io';
+
+import 'package:http/http.dart' as http;
 
 import '../../../utils/result.dart';
 import 'model/login_request/login_request.dart';
 import 'model/login_response/login_response.dart';
 
 class AuthApiClient {
-  AuthApiClient({String? host, int? port, HttpClient Function()? clientFactory})
-    : _host = host ?? 'localhost',
-      _port = port ?? 8080,
-      _clientFactory = clientFactory ?? HttpClient.new;
+  AuthApiClient({String? host, int? port, http.Client Function()? clientFactory})
+      : _host = host ?? 'localhost',
+        _port = port ?? 8080,
+        _clientFactory = clientFactory ?? http.Client.new;
 
   final String _host;
   final int _port;
-  final HttpClient Function() _clientFactory;
+  final http.Client Function() _clientFactory;
 
   Future<Result<LoginResponse>> login(LoginRequest loginRequest) async {
     final client = _clientFactory();
     try {
-      final request = await client.post(_host, _port, '/login');
-      request.write(jsonEncode(loginRequest));
-      final response = await request.close();
+      final uri = Uri.http('$_host:$_port', '/login');
+      final response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(loginRequest),
+      );
       if (response.statusCode == 200) {
-        final stringData = await response.transform(utf8.decoder).join();
-        return Result.ok(LoginResponse.fromJson(jsonDecode(stringData)));
+        return Result.ok(
+          LoginResponse.fromJson(jsonDecode(response.body)),
+        );
       } else {
-        return const Result.error(HttpException("Login error"));
+        return const Result.error(Exception('Login error'));
       }
     } on Exception catch (error) {
       return Result.error(error);
