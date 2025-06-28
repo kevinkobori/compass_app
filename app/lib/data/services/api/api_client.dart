@@ -39,20 +39,17 @@ class ApiClient {
     return header != null ? {'Authorization': header} : <String, String>{};
   }
 
-  Future<Result<List<Continent>>> getContinents() async {
+  Future<Result<T>> _send<T>(
+    Future<http.Response> Function(http.Client) requestFn,
+    Future<T> Function(String body) parse,
+    int expectedStatus,
+  ) async {
     final client = _clientFactory();
     try {
-      final uri = Uri.http('$_host:$_port', '/continent');
-      final response = await client.get(uri, headers: _authHeader());
-      if (response.statusCode == 200) {
-        final stringData = utf8.decode(response.bodyBytes);
-        final continents =
-            kIsWeb
-                ? (jsonDecode(stringData) as List)
-                    .map((e) => Continent.fromJson(e))
-                    .toList()
-                : await parseJsonListInIsolate(stringData, Continent.fromJson);
-        return Result.ok(continents);
+      final response = await requestFn(client);
+      if (response.statusCode == expectedStatus) {
+        final data = await parse(utf8.decode(response.bodyBytes));
+        return Result.ok(data);
       } else {
         return Result.error(Exception('Invalid response'));
       }
@@ -63,175 +60,14 @@ class ApiClient {
     }
   }
 
-  Future<Result<List<Destination>>> getDestinations() async {
+  Future<Result<void>> _sendVoid(
+    Future<http.Response> Function(http.Client) requestFn,
+    int expectedStatus,
+  ) async {
     final client = _clientFactory();
     try {
-      final uri = Uri.http('$_host:$_port', '/destination');
-      final response = await client.get(uri, headers: _authHeader());
-      if (response.statusCode == 200) {
-        final stringData = utf8.decode(response.bodyBytes);
-        final destinations =
-            kIsWeb
-                ? (jsonDecode(stringData) as List)
-                    .map((e) => Destination.fromJson(e))
-                    .toList()
-                : await parseJsonListInIsolate(
-                  stringData,
-                  Destination.fromJson,
-                );
-        return Result.ok(destinations);
-      } else {
-        return Result.error(Exception('Invalid response'));
-      }
-    } on Exception catch (error) {
-      return Result.error(error);
-    } finally {
-      client.close();
-    }
-  }
-
-  Future<Result<List<Activity>>> getActivityByDestination(String ref) async {
-    final client = _clientFactory();
-    try {
-      final uri = Uri.http('$_host:$_port', '/destination/$ref/activity');
-      final response = await client.get(uri, headers: _authHeader());
-      if (response.statusCode == 200) {
-        final stringData = utf8.decode(response.bodyBytes);
-        final activities =
-            kIsWeb
-                ? (jsonDecode(stringData) as List)
-                    .map((e) => Activity.fromJson(e))
-                    .toList()
-                : await parseJsonListInIsolate(stringData, Activity.fromJson);
-        return Result.ok(activities);
-      } else {
-        return Result.error(Exception('Invalid response'));
-      }
-    } on Exception catch (error) {
-      return Result.error(error);
-    } finally {
-      client.close();
-    }
-  }
-
-  Future<Result<List<BookingApiModel>>> getBookings() async {
-    final client = _clientFactory();
-    try {
-      final uri = Uri.http('$_host:$_port', '/booking');
-      final response = await client.get(uri, headers: _authHeader());
-      if (response.statusCode == 200) {
-        final stringData = utf8.decode(response.bodyBytes);
-        final bookings =
-            kIsWeb
-                ? (jsonDecode(stringData) as List)
-                    .map((e) => BookingApiModel.fromJson(e))
-                    .toList()
-                : await parseJsonListInIsolate(
-                  stringData,
-                  BookingApiModel.fromJson,
-                );
-        return Result.ok(bookings);
-      } else {
-        return Result.error(Exception('Invalid response'));
-      }
-    } on Exception catch (error) {
-      return Result.error(error);
-    } finally {
-      client.close();
-    }
-  }
-
-  Future<Result<BookingApiModel>> getBooking(int id) async {
-    final client = _clientFactory();
-    try {
-      final uri = Uri.http('$_host:$_port', '/booking/$id');
-      final response = await client.get(uri, headers: _authHeader());
-      if (response.statusCode == 200) {
-        final stringData = utf8.decode(response.bodyBytes);
-        final booking =
-            kIsWeb
-                ? BookingApiModel.fromJson(
-                  jsonDecode(stringData) as Map<String, dynamic>,
-                )
-                : await parseJsonMapInIsolate(
-                  stringData,
-                  BookingApiModel.fromJson,
-                );
-        return Result.ok(booking);
-      } else {
-        return Result.error(Exception('Invalid response'));
-      }
-    } on Exception catch (error) {
-      return Result.error(error);
-    } finally {
-      client.close();
-    }
-  }
-
-  Future<Result<BookingApiModel>> postBooking(BookingApiModel booking) async {
-    final client = _clientFactory();
-    try {
-      final uri = Uri.http('$_host:$_port', '/booking');
-      final response = await client.post(
-        uri,
-        headers: {..._authHeader(), 'Content-Type': 'application/json'},
-        body: jsonEncode(booking),
-      );
-      if (response.statusCode == 201) {
-        final stringData = utf8.decode(response.bodyBytes);
-        final booking =
-            kIsWeb
-                ? BookingApiModel.fromJson(
-                  jsonDecode(stringData) as Map<String, dynamic>,
-                )
-                : await parseJsonMapInIsolate(
-                  stringData,
-                  BookingApiModel.fromJson,
-                );
-        return Result.ok(booking);
-      } else {
-        return Result.error(Exception('Invalid response'));
-      }
-    } on Exception catch (error) {
-      return Result.error(error);
-    } finally {
-      client.close();
-    }
-  }
-
-  Future<Result<UserApiModel>> getUser() async {
-    final client = _clientFactory();
-    try {
-      final uri = Uri.http('$_host:$_port', '/user');
-      final response = await client.get(uri, headers: _authHeader());
-      if (response.statusCode == 200) {
-        final stringData = utf8.decode(response.bodyBytes);
-        final user =
-            kIsWeb
-                ? UserApiModel.fromJson(
-                  jsonDecode(stringData) as Map<String, dynamic>,
-                )
-                : await parseJsonMapInIsolate(
-                  stringData,
-                  UserApiModel.fromJson,
-                );
-        return Result.ok(user);
-      } else {
-        return Result.error(Exception('Invalid response'));
-      }
-    } on Exception catch (error) {
-      return Result.error(error);
-    } finally {
-      client.close();
-    }
-  }
-
-  Future<Result<void>> deleteBooking(int id) async {
-    final client = _clientFactory();
-    try {
-      final uri = Uri.http('$_host:$_port', '/booking/$id');
-      final response = await client.delete(uri, headers: _authHeader());
-      if (response.statusCode == 204) {
+      final response = await requestFn(client);
+      if (response.statusCode == expectedStatus) {
         return const Result.ok(null);
       } else {
         return Result.error(Exception('Invalid response'));
@@ -241,5 +77,121 @@ class ApiClient {
     } finally {
       client.close();
     }
+  }
+
+  Future<Result<List<Continent>>> getContinents() async {
+    return _send(
+      (client) => client.get(
+        Uri.http('$_host:$_port', '/continent'),
+        headers: _authHeader(),
+      ),
+      (body) async => kIsWeb
+          ? (jsonDecode(body) as List)
+              .map((e) => Continent.fromJson(e))
+              .toList()
+          : await parseJsonListInIsolate(body, Continent.fromJson),
+      200,
+    );
+  }
+
+  Future<Result<List<Destination>>> getDestinations() async {
+    return _send(
+      (client) => client.get(
+        Uri.http('$_host:$_port', '/destination'),
+        headers: _authHeader(),
+      ),
+      (body) async => kIsWeb
+          ? (jsonDecode(body) as List)
+              .map((e) => Destination.fromJson(e))
+              .toList()
+          : await parseJsonListInIsolate(body, Destination.fromJson),
+      200,
+    );
+  }
+
+  Future<Result<List<Activity>>> getActivityByDestination(String ref) async {
+    return _send(
+      (client) => client.get(
+        Uri.http('$_host:$_port', '/destination/$ref/activity'),
+        headers: _authHeader(),
+      ),
+      (body) async => kIsWeb
+          ? (jsonDecode(body) as List)
+              .map((e) => Activity.fromJson(e))
+              .toList()
+          : await parseJsonListInIsolate(body, Activity.fromJson),
+      200,
+    );
+  }
+
+  Future<Result<List<BookingApiModel>>> getBookings() async {
+    return _send(
+      (client) => client.get(
+        Uri.http('$_host:$_port', '/booking'),
+        headers: _authHeader(),
+      ),
+      (body) async => kIsWeb
+          ? (jsonDecode(body) as List)
+              .map((e) => BookingApiModel.fromJson(e))
+              .toList()
+          : await parseJsonListInIsolate(body, BookingApiModel.fromJson),
+      200,
+    );
+  }
+
+  Future<Result<BookingApiModel>> getBooking(int id) async {
+    return _send(
+      (client) => client.get(
+        Uri.http('$_host:$_port', '/booking/$id'),
+        headers: _authHeader(),
+      ),
+      (body) async => kIsWeb
+          ? BookingApiModel.fromJson(
+              jsonDecode(body) as Map<String, dynamic>,
+            )
+          : await parseJsonMapInIsolate(body, BookingApiModel.fromJson),
+      200,
+    );
+  }
+
+  Future<Result<BookingApiModel>> postBooking(BookingApiModel booking) async {
+    return _send(
+      (client) => client.post(
+        Uri.http('$_host:$_port', '/booking'),
+        headers: {..._authHeader(), 'Content-Type': 'application/json'},
+        body: jsonEncode(booking),
+      ),
+      (body) async => kIsWeb
+          ? BookingApiModel.fromJson(
+              jsonDecode(body) as Map<String, dynamic>,
+            )
+          : await parseJsonMapInIsolate(body, BookingApiModel.fromJson),
+      201,
+    );
+  }
+
+  Future<Result<UserApiModel>> getUser() async {
+    return _send(
+      (client) => client.get(
+        Uri.http('$_host:$_port', '/user'),
+        headers: _authHeader(),
+      ),
+      (body) async => kIsWeb
+          ? UserApiModel.fromJson(
+              jsonDecode(body) as Map<String, dynamic>,
+            )
+          : await parseJsonMapInIsolate(body, UserApiModel.fromJson),
+      200,
+    );
+  }
+
+  Future<Result<void>> deleteBooking(int id) async {
+    return _sendVoid(
+      (client) => client.delete(
+        Uri.http('$_host:$_port', '/booking/$id'),
+        headers: _authHeader(),
+      ),
+      204,
+    );
   }
 }

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
-
 import 'package:shelf/shelf.dart';
+
+import '../utils/response_utils.dart';
 
 import '../model/continent/continent.dart';
 
@@ -40,5 +40,5 @@ final _continents = [
 ];
 
 Response continentHandler(Request req) {
-  return Response.ok(jsonEncode(_continents));
+  return jsonResponse(_continents);
 }

@@ -7,6 +7,8 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
+import '../utils/response_utils.dart';
+
 import '../config/assets.dart';
 import '../model/booking/booking.dart';
 
@@ -51,10 +53,7 @@ class BookingApi {
 
     // Get User bookings
     router.get('/', (Request request) {
-      return Response.ok(
-        json.encode(_bookings),
-        headers: {'Content-Type': 'application/json'},
-      );
+      return jsonResponse(_bookings);
     });
 
     // Get a booking by id
@@ -67,10 +66,7 @@ class BookingApi {
         return Response.notFound('Invalid id');
       }
 
-      return Response.ok(
-        json.encode(booking),
-        headers: {'Content-Type': 'application/json'},
-      );
+      return jsonResponse(booking);
     });
 
     // Save a new booking
@@ -92,11 +88,7 @@ class BookingApi {
       _bookings.add(bookingWithId);
 
       // Respond with newly created booking
-      return Response(
-        201, // created
-        body: json.encode(bookingWithId),
-        headers: {'Content-Type': 'application/json'},
-      );
+      return jsonResponse(bookingWithId, statusCode: 201);
     });
 
     // Delete booking
