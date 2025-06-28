@@ -18,9 +18,9 @@ typedef AuthHeaderProvider = String? Function();
 
 class ApiClient {
   ApiClient({String? host, int? port, http.Client Function()? clientFactory})
-      : _host = host ?? 'localhost',
-        _port = port ?? 8080,
-        _clientFactory = clientFactory ?? http.Client.new;
+    : _host = host ?? 'localhost',
+      _port = port ?? 8080,
+      _clientFactory = clientFactory ?? http.Client.new;
 
   final String _host;
   final int _port;
@@ -44,11 +44,9 @@ class ApiClient {
       final response = await client.get(uri, headers: _authHeader());
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as List<dynamic>;
-        return Result.ok(
-          json.map((e) => Continent.fromJson(e)).toList(),
-        );
+        return Result.ok(json.map((e) => Continent.fromJson(e)).toList());
       } else {
-        return const Result.error(Exception('Invalid response'));
+        return Result.error(Exception('Invalid response'));
       }
     } on Exception catch (error) {
       return Result.error(error);
@@ -64,11 +62,9 @@ class ApiClient {
       final response = await client.get(uri, headers: _authHeader());
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as List<dynamic>;
-        return Result.ok(
-          json.map((e) => Destination.fromJson(e)).toList(),
-        );
+        return Result.ok(json.map((e) => Destination.fromJson(e)).toList());
       } else {
-        return const Result.error(Exception('Invalid response'));
+        return Result.error(Exception('Invalid response'));
       }
     } on Exception catch (error) {
       return Result.error(error);
@@ -84,11 +80,9 @@ class ApiClient {
       final response = await client.get(uri, headers: _authHeader());
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as List<dynamic>;
-        return Result.ok(
-          json.map((e) => Activity.fromJson(e)).toList(),
-        );
+        return Result.ok(json.map((e) => Activity.fromJson(e)).toList());
       } else {
-        return const Result.error(Exception('Invalid response'));
+        return Result.error(Exception('Invalid response'));
       }
     } on Exception catch (error) {
       return Result.error(error);
@@ -104,11 +98,9 @@ class ApiClient {
       final response = await client.get(uri, headers: _authHeader());
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as List<dynamic>;
-        return Result.ok(
-          json.map((e) => BookingApiModel.fromJson(e)).toList(),
-        );
+        return Result.ok(json.map((e) => BookingApiModel.fromJson(e)).toList());
       } else {
-        return const Result.error(Exception('Invalid response'));
+        return Result.error(Exception('Invalid response'));
       }
     } on Exception catch (error) {
       return Result.error(error);
@@ -126,7 +118,7 @@ class ApiClient {
         final booking = BookingApiModel.fromJson(jsonDecode(response.body));
         return Result.ok(booking);
       } else {
-        return const Result.error(Exception('Invalid response'));
+        return Result.error(Exception('Invalid response'));
       }
     } on Exception catch (error) {
       return Result.error(error);
@@ -141,17 +133,14 @@ class ApiClient {
       final uri = Uri.http('$_host:$_port', '/booking');
       final response = await client.post(
         uri,
-        headers: {
-          ..._authHeader(),
-          'Content-Type': 'application/json',
-        },
+        headers: {..._authHeader(), 'Content-Type': 'application/json'},
         body: jsonEncode(booking),
       );
       if (response.statusCode == 201) {
         final result = BookingApiModel.fromJson(jsonDecode(response.body));
         return Result.ok(result);
       } else {
-        return const Result.error(Exception('Invalid response'));
+        return Result.error(Exception('Invalid response'));
       }
     } on Exception catch (error) {
       return Result.error(error);
@@ -169,7 +158,7 @@ class ApiClient {
         final user = UserApiModel.fromJson(jsonDecode(response.body));
         return Result.ok(user);
       } else {
-        return const Result.error(Exception('Invalid response'));
+        return Result.error(Exception('Invalid response'));
       }
     } on Exception catch (error) {
       return Result.error(error);
@@ -186,7 +175,7 @@ class ApiClient {
       if (response.statusCode == 204) {
         return const Result.ok(null);
       } else {
-        return const Result.error(Exception('Invalid response'));
+        return Result.error(Exception('Invalid response'));
       }
     } on Exception catch (error) {
       return Result.error(error);

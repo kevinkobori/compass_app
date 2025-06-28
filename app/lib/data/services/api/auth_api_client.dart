@@ -11,10 +11,13 @@ import 'model/login_request/login_request.dart';
 import 'model/login_response/login_response.dart';
 
 class AuthApiClient {
-  AuthApiClient({String? host, int? port, http.Client Function()? clientFactory})
-      : _host = host ?? 'localhost',
-        _port = port ?? 8080,
-        _clientFactory = clientFactory ?? http.Client.new;
+  AuthApiClient({
+    String? host,
+    int? port,
+    http.Client Function()? clientFactory,
+  }) : _host = host ?? 'localhost',
+       _port = port ?? 8080,
+       _clientFactory = clientFactory ?? http.Client.new;
 
   final String _host;
   final int _port;
@@ -30,11 +33,9 @@ class AuthApiClient {
         body: jsonEncode(loginRequest),
       );
       if (response.statusCode == 200) {
-        return Result.ok(
-          LoginResponse.fromJson(jsonDecode(response.body)),
-        );
+        return Result.ok(LoginResponse.fromJson(jsonDecode(response.body)));
       } else {
-        return const Result.error(Exception('Login error'));
+        return Result.error(Exception('Login error'));
       }
     } on Exception catch (error) {
       return Result.error(error);

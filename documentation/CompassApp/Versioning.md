@@ -17,3 +17,7 @@
 	Related files:
 	- integration_test/app_local_data_test.dart
 	- integration_test/app_server_data_test.dart
+- [x] Add isolate helpers for JSON parsing
+- [x] Replace HttpClient with cross-platform http package
+- [x] Add CORS middleware and tests
+- [x] 0.1.7; refactor(cross-platform): fix runtime errors and add new launch configuration
