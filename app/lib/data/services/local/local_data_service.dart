@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import '../../../utils/json_isolate.dart';
+
 import 'package:flutter/services.dart';
 
 import '../../../config/assets.dart';
@@ -58,7 +60,7 @@ class LocalDataService {
 
   Future<List<Map<String, dynamic>>> _loadStringAsset(String asset) async {
     final localData = await rootBundle.loadString(asset);
-    return (jsonDecode(localData) as List).cast<Map<String, dynamic>>();
+    return parseMapListInIsolate(localData);
   }
 
   User getUser() {
