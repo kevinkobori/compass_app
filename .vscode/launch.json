@@ -31,20 +31,20 @@
 
 {
   "configurations": [
-    {
-      "name": "Web Development",
-      "type": "dart",
-      "request": "launch",
-      "program": "app/lib/main_development.dart",
-      "args": ["-d", "chrome", "--web-experimental-hot-reload"]
-    },
-    {
-      "name": "iOS Development",
-      "type": "dart",
-      "request": "launch",
-      "program": "app/lib/main_development.dart",
-      "args": ["-d", "ios"]
-    },
+    // {
+    //   "name": "Web Development",
+    //   "type": "dart",
+    //   "request": "launch",
+    //   "program": "app/lib/main_development.dart",
+    //   "args": ["-d", "chrome", "--web-experimental-hot-reload"]
+    // },
+    // {
+    //   "name": "iOS Development",
+    //   "type": "dart",
+    //   "request": "launch",
+    //   "program": "app/lib/main_development.dart",
+    //   "args": ["-d", "ios"]
+    // },
     {
       "name": "Web Staging",
       "type": "dart",
@@ -60,10 +60,10 @@
       // "args": ["-d", "ios"]
     }
   ],
-  "compounds": [
-    {
-      "name": "Web + iOS Staging",
-      "configurations": ["Web Staging", "iOS Staging"],
-    }
-  ]
+  // "compounds": [
+  //   {
+  //     "name": "Web + iOS Staging",
+  //     "configurations": ["Web Staging", "iOS Staging"],
+  //   }
+  // ]
 }
