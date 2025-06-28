@@ -1,9 +1,9 @@
-import 'package:compass_app/utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 
 extension ResultCast<T> on Result<T> {
-  /// Convenience method to cast to Ok
-  Ok<T> get asOk => this as Ok<T>;
+  /// Convenience method to cast to [Success].
+  Success<T> get asSuccess => this as Success<T>;
 
-  /// Convenience method to cast to Error
-  Error get asError => this as Error<T>;
+  /// Convenience method to cast to [Failure].
+  Failure get asFailure => this as Failure;
 }

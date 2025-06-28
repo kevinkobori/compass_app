@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/auth/auth_repository_remote.dart';
-import 'package:compass_app/utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
@@ -73,7 +73,7 @@ void main() {
         email: 'EMAIL',
         password: 'PASSWORD',
       );
-      expect(result, isA<Ok>());
+      expect(result, isA<Success>());
       expect(await repository.isAuthenticated, isTrue);
       expect(sharedPreferencesService.token, 'TOKEN');
 
@@ -86,7 +86,7 @@ void main() {
       sharedPreferencesService.token = 'TOKEN';
 
       final result = await repository.logout();
-      expect(result, isA<Ok>());
+      expect(result, isA<Success>());
       expect(await repository.isAuthenticated, isFalse);
       expect(sharedPreferencesService.token, null);
 
@@ -96,7 +96,7 @@ void main() {
   });
 }
 
-Future<void> expectAuthHeader(FakeApiClient apiClient, String? header) async {
-  final header = apiClient.authHeaderProvider?.call();
-  expect(header, header);
+Future<void> expectAuthHeader(FakeApiClient apiClient, String? expected) async {
+  final actual = apiClient.authHeaderProvider?.call();
+  expect(actual, expected);
 }

@@ -32,7 +32,7 @@ void main() {
         ),
       );
 
-      expect(booking.asOk.value, kBooking);
+      expect(booking.asSuccess.value, kBooking);
     });
   });
 }

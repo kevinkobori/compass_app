@@ -7,7 +7,7 @@ import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_
 import 'package:compass_app/routing/routes.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:compass_app/ui/home/widgets/home_screen.dart';
-import 'package:compass_app/utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -125,7 +125,7 @@ void main() {
 
 class _BadFakeBookingRepository extends FakeBookingRepository {
   @override
-  Future<Result<void>> delete(int id) async {
-    return Result.error(Exception('Failed to delete booking'));
+  Future<Result<Unit>> delete(int id) async {
+    return Failure(Exception('Failed to delete booking'));
   }
 }

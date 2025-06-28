@@ -4,7 +4,7 @@
 
 import 'package:compass_app/data/repositories/activity/activity_repository_local.dart';
 import 'package:compass_app/data/services/local/local_data_service.dart';
-import 'package:compass_app/utils/result.dart';
+import 'package:result_dart/result_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../testing/utils/result.dart';
@@ -20,9 +20,9 @@ void main() {
 
     test('should get by destination ref', () async {
       final result = await repository.getByDestination('alaska');
-      expect(result, isA<Ok>());
+      expect(result, isA<Success>());
 
-      final list = result.asOk.value;
+      final list = result.asSuccess.value;
       expect(list.length, 20);
 
       final activity = list.first;

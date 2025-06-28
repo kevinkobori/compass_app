@@ -26,7 +26,7 @@ void main() {
       final result = await apiClient.login(
         const LoginRequest(email: 'EMAIL', password: 'PASSWORD'),
       );
-      expect(result.asOk.value, loginResponse);
+      expect(result.asSuccess.value, loginResponse);
     });
   });
 }
