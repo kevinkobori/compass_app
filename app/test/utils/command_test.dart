@@ -37,6 +37,9 @@ void main() {
       final command = Command0<void>(() => Future.value(Result.ok(null)));
       final future = command.execute();
 
+      // Wait a microtask to allow the command to update its state
+      await Future<void>.delayed(Duration.zero);
+
       // Action is running
       expect(command.running, true);
 
@@ -58,7 +61,7 @@ void main() {
       command.execute();
       command.execute();
 
-      // Await execution
+      // Wait for the first execution to finish
       await future;
 
       // Action is called once
