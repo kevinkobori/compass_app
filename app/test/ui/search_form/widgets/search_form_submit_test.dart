@@ -26,7 +26,7 @@ void main() {
       goRouter = MockGoRouter();
     });
 
-    loadWidget(WidgetTester tester) async {
+    Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
         SearchFormSubmit(viewModel: viewModel),
@@ -46,7 +46,7 @@ void main() {
       viewModel.guests = 2;
       viewModel.selectedContinent = 'CONTINENT';
       final newDateRange = DateTimeRange(
-        start: DateTime(2024, 1, 1),
+        start: DateTime(2024),
         end: DateTime(2024, 1, 31),
       );
       viewModel.dateRange = newDateRange;

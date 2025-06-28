@@ -25,7 +25,7 @@ void main() {
         itineraryConfigRepository: FakeItineraryConfigRepository(
           itineraryConfig: ItineraryConfig(
             continent: 'Europe',
-            startDate: DateTime(2024, 01, 01),
+            startDate: DateTime(2024),
             endDate: DateTime(2024, 01, 31),
             guests: 2,
           ),

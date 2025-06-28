@@ -32,7 +32,7 @@ void main() {
       goRouter = MockGoRouter();
     });
 
-    loadWidget(WidgetTester tester) async {
+    Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
         ChangeNotifierProvider.value(

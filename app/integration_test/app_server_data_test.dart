@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:compass_app/config/dependencies.dart';
-import 'package:compass_app/main.dart';
 import 'package:compass_app/ui/activities/widgets/activities_screen.dart';
 import 'package:compass_app/ui/auth/login/widgets/login_screen.dart';
 import 'package:compass_app/ui/auth/logout/widgets/logout_button.dart';
@@ -16,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:compass_app/ui/core/localization/app_strings.dart';
 
 import 'helpers.dart';
 
@@ -46,12 +43,12 @@ void main() {
     for (final locale in locales) {
       final strings = stringProviders[locale]!;
 
-      testWidgets('should load app (${locale.toString()})', (tester) async {
+      testWidgets('should load app ($locale)', (tester) async {
         await pumpMainAppWithLocale(tester, locale);
         expect(find.byType(LoginScreen), findsOneWidget);
       });
 
-      testWidgets('Open a booking (${locale.toString()})', (tester) async {
+      testWidgets('Open a booking ($locale)', (tester) async {
         await pumpMainAppWithLocale(tester, locale);
 
         expect(find.byType(LoginScreen), findsOneWidget);
@@ -88,7 +85,7 @@ void main() {
         expect(find.byType(LoginScreen), findsOneWidget);
       });
 
-      testWidgets('Create booking (${locale.toString()})', (tester) async {
+      testWidgets('Create booking ($locale)', (tester) async {
         await pumpMainAppWithLocale(tester, locale);
 
         expect(find.byType(LoginScreen), findsOneWidget);

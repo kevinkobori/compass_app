@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ignore_for_file: unawaited_futures, cascade_invocations
+
+import 'package:flutter_test/flutter_test.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Command0 tests', () {
     test('should complete void command', () async {
       // Void action
-      final command = Command0<Unit>(() => Future.value(Success(unit)));
+      final command = Command0<Unit>(() => Future.value(const Success(unit)));
 
       // Run void action
       await command.execute();
@@ -32,7 +34,7 @@ void main() {
     });
 
     test('running should be true', () async {
-      final command = Command0<Unit>(() => Future.value(Success(unit)));
+      final command = Command0<Unit>(() => Future.value(const Success(unit)));
       final future = command.execute();
 
       // Action is running
@@ -77,7 +79,7 @@ void main() {
       // Void action with bool argument
       final command = Command1<Unit, bool>((a) {
         expect(a, true);
-        return Future.value(Success(unit));
+        return Future.value(const Success(unit));
       });
 
       // Run void action, ignore void return

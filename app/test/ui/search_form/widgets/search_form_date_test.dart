@@ -22,7 +22,7 @@ void main() {
       );
     });
 
-    loadWidget(WidgetTester tester) async {
+    Future<void> loadWidget(WidgetTester tester) async {
       await testApp(tester, SearchFormDate(viewModel: viewModel));
     }
 

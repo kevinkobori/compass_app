@@ -7,11 +7,11 @@ import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_
 import 'package:compass_app/routing/routes.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:compass_app/ui/home/widgets/home_screen.dart';
-import 'package:result_dart/result_dart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/app.dart';
 import '../../../../testing/fakes/repositories/fake_auth_repository.dart';
@@ -34,7 +34,7 @@ void main() {
         userRepository: FakeUserRepository(),
       );
       goRouter = MockGoRouter();
-      when(() => goRouter.push(any())).thenAnswer((_) => Future.value(null));
+      when(() => goRouter.push(any())).thenAnswer((_) => Future.value());
     });
 
     Future<void> loadWidget(WidgetTester tester) async {
@@ -62,7 +62,7 @@ void main() {
       await loadWidget(tester);
       await tester.pumpAndSettle();
 
-      expect(find.text('NAME\'s Trips'), findsOneWidget);
+      expect(find.text("NAME's Trips"), findsOneWidget);
     });
 
     testWidgets('should navigate to search', (tester) async {

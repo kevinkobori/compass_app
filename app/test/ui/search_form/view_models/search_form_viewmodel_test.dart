@@ -29,7 +29,7 @@ void main() {
 
     test('Setting dateRange updates correctly', () {
       final newDateRange = DateTimeRange(
-        start: DateTime(2024, 1, 1),
+        start: DateTime(2024),
         end: DateTime(2024, 1, 31),
       );
       viewModel.dateRange = newDateRange;
@@ -60,7 +60,7 @@ void main() {
       viewModel.guests = 2;
       viewModel.selectedContinent = 'CONTINENT';
       final newDateRange = DateTimeRange(
-        start: DateTime(2024, 1, 1),
+        start: DateTime(2024),
         end: DateTime(2024, 1, 31),
       );
       viewModel.dateRange = newDateRange;

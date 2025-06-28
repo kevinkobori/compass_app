@@ -1,8 +1,5 @@
-import 'package:compass_app/config/dependencies.dart';
-import 'package:compass_app/main.dart';
 import 'package:compass_app/ui/activities/widgets/activities_screen.dart';
 import 'package:compass_app/ui/booking/widgets/booking_screen.dart';
-import 'package:compass_app/ui/core/localization/app_strings.dart';
 import 'package:compass_app/ui/core/ui/custom_checkbox.dart';
 import 'package:compass_app/ui/core/ui/home_button.dart';
 import 'package:compass_app/ui/home/widgets/home_screen.dart';
@@ -24,12 +21,12 @@ void main() {
     for (final locale in locales) {
       final strings = stringProviders[locale]!;
 
-      testWidgets('should load app (${locale.toString()})', (tester) async {
+      testWidgets('should load app ($locale)', (tester) async {
         await pumpMainAppWithLocale(tester, locale);
         expect(find.byType(HomeScreen), findsOneWidget);
       });
 
-      testWidgets('Open a booking (${locale.toString()})', (tester) async {
+      testWidgets('Open a booking ($locale)', (tester) async {
         await pumpMainAppWithLocale(tester, locale);
 
         // Home screen
@@ -48,7 +45,7 @@ void main() {
         expect(find.text('Alaska'), findsOneWidget);
       });
 
-      testWidgets('Create booking (${locale.toString()})', (tester) async {
+      testWidgets('Create booking ($locale)', (tester) async {
         await pumpMainAppWithLocale(tester, locale);
 
         // Home screen

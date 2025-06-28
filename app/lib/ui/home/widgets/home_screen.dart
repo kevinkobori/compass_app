@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/domain/models/booking/booking_summary.dart';
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/date_format_start_end.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
+import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
+import 'package:compass_app/ui/home/widgets/home_title.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../domain/models/booking/booking_summary.dart';
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/colors.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/date_format_start_end.dart';
-import '../../core/ui/error_indicator.dart';
-import '../view_models/home_viewmodel.dart';
-import 'home_title.dart';
 
 const String bookingButtonKey = 'booking-button';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.viewModel});
+  const HomeScreen({required this.viewModel, super.key});
 
   final HomeViewModel viewModel;
 
@@ -58,8 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: const Icon(Icons.add_location_outlined),
       ),
       body: SafeArea(
-        top: true,
-        bottom: true,
         child: ListenableBuilder(
           listenable: widget.viewModel.load,
           builder: (context, child) {
@@ -153,10 +150,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _Booking extends StatelessWidget {
   const _Booking({
-    super.key,
     required this.booking,
     required this.onTap,
     required this.confirmDismiss,
+    super.key,
   });
 
   final BookingSummary booking;
@@ -169,9 +166,9 @@ class _Booking extends StatelessWidget {
       key: ValueKey(booking.id),
       direction: DismissDirection.endToStart,
       confirmDismiss: confirmDismiss,
-      background: Container(
+      background: const ColoredBox(
         color: AppColors.grey1,
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Padding(
