@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
-
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+
+import '../utils/response_utils.dart';
 
 import '../config/constants.dart';
 
@@ -17,10 +17,7 @@ class UserApi {
     final router = Router();
 
     router.get('/', (Request request) async {
-      return Response.ok(
-        json.encode(Constants.user),
-        headers: {'Content-Type': 'application/json'},
-      );
+      return jsonResponse(Constants.user);
     });
 
     return router;

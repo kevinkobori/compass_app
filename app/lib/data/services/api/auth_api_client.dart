@@ -23,17 +23,16 @@ class AuthApiClient {
   final int _port;
   final http.Client Function() _clientFactory;
 
-  Future<Result<LoginResponse>> login(LoginRequest loginRequest) async {
+  Future<Result<T>> _send<T>(
+    Future<http.Response> Function(http.Client) requestFn,
+    T Function(String body) parse,
+    int expectedStatus,
+  ) async {
     final client = _clientFactory();
     try {
-      final uri = Uri.http('$_host:$_port', '/login');
-      final response = await client.post(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(loginRequest),
-      );
-      if (response.statusCode == 200) {
-        return Result.ok(LoginResponse.fromJson(jsonDecode(response.body)));
+      final response = await requestFn(client);
+      if (response.statusCode == expectedStatus) {
+        return Result.ok(parse(response.body));
       } else {
         return Result.error(Exception('Login error'));
       }
@@ -42,5 +41,17 @@ class AuthApiClient {
     } finally {
       client.close();
     }
+  }
+
+  Future<Result<LoginResponse>> login(LoginRequest loginRequest) async {
+    return _send(
+      (client) => client.post(
+        Uri.http('$_host:$_port', '/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(loginRequest),
+      ),
+      (body) => LoginResponse.fromJson(jsonDecode(body)),
+      200,
+    );
   }
 }
