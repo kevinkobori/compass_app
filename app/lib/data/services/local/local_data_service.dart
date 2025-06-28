@@ -4,8 +4,7 @@
 
 import 'dart:convert';
 
-import '../../../utils/json_isolate.dart';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 
 import '../../../config/assets.dart';
@@ -13,6 +12,7 @@ import '../../../domain/models/activity/activity.dart';
 import '../../../domain/models/continent/continent.dart';
 import '../../../domain/models/destination/destination.dart';
 import '../../../domain/models/user/user.dart';
+import '../../../utils/json_isolate.dart';
 
 class LocalDataService {
   List<Continent> getContinents() {
@@ -60,7 +60,12 @@ class LocalDataService {
 
   Future<List<Map<String, dynamic>>> _loadStringAsset(String asset) async {
     final localData = await rootBundle.loadString(asset);
-    return parseMapListInIsolate(localData);
+
+    if (kIsWeb) {
+      return (jsonDecode(localData) as List).cast<Map<String, dynamic>>();
+    } else {
+      return await parseMapListInIsolate(localData);
+    }
   }
 
   User getUser() {
