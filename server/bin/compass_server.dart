@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:compass_server/middleware/auth.dart';
+import 'package:compass_server/middleware/cors.dart';
 import 'package:compass_server/routes/booking.dart';
 import 'package:compass_server/routes/continent.dart';
 import 'package:compass_server/routes/destination.dart';
@@ -30,6 +31,7 @@ void main(List<String> args) async {
   // Configure a pipeline that logs requests.
   final handler = Pipeline()
       .addMiddleware(logRequests())
+      .addMiddleware(cors())
       .addMiddleware(authRequests())
       .addHandler(_router.call);
 
