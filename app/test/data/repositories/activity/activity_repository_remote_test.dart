@@ -8,7 +8,7 @@ import 'package:result_dart/result_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
-import '../../../../testing/utils/result.dart';
+
 
 void main() {
   group('ActivityRepositoryRemote tests', () {
@@ -24,7 +24,7 @@ void main() {
       final result = await repository.getByDestination('alaska');
       expect(result, isA<Success>());
 
-      final list = result.asSuccess.value;
+      final list = result.getOrThrow();
       expect(list.length, 1);
 
       final destination = list.first;

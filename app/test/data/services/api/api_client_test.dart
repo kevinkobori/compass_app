@@ -12,7 +12,7 @@ import '../../../../testing/models/activity.dart';
 import '../../../../testing/models/booking.dart';
 import '../../../../testing/models/destination.dart';
 import '../../../../testing/models/user.dart';
-import '../../../../testing/utils/result.dart';
+
 
 void main() {
   group('ApiClient', () {
@@ -28,7 +28,7 @@ void main() {
       final continents = [const Continent(name: 'NAME', imageUrl: 'URL')];
       mockHttpClient.mockGet('/continent', continents);
       final result = await apiClient.getContinents();
-      expect(result.asSuccess.value, continents);
+      expect(result.getOrThrow(), continents);
     });
 
     test('should get activities by destination', () async {
@@ -40,7 +40,7 @@ void main() {
       final result = await apiClient.getActivityByDestination(
         kDestination1.ref,
       );
-      expect(result.asSuccess.value, activites);
+      expect(result.getOrThrow(), activites);
     });
 
     test('should get booking', () async {
@@ -49,37 +49,37 @@ void main() {
         kBookingApiModel,
       );
       final result = await apiClient.getBooking(kBookingApiModel.id!);
-      expect(result.asSuccess.value, kBookingApiModel);
+      expect(result.getOrThrow(), kBookingApiModel);
     });
 
     test('should get bookings', () async {
       mockHttpClient.mockGet('/booking', [kBookingApiModel]);
       final result = await apiClient.getBookings();
-      expect(result.asSuccess.value, [kBookingApiModel]);
+      expect(result.getOrThrow(), [kBookingApiModel]);
     });
 
     test('should get destinations', () async {
       mockHttpClient.mockGet('/destination', [kDestination1]);
       final result = await apiClient.getDestinations();
-      expect(result.asSuccess.value, [kDestination1]);
+      expect(result.getOrThrow(), [kDestination1]);
     });
 
     test('should get user', () async {
       mockHttpClient.mockGet('/user', userApiModel);
       final result = await apiClient.getUser();
-      expect(result.asSuccess.value, userApiModel);
+      expect(result.getOrThrow(), userApiModel);
     });
 
     test('should post booking', () async {
       mockHttpClient.mockPost('/booking', kBookingApiModel);
       final result = await apiClient.postBooking(kBookingApiModel);
-      expect(result.asSuccess.value, kBookingApiModel);
+      expect(result.getOrThrow(), kBookingApiModel);
     });
 
     test('should delete booking', () async {
       mockHttpClient.mockDelete('/booking/0');
       final result = await apiClient.deleteBooking(0);
-      expect(result, isA<Success<Unit>>());
+      expect(result, isA<Success<Unit, Exception>>());
     });
   });
 }

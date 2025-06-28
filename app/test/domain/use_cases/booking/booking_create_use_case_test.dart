@@ -12,7 +12,6 @@ import '../../../../testing/fakes/repositories/fake_destination_repository.dart'
 import '../../../../testing/models/activity.dart';
 import '../../../../testing/models/booking.dart';
 import '../../../../testing/models/destination.dart';
-import '../../../../testing/utils/result.dart';
 
 void main() {
   group('BookingCreateUseCase tests', () {
@@ -32,7 +31,7 @@ void main() {
         ),
       );
 
-      expect(booking.asSuccess.value, kBooking);
+      expect(booking.getOrThrow(), kBooking);
     });
   });
 }

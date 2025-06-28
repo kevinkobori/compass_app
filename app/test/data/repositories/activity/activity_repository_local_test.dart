@@ -7,7 +7,7 @@ import 'package:compass_app/data/services/local/local_data_service.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../testing/utils/result.dart';
+
 
 void main() {
   group('ActivityRepositoryLocal tests', () {
@@ -22,7 +22,7 @@ void main() {
       final result = await repository.getByDestination('alaska');
       expect(result, isA<Success>());
 
-      final list = result.asSuccess.value;
+      final list = result.getOrThrow();
       expect(list.length, 20);
 
       final activity = list.first;

@@ -14,10 +14,10 @@ class ItineraryConfigRepositoryMemory implements ItineraryConfigRepository {
   }
 
   @override
-  Future<Result<bool>> setItineraryConfig(
+  Future<Result<Unit>> setItineraryConfig(
     ItineraryConfig itineraryConfig,
   ) async {
     _itineraryConfig = itineraryConfig;
-    return Success(true);
+    return Success(unit);
   }
 }

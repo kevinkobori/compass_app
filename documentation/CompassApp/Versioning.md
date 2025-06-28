@@ -23,3 +23,5 @@
 - [x] 0.1.7; refactor(cross-platform): fix runtime errors and add new launch configuration
 - [x] chore: migrate to result_command
 - [x] 0.1.8; refactor(project): fix all project errors to migrate to result_command 2.1.0 and result_dart 2.1.1. Not including tests
+- [x] test: update for result_dart
+- [x] 0.1.10; fix Compile time tests errors

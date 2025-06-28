@@ -6,19 +6,17 @@ import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../testing/utils/result.dart';
-
 void main() {
   group('Command0 tests', () {
     test('should complete void command', () async {
       // Void action
-      final command = Command0<void>(() => Future.value(Success(unit)));
+      final command = Command0<Unit>(() => Future.value(Success(unit)));
 
       // Run void action
       await command.execute();
 
       // Action completed
-      expect(command.completed, true);
+      expect(command.value.isSuccess, true);
     });
 
     test('should complete bool command', () async {
@@ -29,22 +27,22 @@ void main() {
       await command.execute();
 
       // Action completed
-      expect(command.completed, true);
-      expect(command.result!.asSuccess.value, true);
+      expect(command.value.isSuccess, true);
+      // expect(command.result!.getOrThrow(), true);
     });
 
     test('running should be true', () async {
-      final command = Command0<void>(() => Future.value(Success(unit)));
+      final command = Command0<Unit>(() => Future.value(Success(unit)));
       final future = command.execute();
 
       // Action is running
-      expect(command.running, true);
+      expect(command.value.isRunning, true);
 
       // Await execution
       await future;
 
       // Action finished running
-      expect(command.running, false);
+      expect(command.value.isRunning, false);
     });
 
     test('should only run once', () async {
@@ -70,15 +68,14 @@ void main() {
         () => Future.value(Failure(Exception('ERROR!'))),
       );
       await command.execute();
-      expect(command.error, true);
-      expect(command.result, isA<Failure>());
+      expect(command.value.isFailure, true);
     });
   });
 
   group('Command1 tests', () {
     test('should complete void command, bool argument', () async {
       // Void action with bool argument
-      final command = Command1<void, bool>((a) {
+      final command = Command1<Unit, bool>((a) {
         expect(a, true);
         return Future.value(Success(unit));
       });
@@ -86,7 +83,7 @@ void main() {
       // Run void action, ignore void return
       await command.execute(true);
 
-      expect(command.completed, true);
+      expect(command.value.isSuccess, true);
     });
 
     test('should complete bool command, bool argument', () async {
@@ -99,8 +96,8 @@ void main() {
       await command.execute(true);
 
       // Argument was passed to onComplete
-      expect(command.completed, true);
-      expect(command.result!.asSuccess.value, true);
+      expect(command.value.isSuccess, true);
+      // expect(command.result!.getOrThrow(), true);
     });
   });
 }

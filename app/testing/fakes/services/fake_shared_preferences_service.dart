@@ -9,8 +9,12 @@ class FakeSharedPreferencesService implements SharedPreferencesService {
   String? token;
 
   @override
-  Future<Result<String?>> fetchToken() async {
-    return Success(token);
+  Future<Result<String>> fetchToken() async {
+    if (token != null) {
+      return Success(token!);
+    } else {
+      return Failure(Exception('Token not found'));
+    }
   }
 
   @override
