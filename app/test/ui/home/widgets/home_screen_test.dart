@@ -105,9 +105,12 @@ void main() {
     });
 
     testWidgets('fail to delete booking', (tester) async {
+      final repo = _BadFakeBookingRepository();
+      await repo.createBooking(kBooking);
+
       // Create a ViewModel with a repository that will fail to delete
       viewModel = HomeViewModel(
-        bookingRepository: _BadFakeBookingRepository()..createBooking(kBooking),
+        bookingRepository: repo,
         userRepository: FakeUserRepository(),
       );
       await loadWidget(tester);

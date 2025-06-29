@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_create_use_case.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart';
@@ -69,13 +71,13 @@ void main() {
 
     testWidgets('should display booking from ID', (WidgetTester tester) async {
       // Add a booking to repository
-      bookingRepository.createBooking(kBooking);
+      unawaited(bookingRepository.createBooking(kBooking));
 
       // Load screen
       await loadScreen(tester);
 
       // Load booking with ID 0
-      viewModel.loadBooking.execute(0);
+      unawaited(viewModel.loadBooking.execute(0));
 
       // Wait for booking to load
       await tester.pumpAndSettle();
@@ -90,7 +92,7 @@ void main() {
       await loadScreen(tester);
 
       // Create a new booking from stored itinerary config
-      viewModel.createBooking.execute();
+      unawaited(viewModel.createBooking.execute());
 
       // Wait for booking to load
       await tester.pumpAndSettle();
@@ -103,9 +105,9 @@ void main() {
     });
 
     testWidgets('should share booking', (WidgetTester tester) async {
-      bookingRepository.createBooking(kBooking);
+      unawaited(bookingRepository.createBooking(kBooking));
       await loadScreen(tester);
-      viewModel.loadBooking.execute(0);
+      unawaited(viewModel.loadBooking.execute(0));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('share-button')));
       expect(shared, true);

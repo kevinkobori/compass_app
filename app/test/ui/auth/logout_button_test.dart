@@ -22,9 +22,10 @@ void main() {
 
     setUp(() {
       goRouter = MockGoRouter();
-      fakeAuthRepository = FakeAuthRepository();
-      // Setup a token, should be cleared after logout
-      fakeAuthRepository.token = 'TOKEN';
+      fakeAuthRepository =
+          FakeAuthRepository()
+            // Setup a token, should be cleared after logout
+            ..token = 'TOKEN';
       // Setup an ItineraryConfig with some data, should be cleared after logout
       fakeItineraryConfigRepository = FakeItineraryConfigRepository(
         itineraryConfig: const ItineraryConfig(continent: 'CONTINENT'),

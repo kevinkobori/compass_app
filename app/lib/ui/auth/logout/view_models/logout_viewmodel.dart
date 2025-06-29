@@ -1,9 +1,8 @@
-import '../../../../data/repositories/auth/auth_repository.dart';
-import '../../../../data/repositories/itinerary_config/itinerary_config_repository.dart';
-import '../../../../domain/models/itinerary_config/itinerary_config.dart';
-
-import 'package:result_dart/result_dart.dart';
+import 'package:compass_app/data/repositories/auth/auth_repository.dart';
+import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:result_command/result_command.dart';
+import 'package:result_dart/result_dart.dart';
 
 class LogoutViewModel {
   LogoutViewModel({
@@ -23,11 +22,11 @@ class LogoutViewModel {
     if (result.isError()) {
       return Failure(result.exceptionOrNull() ?? Exception('Logout failed'));
     }
-    // Limpa o ItineraryConfig após logout bem-sucedido
-    return await _itineraryConfigRepository
+
+    return _itineraryConfigRepository
         .setItineraryConfig(const ItineraryConfig())
         .then(
           (res) => res.map((_) => unit),
-        ); // Garante retorno do tipo Result<Unit>
+        );
   }
 }

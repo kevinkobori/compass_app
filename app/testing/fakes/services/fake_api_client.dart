@@ -61,8 +61,11 @@ class FakeApiClient implements ApiClient {
       return const Success([
         Activity(
           name: 'Glacier Trekking and Ice Climbing',
-          description:
-              'Embark on a thrilling adventure exploring the awe-inspiring glaciers of Alaska. Hike across the icy terrain, marvel at the deep blue crevasses, and even try your hand at ice climbing for an unforgettable experience.',
+          description: '''
+Embark on a thrilling adventure exploring the awe-inspiring
+ glaciers of Alaska. Hike across the icy terrain, marvel at the
+  deep blue crevasses, and even try your hand at ice climbing
+   for an unforgettable experience.''',
           locationName: 'Matanuska Glacier or Mendenhall Glacier',
           duration: 8,
           timeOfDay: TimeOfDay.morning,

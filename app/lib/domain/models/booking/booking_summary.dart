@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/data/repositories/booking/booking_repository.dart'
+    show BookingRepository;
+import 'package:compass_app/domain/models/booking/booking.dart' show Booking;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'booking_summary.freezed.dart';

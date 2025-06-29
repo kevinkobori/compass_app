@@ -24,4 +24,5 @@ analyzer:
     invalid_annotation_target: ignore
     avoid_positional_boolean_parameters: ignore
     public_member_api_docs: ignore # TODO(Kevin): remove this
+    avoid_setters_without_getters: ignore
     # parameter_assignments: ignore

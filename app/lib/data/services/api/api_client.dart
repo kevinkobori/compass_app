@@ -4,16 +4,15 @@
 
 import 'dart:convert';
 
+import 'package:compass_app/data/services/api/model/booking/booking_api_model.dart';
+import 'package:compass_app/data/services/api/model/user/user_api_model.dart';
+import 'package:compass_app/domain/models/activity/activity.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
+import 'package:compass_app/utils/json_isolate.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
-
-import '../../../domain/models/activity/activity.dart';
-import '../../../domain/models/continent/continent.dart';
-import '../../../domain/models/destination/destination.dart';
-import '../../../utils/json_isolate.dart';
 import 'package:result_dart/result_dart.dart';
-import 'model/booking/booking_api_model.dart';
-import 'model/user/user_api_model.dart';
 
 /// Adds the `Authentication` header to a header configuration.
 typedef AuthHeaderProvider = String? Function();
@@ -68,10 +67,11 @@ class ApiClient {
     try {
       final response = await requestFn(client);
       if (response.statusCode == expectedStatus) {
-        return Success(
+        return const Success(
           unit,
         ); // Success<Object, Exception> Success(Object _success)
-        // The argument type 'Null' can't be assigned to the parameter type 'Object'.
+        // The argument type 'Null' can't be assigned to the parameter type
+        // 'Object'.
       } else {
         return Failure(Exception('Invalid response'));
       }
@@ -90,8 +90,8 @@ class ApiClient {
       ),
       (body) async =>
           kIsWeb
-              ? (jsonDecode(body) as List)
-                  .map((e) => Continent.fromJson(e))
+              ? (jsonDecode(body) as List<dynamic>)
+                  .map((e) => Continent.fromJson(e as Map<String, dynamic>))
                   .toList()
               : await parseJsonListInIsolate(body, Continent.fromJson),
       200,
@@ -106,8 +106,8 @@ class ApiClient {
       ),
       (body) async =>
           kIsWeb
-              ? (jsonDecode(body) as List)
-                  .map((e) => Destination.fromJson(e))
+              ? (jsonDecode(body) as List<dynamic>)
+                  .map((e) => Destination.fromJson(e as Map<String, dynamic>))
                   .toList()
               : await parseJsonListInIsolate(body, Destination.fromJson),
       200,
@@ -122,8 +122,8 @@ class ApiClient {
       ),
       (body) async =>
           kIsWeb
-              ? (jsonDecode(body) as List)
-                  .map((e) => Activity.fromJson(e))
+              ? (jsonDecode(body) as List<dynamic>)
+                  .map((e) => Activity.fromJson(e as Map<String, dynamic>))
                   .toList()
               : await parseJsonListInIsolate(body, Activity.fromJson),
       200,
@@ -138,8 +138,10 @@ class ApiClient {
       ),
       (body) async =>
           kIsWeb
-              ? (jsonDecode(body) as List)
-                  .map((e) => BookingApiModel.fromJson(e))
+              ? (jsonDecode(body) as List<dynamic>)
+                  .map(
+                    (e) => BookingApiModel.fromJson(e as Map<String, dynamic>),
+                  )
                   .toList()
               : await parseJsonListInIsolate(body, BookingApiModel.fromJson),
       200,

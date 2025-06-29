@@ -57,8 +57,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           listenable: widget.viewModel.loadActivities,
           builder: (context, child) {
             if (widget.viewModel.loadActivities.value.isSuccess) {
-              // The getter 'completed' isn't defined for the type 'Command0<Object>'.
-              // Try importing the library that defines 'completed', correcting the name to the name of an existing getter, or defining a getter or field named 'completed'.
+              // The getter 'completed' isn't defined for the type
+              // 'Command0<Object>'.
+              // Try importing the library that defines 'completed', correcting
+              // the name to the name of an existing getter, or defining a
+              // getter or field named 'completed'.
               return child!;
             }
             return Column(
@@ -150,37 +153,39 @@ class _BottomArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Material(
-        elevation: 8,
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: Dimens.of(context).paddingScreenHorizontal,
-            right: Dimens.of(context).paddingScreenVertical,
-            top: Dimens.paddingVertical,
-            bottom: Dimens.of(context).paddingScreenVertical,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                AppLocalization.of(
-                  context,
-                ).selected(viewModel.selectedActivities.length),
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              FilledButton(
-                key: const Key(confirmButtonKey),
-                onPressed:
-                    viewModel.selectedActivities.isNotEmpty
-                        ? viewModel.saveActivities.execute
-                        : null,
-                child: Text(AppLocalization.of(context).confirm),
-              ),
-            ],
-          ),
+    return
+    // SafeArea(
+    //   child:
+    Material(
+      elevation: 8,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: Dimens.of(context).paddingScreenHorizontal,
+          right: Dimens.of(context).paddingScreenVertical,
+          top: Dimens.paddingVertical,
+          bottom: Dimens.of(context).paddingScreenVertical,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppLocalization.of(
+                context,
+              ).selected(viewModel.selectedActivities.length),
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            FilledButton(
+              key: const Key(confirmButtonKey),
+              onPressed:
+                  viewModel.selectedActivities.isNotEmpty
+                      ? viewModel.saveActivities.execute
+                      : null,
+              child: Text(AppLocalization.of(context).confirm),
+            ),
+          ],
         ),
       ),
+      // ),
     );
   }
 }

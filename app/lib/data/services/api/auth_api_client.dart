@@ -4,11 +4,10 @@
 
 import 'dart:convert';
 
+import 'package:compass_app/data/services/api/model/login_request/login_request.dart';
+import 'package:compass_app/data/services/api/model/login_response/login_response.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:result_dart/result_dart.dart';
-import 'model/login_request/login_request.dart';
-import 'model/login_response/login_response.dart';
 
 class AuthApiClient {
   AuthApiClient({
@@ -50,7 +49,8 @@ class AuthApiClient {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(loginRequest),
       ),
-      (body) => LoginResponse.fromJson(jsonDecode(body)),
+      (body) =>
+          LoginResponse.fromJson(jsonDecode(body) as Map<String, dynamic>),
       200,
     );
   }

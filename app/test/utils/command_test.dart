@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: unawaited_futures, cascade_invocations
+import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:result_command/result_command.dart';
@@ -53,10 +53,10 @@ void main() {
       final future = command.execute();
 
       // Run multiple times
-      command.execute();
-      command.execute();
-      command.execute();
-      command.execute();
+      unawaited(command.execute());
+      unawaited(command.execute());
+      unawaited(command.execute());
+      unawaited(command.execute());
 
       // Await execution
       await future;

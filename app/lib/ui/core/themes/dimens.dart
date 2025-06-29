@@ -47,24 +47,24 @@ abstract final class Dimens {
 final class _DimensMobile extends Dimens {
   const _DimensMobile();
   @override
-  final double paddingScreenHorizontal = Dimens.paddingHorizontal;
+  double get paddingScreenHorizontal => Dimens.paddingHorizontal;
 
   @override
-  final double paddingScreenVertical = Dimens.paddingVertical;
+  double get paddingScreenVertical => Dimens.paddingVertical;
 
   @override
-  final double profilePictureSize = 64;
+  double get profilePictureSize => 64;
 }
 
 /// Desktop/Web dimensions
 final class _DimensDesktop extends Dimens {
   const _DimensDesktop();
   @override
-  final double paddingScreenHorizontal = 100;
+  double get paddingScreenHorizontal => 100;
 
   @override
-  final double paddingScreenVertical = 64;
+  double get paddingScreenVertical => 64;
 
   @override
-  final double profilePictureSize = 128;
+  double get profilePictureSize => 128;
 }

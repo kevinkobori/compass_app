@@ -1,14 +1,11 @@
+import 'package:compass_app/data/repositories/continent/continent_repository.dart';
+import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
+import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
-
-import '../../../data/repositories/continent/continent_repository.dart';
-import '../../../data/repositories/itinerary_config/itinerary_config_repository.dart';
-import '../../../domain/models/continent/continent.dart';
-import '../../../domain/models/itinerary_config/itinerary_config.dart';
-
 import 'package:result_dart/result_dart.dart';
-import 'package:result_dart/functions.dart';
 
 class SearchFormViewModel extends ChangeNotifier {
   SearchFormViewModel({
@@ -64,7 +61,7 @@ class SearchFormViewModel extends ChangeNotifier {
         result.exceptionOrNull() ?? Exception('Failed to load continents'),
       );
     }
-    return await _loadItineraryConfig();
+    return _loadItineraryConfig();
   }
 
   Future<Result<Unit>> _loadContinents() async {
@@ -104,7 +101,7 @@ class SearchFormViewModel extends ChangeNotifier {
   }
 
   Future<Result<Unit>> _updateItineraryConfig() async {
-    assert(valid, "called when valid was false");
+    assert(valid, 'called when valid was false');
     final result = await _itineraryConfigRepository.setItineraryConfig(
       ItineraryConfig(
         continent: _selectedContinent,

@@ -130,10 +130,10 @@ class _AppSearchBar extends StatelessWidget {
         ),
         child: AppSearchBar(
           config: widget.viewModel.config,
-          onTap: () {
-            // Navigate to SearchFormScreen and edit search
-            context.pop();
-          },
+          // onTap: () {
+          //   // Navigate to SearchFormScreen and edit search
+          // context.pop();
+          // },
         ),
       ),
     );

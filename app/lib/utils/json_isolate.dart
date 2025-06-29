@@ -26,6 +26,6 @@ Future<List<T>> parseJsonListInIsolate<T>(
 /// Decode a JSON list into a list of maps in an isolate.
 Future<List<Map<String, dynamic>>> parseMapListInIsolate(String source) {
   return Isolate.run(() {
-    return (jsonDecode(source) as List).cast<Map<String, dynamic>>();
+    return (jsonDecode(source) as List<dynamic>).cast<Map<String, dynamic>>();
   });
 }

@@ -101,7 +101,8 @@ class _CarouselItem extends StatelessWidget {
               fit: BoxFit.cover,
               errorListener: imageErrorListener,
               errorWidget: (context, url, error) {
-                // NOTE: Getting "invalid image data" error for some of the images
+                // NOTE: Getting "invalid image data" error for some of the
+                // images
                 // e.g. https://rstr.in/google/tripedia/jlbgFDrSUVE
                 return const DecoratedBox(
                   decoration: BoxDecoration(color: AppColors.grey3),

@@ -112,7 +112,7 @@ class BookingCreateUseCase {
         (destination) => destination.ref == destinationRef,
       );
       return Success(destination);
-    } catch (e) {
+    } on Exception catch (_) {
       return Failure(Exception('Destination not found'));
     }
   }

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/domain/models/activity/activity.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../activity/activity.dart';
-import '../destination/destination.dart';
 
 part 'booking.freezed.dart';
 part 'booking.g.dart';
@@ -13,10 +12,6 @@ part 'booking.g.dart';
 @freezed
 class Booking with _$Booking {
   const factory Booking({
-    /// Optional ID of the booking.
-    /// May be null if the booking is not yet stored.
-    int? id,
-
     /// Start date of the trip
     required DateTime startDate,
 
@@ -28,6 +23,10 @@ class Booking with _$Booking {
 
     /// List of chosen activities
     required List<Activity> activity,
+
+    /// Optional ID of the booking.
+    /// May be null if the booking is not yet stored.
+    int? id,
   }) = _Booking;
 
   factory Booking.fromJson(Map<String, Object?> json) =>

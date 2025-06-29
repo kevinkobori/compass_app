@@ -27,3 +27,4 @@
 - [x] 0.1.11; dart format .
 - [x] 0.1.12; introduce very_good_analysis
 - [x] 0.1.13; enhance the code
+- [x] 0.1.14; fix: resolve all project warnings 

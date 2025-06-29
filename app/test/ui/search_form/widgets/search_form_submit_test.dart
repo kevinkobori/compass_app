@@ -43,8 +43,9 @@ void main() {
       verifyNever(() => goRouter.go(any()));
 
       // Fill in data
-      viewModel.guests = 2;
-      viewModel.selectedContinent = 'CONTINENT';
+      viewModel
+        ..guests = 2
+        ..selectedContinent = 'CONTINENT';
       final newDateRange = DateTimeRange(
         start: DateTime(2024),
         end: DateTime(2024, 1, 31),

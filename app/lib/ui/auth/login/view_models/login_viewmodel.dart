@@ -16,7 +16,7 @@ class LoginViewModel {
   final AuthRepository _authRepository;
   final _log = Logger('LoginViewModel');
 
-  late Command1 login;
+  late Command1<Object, dynamic> login;
 
   Future<Result<Unit>> _login((String, String) credentials) async {
     final (email, password) = credentials;
