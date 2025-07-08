@@ -5,6 +5,7 @@
 import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/ui/auth/logout/view_models/logout_viewmodel.dart';
 import 'package:compass_app/ui/auth/logout/widgets/logout_button.dart';
+import 'package:compass_app/ui/auth/auth_controller.dart';
 import 'package:compass_app/ui/core/localization/applocalization.dart';
 import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
@@ -39,7 +40,7 @@ class HomeHeader extends HookConsumerWidget {
             ),
             LogoutButton(
               viewModel: LogoutViewModel(
-                authRepository: ref.read(authRepositoryProvider),
+                authController: ref.read(authControllerProvider.notifier),
                 itineraryConfigRepository: ref.read(
                   itineraryConfigRepositoryProvider,
                 ),

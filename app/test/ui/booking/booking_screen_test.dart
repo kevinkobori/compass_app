@@ -9,6 +9,7 @@ import 'package:compass_app/domain/use_cases/booking/booking_create_use_case.dar
 import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart';
 import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
 import 'package:compass_app/ui/booking/widgets/booking_screen.dart';
+import 'package:compass_app/config/dependencies.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -29,39 +30,52 @@ void main() {
     late BookingViewModel viewModel;
     late bool shared;
     late FakeBookingRepository bookingRepository;
+    late ProviderContainer container;
 
     setUp(() {
       shared = false;
       bookingRepository = FakeBookingRepository();
-      viewModel = BookingViewModel(
-        itineraryConfigRepository: FakeItineraryConfigRepository(
-          itineraryConfig: ItineraryConfig(
-            continent: 'Europe',
-            startDate: DateTime(2024),
-            endDate: DateTime(2024, 01, 31),
-            guests: 2,
-            destination: kDestination1.ref,
-            activities: [kActivity.ref],
+      container = ProviderContainer(overrides: [
+        itineraryConfigRepositoryProvider.overrideWith(
+          (ref) => FakeItineraryConfigRepository(
+            itineraryConfig: ItineraryConfig(
+              continent: 'Europe',
+              startDate: DateTime(2024),
+              endDate: DateTime(2024, 01, 31),
+              guests: 2,
+              destination: kDestination1.ref,
+              activities: [kActivity.ref],
+            ),
           ),
         ),
-        createBookingUseCase: BookingCreateUseCase(
-          activityRepository: FakeActivityRepository(),
-          destinationRepository: FakeDestinationRepository(),
-          bookingRepository: bookingRepository,
+        bookingRepositoryProvider.overrideWithValue(bookingRepository),
+        bookingCreateUseCaseProvider.overrideWith(
+          (ref) => BookingCreateUseCase(
+            activityRepository: FakeActivityRepository(),
+            destinationRepository: FakeDestinationRepository(),
+            bookingRepository: bookingRepository,
+          ),
         ),
-        shareBookingUseCase: BookingShareUseCase.custom((text) async {
-          shared = true;
-        }),
-        bookingRepository: bookingRepository,
-      );
+        bookingShareUseCaseProvider.overrideWith(
+          (ref) => BookingShareUseCase.custom((text) async {
+                shared = true;
+              }),
+        ),
+      ]);
+      viewModel = container.read(bookingViewModelProvider.notifier);
       goRouter = MockGoRouter();
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     Future<void> loadScreen(WidgetTester tester) async {
       await testApp(
         tester,
-        ProviderScope(
-          child: BookingScreen(viewModel: viewModel),
+        UncontrolledProviderScope(
+          container: container,
+          child: const BookingScreen(),
         ),
         goRouter: goRouter,
       );

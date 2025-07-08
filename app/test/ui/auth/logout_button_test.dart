@@ -12,6 +12,7 @@ import '../../../testing/app.dart';
 import '../../../testing/fakes/repositories/fake_auth_repository.dart';
 import '../../../testing/fakes/repositories/fake_itinerary_config_repository.dart';
 import '../../../testing/mocks.dart';
+import 'package:compass_app/config/dependencies.dart';
 
 void main() {
   group('LogoutButton test', () {
@@ -19,21 +20,27 @@ void main() {
     late FakeAuthRepository fakeAuthRepository;
     late FakeItineraryConfigRepository fakeItineraryConfigRepository;
     late LogoutViewModel viewModel;
+    late ProviderContainer container;
 
     setUp(() {
       goRouter = MockGoRouter();
       fakeAuthRepository =
           FakeAuthRepository()
-            // Setup a token, should be cleared after logout
             ..token = 'TOKEN';
-      // Setup an ItineraryConfig with some data, should be cleared after logout
       fakeItineraryConfigRepository = FakeItineraryConfigRepository(
         itineraryConfig: const ItineraryConfig(continent: 'CONTINENT'),
       );
+      container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+      ]);
       viewModel = LogoutViewModel(
-        authRepository: fakeAuthRepository,
+        authController: container.read(authControllerProvider.notifier),
         itineraryConfigRepository: fakeItineraryConfigRepository,
       );
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     Future<void> loadScreen(WidgetTester tester) async {

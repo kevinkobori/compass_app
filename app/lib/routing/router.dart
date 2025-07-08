@@ -18,6 +18,8 @@ import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dar
 import 'package:compass_app/ui/search_form/widgets/search_form_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart' show GoRouterRefreshStream;
+import 'package:compass_app/ui/auth/auth_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Top go_router entry point.
@@ -27,12 +29,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 typedef Reader = T Function<T>(ProviderListenable<T> provider);
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authRepository = ref.watch(authRepositoryProvider);
+  final refresh = GoRouterRefreshStream(ref.watch(authControllerProvider.stream));
   return GoRouter(
     initialLocation: Routes.home,
     debugLogDiagnostics: true,
     redirect: (context, state) => _redirect(context, state, ref.read),
-    refreshListenable: authRepository,
+    refreshListenable: refresh,
     routes: [
       GoRoute(
         path: Routes.login,
@@ -40,7 +42,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return Consumer(
             builder: (context, ref, _) {
               final viewModel = LoginViewModel(
-                authRepository: ref.read(authRepositoryProvider),
+                authController: ref.read(authControllerProvider.notifier),
               );
               return LoginScreen(viewModel: viewModel);
             },
@@ -116,22 +118,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) {
               return Consumer(
                 builder: (context, ref, _) {
-                  final viewModel = BookingViewModel(
-                    itineraryConfigRepository: ref.read(
-                      itineraryConfigRepositoryProvider,
-                    ),
-                    createBookingUseCase: ref.read(
-                      bookingCreateUseCaseProvider,
-                    ),
-                    shareBookingUseCase: ref.read(bookingShareUseCaseProvider),
-                    bookingRepository: ref.read(bookingRepositoryProvider),
-                  );
+                  final notifier = ref.read(bookingViewModelProvider.notifier);
 
-                  // When opening the booking screen directly
-                  // create a new booking from the stored ItineraryConfig.
-                  viewModel.createBooking.execute();
+                  // When opening the booking screen directly create a booking
+                  // from the stored ItineraryConfig.
+                  notifier.createBooking.execute();
 
-                  return BookingScreen(viewModel: viewModel);
+                  return const BookingScreen();
                 },
               );
             },
@@ -142,24 +135,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                   final id = int.parse(state.pathParameters['id']!);
                   return Consumer(
                     builder: (context, ref, _) {
-                      final viewModel = BookingViewModel(
-                        itineraryConfigRepository: ref.read(
-                          itineraryConfigRepositoryProvider,
-                        ),
-                        createBookingUseCase: ref.read(
-                          bookingCreateUseCaseProvider,
-                        ),
-                        shareBookingUseCase: ref.read(
-                          bookingShareUseCaseProvider,
-                        ),
-                        bookingRepository: ref.read(bookingRepositoryProvider),
-                      );
+                      final notifier =
+                          ref.read(bookingViewModelProvider.notifier);
 
-                      // When opening the booking screen with an existing id
-                      // load and display that booking.
-                      viewModel.loadBooking.execute(id);
+                      // Load and display booking with given id.
+                      notifier.loadBooking.execute(id);
 
-                      return BookingScreen(viewModel: viewModel);
+                      return const BookingScreen();
                     },
                   );
                 },
@@ -179,7 +161,7 @@ Future<String?> _redirect(
   Reader read,
 ) async {
   // if the user is not logged in, they need to login
-  final loggedIn = await read(authRepositoryProvider).isAuthenticated;
+  final loggedIn = await read(authControllerProvider.future);
   final loggingIn = state.matchedLocation == Routes.login;
   if (!loggedIn) {
     return Routes.login;
