@@ -51,6 +51,52 @@ class HomeScreen extends HookWidget {
     useListenable(viewModel);
     useListenable(viewModel.load);
     useListenable(viewModel.deleteBooking);
+
+    final Widget body;
+    if (viewModel.load.value.isRunning) {
+      body = const Center(child: CircularProgressIndicator());
+    } else if (viewModel.load.value.isFailure) {
+      body = ErrorIndicator(
+        title: AppLocalization.of(context).errorWhileLoadingHome,
+        label: AppLocalization.of(context).tryAgain,
+        onPressed: viewModel.load.execute,
+      );
+    } else {
+      body = CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: Dimens.of(context).paddingScreenVertical,
+                horizontal: Dimens.of(context).paddingScreenHorizontal,
+              ),
+              child: HomeHeader(viewModel: viewModel),
+            ),
+          ),
+          SliverList.builder(
+            itemCount: viewModel.bookings.length,
+            itemBuilder: (_, index) => _Booking(
+              key: ValueKey(viewModel.bookings[index].id),
+              booking: viewModel.bookings[index],
+              onTap: () => context.push(
+                Routes.bookingWithId(
+                  viewModel.bookings[index].id,
+                ),
+              ),
+              confirmDismiss: (_) async {
+                // Wait for the command to complete
+                await viewModel.deleteBooking.execute(
+                  viewModel.bookings[index].id,
+                );
+                // Remove the item if the delete command succeeded
+                return viewModel.deleteBooking.value.isSuccess;
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         // Workaround for https://github.com/flutter/flutter/issues/115358#issuecomment-2117157419
@@ -60,72 +106,7 @@ class HomeScreen extends HookWidget {
         label: Text(AppLocalization.of(context).bookNewTrip),
         icon: const Icon(Icons.add_location_outlined),
       ),
-      body: SafeArea(
-        child: ListenableBuilder(
-          listenable: viewModel.load,
-          builder: (context, child) {
-            if (viewModel.load.value.isRunning) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (viewModel.load.value.isFailure) {
-              return ErrorIndicator(
-                title: AppLocalization.of(context).errorWhileLoadingHome,
-                label: AppLocalization.of(context).tryAgain,
-                onPressed: viewModel.load.execute,
-              );
-            }
-
-            return child!;
-          },
-          child: ListenableBuilder(
-            listenable: viewModel,
-            builder: (context, _) {
-              return CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: Dimens.of(context).paddingScreenVertical,
-                        horizontal: Dimens.of(context).paddingScreenHorizontal,
-                      ),
-                      child: HomeHeader(viewModel: viewModel),
-                    ),
-                  ),
-                  SliverList.builder(
-                    itemCount: viewModel.bookings.length,
-                    itemBuilder:
-                        (_, index) => _Booking(
-                          key: ValueKey(viewModel.bookings[index].id),
-                          booking: viewModel.bookings[index],
-                          onTap:
-                              () => context.push(
-                                Routes.bookingWithId(
-                                  viewModel.bookings[index].id,
-                                ),
-                              ),
-                          confirmDismiss: (_) async {
-                            // wait for command to complete
-                            await viewModel.deleteBooking.execute(
-                              viewModel.bookings[index].id,
-                            );
-                            // if command completed successfully, return true
-                            if (viewModel.deleteBooking.value.isSuccess) {
-                              // removes the dismissable from the list
-                              return true;
-                            } else {
-                              // the dismissable stays in the list
-                              return false;
-                            }
-                          },
-                        ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
+      body: SafeArea(child: body),
     );
   }
 }
