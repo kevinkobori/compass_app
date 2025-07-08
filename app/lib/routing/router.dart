@@ -81,37 +81,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: Routes.resultsRelative,
-            builder: (context, state) {
-              return Consumer(
-                builder: (context, ref, _) {
-                  final viewModel = ResultsViewModel(
-                    destinationRepository: ref.read(
-                      destinationRepositoryProvider,
-                    ),
-                    itineraryConfigRepository: ref.read(
-                      itineraryConfigRepositoryProvider,
-                    ),
-                  );
-                  return ResultsScreen(viewModel: viewModel);
-                },
-              );
-            },
+            builder: (context, state) => const ResultsScreen(),
           ),
           GoRoute(
             path: Routes.activitiesRelative,
-            builder: (context, state) {
-              return Consumer(
-                builder: (context, ref, _) {
-                  final viewModel = ActivitiesViewModel(
-                    activityRepository: ref.read(activityRepositoryProvider),
-                    itineraryConfigRepository: ref.read(
-                      itineraryConfigRepositoryProvider,
-                    ),
-                  );
-                  return ActivitiesScreen(viewModel: viewModel);
-                },
-              );
-            },
+            builder: (context, state) => const ActivitiesScreen(),
           ),
           GoRoute(
             path: Routes.bookingRelative,

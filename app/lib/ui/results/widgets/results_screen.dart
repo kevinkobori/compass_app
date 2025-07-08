@@ -15,12 +15,13 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ResultsScreen extends HookConsumerWidget {
-  const ResultsScreen({required this.viewModel, super.key});
-
-  final ResultsViewModel viewModel;
+  const ResultsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(resultsViewModelProvider.notifier);
+    ref.watch(resultsViewModelProvider);
+
     void listener() {
       if (viewModel.updateItineraryConfig.value.isSuccess) {
         viewModel.updateItineraryConfig.reset();
@@ -43,8 +44,6 @@ class ResultsScreen extends HookConsumerWidget {
       viewModel.updateItineraryConfig.addListener(listener);
       return () => viewModel.updateItineraryConfig.removeListener(listener);
     }, [viewModel]);
-
-    useListenable(viewModel);
     useListenable(viewModel.search);
     useListenable(viewModel.updateItineraryConfig);
 

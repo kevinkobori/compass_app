@@ -19,12 +19,13 @@ import 'package:go_router/go_router.dart';
 const String confirmButtonKey = 'confirm-button';
 
 class ActivitiesScreen extends HookConsumerWidget {
-  const ActivitiesScreen({required this.viewModel, super.key});
-
-  final ActivitiesViewModel viewModel;
+  const ActivitiesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(activitiesViewModelProvider.notifier);
+    ref.watch(activitiesViewModelProvider);
+
     void listener() {
       if (viewModel.saveActivities.value.isSuccess) {
         viewModel.saveActivities.reset();
@@ -51,7 +52,6 @@ class ActivitiesScreen extends HookConsumerWidget {
       return () => viewModel.saveActivities.removeListener(listener);
     }, [viewModel]);
 
-    useListenable(viewModel);
     useListenable(viewModel.loadActivities);
     useListenable(viewModel.saveActivities);
 
