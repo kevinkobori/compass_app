@@ -26,3 +26,6 @@ analyzer:
     public_member_api_docs: ignore # TODO(Kevin): remove this
     avoid_setters_without_getters: ignore
     # parameter_assignments: ignore
+
+formatter:
+  trailing_commas: preserve
