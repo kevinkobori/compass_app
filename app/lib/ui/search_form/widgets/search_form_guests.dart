@@ -7,6 +7,7 @@ import 'package:compass_app/ui/core/themes/colors.dart';
 import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 const String removeGuestsKey = 'remove-guests';
 const String addGuestsKey = 'add-guests';
@@ -15,7 +16,7 @@ const String addGuestsKey = 'add-guests';
 ///
 /// Users can tap the Plus and Minus icons to increase or decrease
 /// the number of guests.
-class SearchFormGuests extends StatelessWidget {
+class SearchFormGuests extends HookWidget {
   const SearchFormGuests({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
@@ -54,13 +55,14 @@ class SearchFormGuests extends StatelessWidget {
   }
 }
 
-class _QuantitySelector extends StatelessWidget {
+class _QuantitySelector extends HookWidget {
   const _QuantitySelector(this.viewModel);
 
   final SearchFormViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
+    useListenable(viewModel);
     return SizedBox(
       width: 90,
       child: Row(
@@ -76,16 +78,11 @@ class _QuantitySelector extends StatelessWidget {
               color: AppColors.grey3,
             ),
           ),
-          ListenableBuilder(
-            listenable: viewModel,
-            builder:
-                (context, _) => Text(
-                  viewModel.guests.toString(),
-                  style:
-                      viewModel.guests == 0
-                          ? Theme.of(context).inputDecorationTheme.hintStyle
-                          : Theme.of(context).textTheme.bodyMedium,
-                ),
+          Text(
+            viewModel.guests.toString(),
+            style: viewModel.guests == 0
+                ? Theme.of(context).inputDecorationTheme.hintStyle
+                : Theme.of(context).textTheme.bodyMedium,
           ),
           InkWell(
             key: const ValueKey(addGuestsKey),

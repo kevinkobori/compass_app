@@ -12,41 +12,45 @@ import 'package:compass_app/ui/core/ui/error_indicator.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:compass_app/ui/home/widgets/home_title.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
 const String bookingButtonKey = 'booking-button';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends HookWidget {
   const HomeScreen({required this.viewModel, super.key});
 
   final HomeViewModel viewModel;
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    widget.viewModel.deleteBooking.addListener(_onResult);
-  }
-
-  @override
-  void didUpdateWidget(covariant HomeScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    oldWidget.viewModel.deleteBooking.removeListener(_onResult);
-    widget.viewModel.deleteBooking.addListener(_onResult);
-  }
-
-  @override
-  void dispose() {
-    widget.viewModel.deleteBooking.removeListener(_onResult);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    void onResult() {
+      if (viewModel.deleteBooking.value.isSuccess) {
+        viewModel.deleteBooking.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalization.of(context).bookingDeleted)),
+        );
+      }
+
+      if (viewModel.deleteBooking.value.isFailure) {
+        viewModel.deleteBooking.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(AppLocalization.of(context).errorWhileDeletingBooking),
+          ),
+        );
+      }
+    }
+
+    useEffect(() {
+      viewModel.deleteBooking.addListener(onResult);
+      return () => viewModel.deleteBooking.removeListener(onResult);
+    }, [viewModel]);
+
+    useListenable(viewModel);
+    useListenable(viewModel.load);
+    useListenable(viewModel.deleteBooking);
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         // Workaround for https://github.com/flutter/flutter/issues/115358#issuecomment-2117157419
@@ -58,24 +62,24 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: ListenableBuilder(
-          listenable: widget.viewModel.load,
+          listenable: viewModel.load,
           builder: (context, child) {
-            if (widget.viewModel.load.value.isRunning) {
+            if (viewModel.load.value.isRunning) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (widget.viewModel.load.value.isFailure) {
+            if (viewModel.load.value.isFailure) {
               return ErrorIndicator(
                 title: AppLocalization.of(context).errorWhileLoadingHome,
                 label: AppLocalization.of(context).tryAgain,
-                onPressed: widget.viewModel.load.execute,
+                onPressed: viewModel.load.execute,
               );
             }
 
             return child!;
           },
           child: ListenableBuilder(
-            listenable: widget.viewModel,
+            listenable: viewModel,
             builder: (context, _) {
               return CustomScrollView(
                 slivers: [
@@ -85,32 +89,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         vertical: Dimens.of(context).paddingScreenVertical,
                         horizontal: Dimens.of(context).paddingScreenHorizontal,
                       ),
-                      child: HomeHeader(viewModel: widget.viewModel),
+                      child: HomeHeader(viewModel: viewModel),
                     ),
                   ),
                   SliverList.builder(
-                    itemCount: widget.viewModel.bookings.length,
+                    itemCount: viewModel.bookings.length,
                     itemBuilder:
                         (_, index) => _Booking(
-                          key: ValueKey(widget.viewModel.bookings[index].id),
-                          booking: widget.viewModel.bookings[index],
+                          key: ValueKey(viewModel.bookings[index].id),
+                          booking: viewModel.bookings[index],
                           onTap:
                               () => context.push(
                                 Routes.bookingWithId(
-                                  widget.viewModel.bookings[index].id,
+                                  viewModel.bookings[index].id,
                                 ),
                               ),
                           confirmDismiss: (_) async {
                             // wait for command to complete
-                            await widget.viewModel.deleteBooking.execute(
-                              widget.viewModel.bookings[index].id,
+                            await viewModel.deleteBooking.execute(
+                              viewModel.bookings[index].id,
                             );
                             // if command completed successfully, return true
-                            if (widget
-                                .viewModel
-                                .deleteBooking
-                                .value
-                                .isSuccess) {
+                            if (viewModel.deleteBooking.value.isSuccess) {
                               // removes the dismissable from the list
                               return true;
                             } else {
@@ -127,24 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  void _onResult() {
-    if (widget.viewModel.deleteBooking.value.isSuccess) {
-      widget.viewModel.deleteBooking.reset();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalization.of(context).bookingDeleted)),
-      );
-    }
-
-    if (widget.viewModel.deleteBooking.value.isFailure) {
-      widget.viewModel.deleteBooking.reset();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalization.of(context).errorWhileDeletingBooking),
-        ),
-      );
-    }
   }
 }
 
