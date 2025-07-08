@@ -10,7 +10,7 @@ import 'package:compass_app/ui/home/widgets/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/app.dart';

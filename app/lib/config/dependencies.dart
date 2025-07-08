@@ -28,7 +28,7 @@ import 'package:compass_app/data/services/local/local_data_service.dart';
 import 'package:compass_app/data/services/shared_preferences_service.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_create_use_case.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// API client for authentication requests.
 final authApiClientProvider = Provider((ref) => AuthApiClient());

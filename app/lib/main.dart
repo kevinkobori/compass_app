@@ -9,7 +9,7 @@ import 'package:compass_app/ui/core/themes/theme.dart';
 import 'package:compass_app/ui/core/ui/scroll_behavior.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Default main method
 void main() {
@@ -17,7 +17,7 @@ void main() {
   development.main();
 }
 
-class MainApp extends ConsumerWidget {
+class MainApp extends HookConsumerWidget {
   const MainApp({super.key});
 
   @override

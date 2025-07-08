@@ -9,9 +9,9 @@ import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class HomeHeader extends ConsumerWidget {
+class HomeHeader extends HookConsumerWidget {
   const HomeHeader({required this.viewModel, super.key});
 
   final HomeViewModel viewModel;

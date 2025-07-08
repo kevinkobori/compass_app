@@ -7,7 +7,7 @@ import 'package:compass_app/ui/core/ui/scroll_behavior.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../testing/fakes/repositories/fake_auth_repository.dart';
 
