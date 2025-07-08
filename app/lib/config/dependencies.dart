@@ -26,6 +26,7 @@ import 'package:compass_app/data/services/api/api_client.dart';
 import 'package:compass_app/data/services/api/auth_api_client.dart';
 import 'package:compass_app/data/services/local/local_data_service.dart';
 import 'package:compass_app/data/services/shared_preferences_service.dart';
+import 'package:compass_app/ui/auth/auth_controller.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_create_use_case.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -48,13 +49,18 @@ final Provider<LocalDataService> localDataServiceProvider = Provider(
 );
 
 /// Authentication repository used by the router to check login state.
-final authRepositoryProvider = ChangeNotifierProvider<AuthRepository>((ref) {
+/// Authentication repository used by [AuthController].
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositoryRemote(
     apiClient: ref.read(apiClientProvider),
     authApiClient: ref.read(authApiClientProvider),
     sharedPreferencesService: ref.read(sharedPreferencesServiceProvider),
   );
 });
+
+/// Authentication controller exposing the user's login state.
+final authControllerProvider =
+    AsyncNotifierProvider<AuthController, bool>(AuthController.new);
 
 /// Destination repository implementation.
 final destinationRepositoryProvider = Provider<DestinationRepository>((ref) {

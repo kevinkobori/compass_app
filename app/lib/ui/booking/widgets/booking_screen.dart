@@ -13,12 +13,13 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class BookingScreen extends HookConsumerWidget {
-  const BookingScreen({required this.viewModel, super.key});
-
-  final BookingViewModel viewModel;
+  const BookingScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(bookingViewModelProvider.notifier);
+    final booking = ref.watch(bookingViewModelProvider);
+
     void listener() {
       if (viewModel.shareBooking.value.isFailure) {
         viewModel.shareBooking.reset();
@@ -39,7 +40,6 @@ class BookingScreen extends HookConsumerWidget {
       return () => viewModel.shareBooking.removeListener(listener);
     }, [viewModel]);
 
-    useListenable(viewModel);
     useListenable(viewModel.createBooking);
     useListenable(viewModel.loadBooking);
 
@@ -53,9 +53,8 @@ class BookingScreen extends HookConsumerWidget {
           heroTag:
               null, // Workaround for https://github.com/flutter/flutter/issues/115358#issuecomment-2117157419
           key: const ValueKey('share-button'),
-          onPressed: viewModel.booking != null
-              ? viewModel.shareBooking.execute
-              : null,
+          onPressed:
+              booking != null ? viewModel.shareBooking.execute : null,
           label: Text(AppLocalization.of(context).shareTrip),
           icon: const Icon(Icons.share_outlined),
         ),
