@@ -9,32 +9,32 @@ import 'package:compass_app/ui/booking/widgets/booking_header.dart';
 import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class BookingBody extends StatelessWidget {
+class BookingBody extends HookWidget {
   const BookingBody({required this.viewModel, super.key});
 
   final BookingViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: viewModel,
-      builder: (context, _) {
-        final booking = viewModel.booking;
-        if (booking == null) return const SizedBox();
-        return CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: BookingHeader(booking: booking)),
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final activity = booking.activity[index];
-                return _Activity(activity: activity);
-              }, childCount: booking.activity.length),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 200)),
-          ],
-        );
-      },
+    // Rebuild the widget whenever the view model notifies listeners.
+    useListenable(viewModel);
+
+    final booking = viewModel.booking;
+    if (booking == null) return const SizedBox();
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: BookingHeader(booking: booking)),
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final activity = booking.activity[index];
+            return _Activity(activity: activity);
+          }, childCount: booking.activity.length),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 200)),
+      ],
     );
   }
 }
