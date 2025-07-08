@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/data/repositories/auth/auth_repository.dart';
-import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/routing/routes.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:compass_app/ui/home/widgets/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/app.dart';

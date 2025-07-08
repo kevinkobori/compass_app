@@ -29,3 +29,8 @@
 - [x] 0.1.13; enhance the code
 - [x] 0.1.14; fix: resolve all project warnings
 - [x] 0.1.15; chore: update SDK version and dependencies across project files
+- [x] Replace Provider with Riverpod
+- [x] Fix Riverpod integration
+- [x] Fix provider overrides in tests
+- [x] Use hooks_riverpod for state management
+- [x] 0.2.4; refactor: update imports and clean up routing code for better readability

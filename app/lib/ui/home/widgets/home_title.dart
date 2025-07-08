@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/ui/auth/logout/view_models/logout_viewmodel.dart';
 import 'package:compass_app/ui/auth/logout/widgets/logout_button.dart';
 import 'package:compass_app/ui/core/localization/applocalization.dart';
@@ -39,8 +40,9 @@ class HomeHeader extends HookConsumerWidget {
             LogoutButton(
               viewModel: LogoutViewModel(
                 authRepository: ref.read(authRepositoryProvider),
-                itineraryConfigRepository:
-                    ref.read(itineraryConfigRepositoryProvider),
+                itineraryConfigRepository: ref.read(
+                  itineraryConfigRepositoryProvider,
+                ),
               ),
             ),
           ],
@@ -61,12 +63,11 @@ class _Title extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShaderMask(
       blendMode: BlendMode.srcIn,
-      shaderCallback:
-          (bounds) => RadialGradient(
-            center: Alignment.bottomLeft,
-            radius: 2,
-            colors: [Colors.purple.shade700, Colors.purple.shade400],
-          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback: (bounds) => RadialGradient(
+        center: Alignment.bottomLeft,
+        radius: 2,
+        colors: [Colors.purple.shade700, Colors.purple.shade400],
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(
         text,
         style: GoogleFonts.rubik(
