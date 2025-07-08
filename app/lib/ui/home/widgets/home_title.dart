@@ -11,13 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends ConsumerWidget {
   const HomeHeader({required this.viewModel, super.key});
 
   final HomeViewModel viewModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final user = viewModel.user;
     if (user == null) {
       return const SizedBox();
@@ -38,9 +38,9 @@ class HomeHeader extends StatelessWidget {
             ),
             LogoutButton(
               viewModel: LogoutViewModel(
-                authRepository: context.read(authRepositoryProvider),
+                authRepository: ref.read(authRepositoryProvider),
                 itineraryConfigRepository:
-                    context.read(itineraryConfigRepositoryProvider),
+                    ref.read(itineraryConfigRepositoryProvider),
               ),
             ),
           ],

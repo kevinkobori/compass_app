@@ -37,93 +37,121 @@ final routerProvider = Provider<GoRouter>((ref) {
     GoRoute(
       path: Routes.login,
       builder: (context, state) {
-        final viewModel =
-            LoginViewModel(authRepository: context.read(authRepositoryProvider));
-        return LoginScreen(viewModel: viewModel);
+        return Consumer(
+          builder: (context, ref, _) {
+            final viewModel =
+                LoginViewModel(authRepository: ref.read(authRepositoryProvider));
+            return LoginScreen(viewModel: viewModel);
+          },
+        );
       },
     ),
     GoRoute(
       path: Routes.home,
       builder: (context, state) {
-        final viewModel = HomeViewModel(
-          bookingRepository: context.read(bookingRepositoryProvider),
-          userRepository: context.read(userRepositoryProvider),
+        return Consumer(
+          builder: (context, ref, _) {
+            final viewModel = HomeViewModel(
+              bookingRepository: ref.read(bookingRepositoryProvider),
+              userRepository: ref.read(userRepositoryProvider),
+            );
+            return HomeScreen(viewModel: viewModel);
+          },
         );
-        return HomeScreen(viewModel: viewModel);
       },
       routes: [
         GoRoute(
           path: Routes.searchRelative,
           builder: (context, state) {
-            final viewModel = SearchFormViewModel(
-              continentRepository: context.read(continentRepositoryProvider),
-              itineraryConfigRepository:
-                  context.read(itineraryConfigRepositoryProvider),
+            return Consumer(
+              builder: (context, ref, _) {
+                final viewModel = SearchFormViewModel(
+                  continentRepository: ref.read(continentRepositoryProvider),
+                  itineraryConfigRepository:
+                      ref.read(itineraryConfigRepositoryProvider),
+                );
+                return SearchFormScreen(viewModel: viewModel);
+              },
             );
-            return SearchFormScreen(viewModel: viewModel);
           },
         ),
         GoRoute(
           path: Routes.resultsRelative,
           builder: (context, state) {
-            final viewModel = ResultsViewModel(
-              destinationRepository: context.read(destinationRepositoryProvider),
-              itineraryConfigRepository:
-                  context.read(itineraryConfigRepositoryProvider),
+            return Consumer(
+              builder: (context, ref, _) {
+                final viewModel = ResultsViewModel(
+                  destinationRepository: ref.read(destinationRepositoryProvider),
+                  itineraryConfigRepository:
+                      ref.read(itineraryConfigRepositoryProvider),
+                );
+                return ResultsScreen(viewModel: viewModel);
+              },
             );
-            return ResultsScreen(viewModel: viewModel);
           },
         ),
         GoRoute(
           path: Routes.activitiesRelative,
           builder: (context, state) {
-            final viewModel = ActivitiesViewModel(
-              activityRepository: context.read(activityRepositoryProvider),
-              itineraryConfigRepository:
-                  context.read(itineraryConfigRepositoryProvider),
+            return Consumer(
+              builder: (context, ref, _) {
+                final viewModel = ActivitiesViewModel(
+                  activityRepository: ref.read(activityRepositoryProvider),
+                  itineraryConfigRepository:
+                      ref.read(itineraryConfigRepositoryProvider),
+                );
+                return ActivitiesScreen(viewModel: viewModel);
+              },
             );
-            return ActivitiesScreen(viewModel: viewModel);
           },
         ),
         GoRoute(
           path: Routes.bookingRelative,
           builder: (context, state) {
-            final viewModel = BookingViewModel(
-              itineraryConfigRepository:
-                  context.read(itineraryConfigRepositoryProvider),
-              createBookingUseCase:
-                  context.read(bookingCreateUseCaseProvider),
-              shareBookingUseCase:
-                  context.read(bookingShareUseCaseProvider),
-              bookingRepository: context.read(bookingRepositoryProvider),
+            return Consumer(
+              builder: (context, ref, _) {
+                final viewModel = BookingViewModel(
+                  itineraryConfigRepository:
+                      ref.read(itineraryConfigRepositoryProvider),
+                  createBookingUseCase:
+                      ref.read(bookingCreateUseCaseProvider),
+                  shareBookingUseCase:
+                      ref.read(bookingShareUseCaseProvider),
+                  bookingRepository: ref.read(bookingRepositoryProvider),
+                );
+
+                // When opening the booking screen directly
+                // create a new booking from the stored ItineraryConfig.
+                viewModel.createBooking.execute();
+
+                return BookingScreen(viewModel: viewModel);
+              },
             );
-
-            // When opening the booking screen directly
-            // create a new booking from the stored ItineraryConfig.
-            viewModel.createBooking.execute();
-
-            return BookingScreen(viewModel: viewModel);
           },
           routes: [
             GoRoute(
               path: ':id',
               builder: (context, state) {
                 final id = int.parse(state.pathParameters['id']!);
-                final viewModel = BookingViewModel(
-                  itineraryConfigRepository:
-                      context.read(itineraryConfigRepositoryProvider),
-                  createBookingUseCase:
-                      context.read(bookingCreateUseCaseProvider),
-                  shareBookingUseCase:
-                      context.read(bookingShareUseCaseProvider),
-                  bookingRepository: context.read(bookingRepositoryProvider),
+                return Consumer(
+                  builder: (context, ref, _) {
+                    final viewModel = BookingViewModel(
+                      itineraryConfigRepository:
+                          ref.read(itineraryConfigRepositoryProvider),
+                      createBookingUseCase:
+                          ref.read(bookingCreateUseCaseProvider),
+                      shareBookingUseCase:
+                          ref.read(bookingShareUseCaseProvider),
+                      bookingRepository: ref.read(bookingRepositoryProvider),
+                    );
+
+                    // When opening the booking screen with an existing id
+                    // load and display that booking.
+                    viewModel.loadBooking.execute(id);
+
+                    return BookingScreen(viewModel: viewModel);
+                  },
                 );
-
-                // When opening the booking screen with an existing id
-                // load and display that booking.
-                viewModel.loadBooking.execute(id);
-
-                return BookingScreen(viewModel: viewModel);
               },
             ),
           ],
