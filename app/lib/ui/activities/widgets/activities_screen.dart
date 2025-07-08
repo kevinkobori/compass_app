@@ -12,137 +12,115 @@ import 'package:compass_app/ui/core/localization/applocalization.dart';
 import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/ui/core/ui/error_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 const String confirmButtonKey = 'confirm-button';
 
-class ActivitiesScreen extends StatefulWidget {
+class ActivitiesScreen extends HookConsumerWidget {
   const ActivitiesScreen({required this.viewModel, super.key});
 
   final ActivitiesViewModel viewModel;
 
   @override
-  State<ActivitiesScreen> createState() => _ActivitiesScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    void listener() {
+      if (viewModel.saveActivities.value.isSuccess) {
+        viewModel.saveActivities.reset();
+        context.go(Routes.booking);
+      }
 
-class _ActivitiesScreenState extends State<ActivitiesScreen> {
-  @override
-  void initState() {
-    super.initState();
-    widget.viewModel.saveActivities.addListener(_onResult);
-  }
+      if (viewModel.saveActivities.value.isFailure) {
+        viewModel.saveActivities.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(AppLocalization.of(context).errorWhileSavingActivities),
+            action: SnackBarAction(
+              label: AppLocalization.of(context).tryAgain,
+              onPressed: viewModel.saveActivities.execute,
+            ),
+          ),
+        );
+      }
+    }
 
-  @override
-  void didUpdateWidget(covariant ActivitiesScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    oldWidget.viewModel.saveActivities.removeListener(_onResult);
-    widget.viewModel.saveActivities.addListener(_onResult);
-  }
+    useEffect(() {
+      viewModel.saveActivities.addListener(listener);
+      return () => viewModel.saveActivities.removeListener(listener);
+    }, [viewModel]);
 
-  @override
-  void dispose() {
-    widget.viewModel.saveActivities.removeListener(_onResult);
-    super.dispose();
-  }
+    useListenable(viewModel);
+    useListenable(viewModel.loadActivities);
+    useListenable(viewModel.saveActivities);
 
-  @override
-  Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, r) {
         if (!didPop) context.go(Routes.results);
       },
       child: Scaffold(
-        body: ListenableBuilder(
-          listenable: widget.viewModel.loadActivities,
-          builder: (context, child) {
-            if (widget.viewModel.loadActivities.value.isSuccess) {
-              // The getter 'completed' isn't defined for the type
-              // 'Command0<Object>'.
-              // Try importing the library that defines 'completed', correcting
-              // the name to the name of an existing getter, or defining a
-              // getter or field named 'completed'.
-              return child!;
+        body: Builder(
+          builder: (context) {
+            if (viewModel.loadActivities.value.isRunning) {
+              return Column(
+                children: const [
+                  ActivitiesHeader(),
+                  Expanded(child: Center(child: CircularProgressIndicator())),
+                ],
+              );
             }
-            return Column(
-              children: [
-                const ActivitiesHeader(),
-                if (widget.viewModel.loadActivities.value.isRunning)
-                  const Expanded(
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                if (widget.viewModel.loadActivities.value.isFailure)
+            if (viewModel.loadActivities.value.isFailure) {
+              return Column(
+                children: [
+                  const ActivitiesHeader(),
                   Expanded(
                     child: Center(
                       child: ErrorIndicator(
-                        title:
-                            AppLocalization.of(
-                              context,
-                            ).errorWhileLoadingActivities,
+                        title: AppLocalization.of(context)
+                            .errorWhileLoadingActivities,
                         label: AppLocalization.of(context).tryAgain,
-                        onPressed: widget.viewModel.loadActivities.execute,
+                        onPressed: viewModel.loadActivities.execute,
                       ),
                     ),
                   ),
+                ],
+              );
+            }
+
+            return Column(
+              children: [
+                Expanded(
+                  child: CustomScrollView(
+                    slivers: [
+                      const SliverToBoxAdapter(child: ActivitiesHeader()),
+                      ActivitiesTitle(
+                        viewModel: viewModel,
+                        activityTimeOfDay: ActivityTimeOfDay.daytime,
+                      ),
+                      ActivitiesList(
+                        viewModel: viewModel,
+                        activityTimeOfDay: ActivityTimeOfDay.daytime,
+                      ),
+                      ActivitiesTitle(
+                        viewModel: viewModel,
+                        activityTimeOfDay: ActivityTimeOfDay.evening,
+                      ),
+                      ActivitiesList(
+                        viewModel: viewModel,
+                        activityTimeOfDay: ActivityTimeOfDay.evening,
+                      ),
+                    ],
+                  ),
+                ),
+                _BottomArea(viewModel: viewModel),
               ],
             );
           },
-          child: ListenableBuilder(
-            listenable: widget.viewModel,
-            builder: (context, child) {
-              return Column(
-                children: [
-                  Expanded(
-                    child: CustomScrollView(
-                      slivers: [
-                        const SliverToBoxAdapter(child: ActivitiesHeader()),
-                        ActivitiesTitle(
-                          viewModel: widget.viewModel,
-                          activityTimeOfDay: ActivityTimeOfDay.daytime,
-                        ),
-                        ActivitiesList(
-                          viewModel: widget.viewModel,
-                          activityTimeOfDay: ActivityTimeOfDay.daytime,
-                        ),
-                        ActivitiesTitle(
-                          viewModel: widget.viewModel,
-                          activityTimeOfDay: ActivityTimeOfDay.evening,
-                        ),
-                        ActivitiesList(
-                          viewModel: widget.viewModel,
-                          activityTimeOfDay: ActivityTimeOfDay.evening,
-                        ),
-                      ],
-                    ),
-                  ),
-                  _BottomArea(viewModel: widget.viewModel),
-                ],
-              );
-            },
-          ),
         ),
       ),
     );
-  }
-
-  void _onResult() {
-    if (widget.viewModel.saveActivities.value.isSuccess) {
-      widget.viewModel.saveActivities.reset();
-      context.go(Routes.booking);
-    }
-
-    if (widget.viewModel.saveActivities.value.isFailure) {
-      widget.viewModel.saveActivities.reset();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalization.of(context).errorWhileSavingActivities),
-          action: SnackBarAction(
-            label: AppLocalization.of(context).tryAgain,
-            onPressed: widget.viewModel.saveActivities.execute,
-          ),
-        ),
-      );
-    }
   }
 }
 
