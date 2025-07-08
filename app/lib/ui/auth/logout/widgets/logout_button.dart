@@ -7,6 +7,7 @@ import 'package:compass_app/ui/core/localization/applocalization.dart';
 import 'package:compass_app/ui/core/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LogoutButton extends HookConsumerWidget {
   const LogoutButton({required this.viewModel, super.key});

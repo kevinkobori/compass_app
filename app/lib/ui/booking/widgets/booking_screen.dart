@@ -10,6 +10,7 @@ import 'package:compass_app/ui/core/ui/error_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class BookingScreen extends HookConsumerWidget {
   const BookingScreen({required this.viewModel, super.key});
@@ -49,10 +50,12 @@ class BookingScreen extends HookConsumerWidget {
       },
       child: Scaffold(
         floatingActionButton: FloatingActionButton.extended(
-          heroTag: null, // Workaround for https://github.com/flutter/flutter/issues/115358#issuecomment-2117157419
+          heroTag:
+              null, // Workaround for https://github.com/flutter/flutter/issues/115358#issuecomment-2117157419
           key: const ValueKey('share-button'),
-          onPressed:
-              viewModel.booking != null ? viewModel.shareBooking.execute : null,
+          onPressed: viewModel.booking != null
+              ? viewModel.shareBooking.execute
+              : null,
           label: Text(AppLocalization.of(context).shareTrip),
           icon: const Icon(Icons.share_outlined),
         ),

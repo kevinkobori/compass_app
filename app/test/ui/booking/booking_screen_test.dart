@@ -11,6 +11,7 @@ import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
 import 'package:compass_app/ui/booking/widgets/booking_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../testing/app.dart';
 import '../../../testing/fakes/repositories/fake_activities_repository.dart';
@@ -21,7 +22,6 @@ import '../../../testing/mocks.dart';
 import '../../../testing/models/activity.dart';
 import '../../../testing/models/booking.dart';
 import '../../../testing/models/destination.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
   group('BookingScreen widget tests', () {

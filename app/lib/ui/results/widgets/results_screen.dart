@@ -11,8 +11,8 @@ import 'package:compass_app/ui/results/view_models/results_viewmodel.dart';
 import 'package:compass_app/ui/results/widgets/result_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ResultsScreen extends HookConsumerWidget {
   const ResultsScreen({required this.viewModel, super.key});
@@ -31,8 +31,9 @@ class ResultsScreen extends HookConsumerWidget {
         viewModel.updateItineraryConfig.reset();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text(AppLocalization.of(context).errorWhileSavingItinerary),
+            content: Text(
+              AppLocalization.of(context).errorWhileSavingItinerary,
+            ),
           ),
         );
       }
@@ -48,7 +49,6 @@ class ResultsScreen extends HookConsumerWidget {
     useListenable(viewModel.updateItineraryConfig);
 
     return PopScope(
-    return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, r) {
         if (!didPop) context.go(Routes.search);
@@ -60,7 +60,9 @@ class ResultsScreen extends HookConsumerWidget {
               return Column(
                 children: [
                   _AppSearchBar(viewModel: viewModel),
-                  Expanded(child: Center(child: CircularProgressIndicator())),
+                  const Expanded(
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
                 ],
               );
             }
@@ -71,8 +73,9 @@ class ResultsScreen extends HookConsumerWidget {
                   Expanded(
                     child: Center(
                       child: ErrorIndicator(
-                        title: AppLocalization.of(context)
-                            .errorWhileLoadingDestinations,
+                        title: AppLocalization.of(
+                          context,
+                        ).errorWhileLoadingDestinations,
                         label: AppLocalization.of(context).tryAgain,
                         onPressed: viewModel.search.execute,
                       ),
@@ -86,7 +89,9 @@ class ResultsScreen extends HookConsumerWidget {
               padding: Dimens.of(context).edgeInsetsScreenHorizontal,
               child: CustomScrollView(
                 slivers: [
-                  SliverToBoxAdapter(child: _AppSearchBar(viewModel: viewModel)),
+                  SliverToBoxAdapter(
+                    child: _AppSearchBar(viewModel: viewModel),
+                  ),
                   _Grid(viewModel: viewModel),
                 ],
               ),

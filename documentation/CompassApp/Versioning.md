@@ -34,3 +34,8 @@
 - [x] Fix provider overrides in tests
 - [x] Use hooks_riverpod for state management
 - [x] 0.2.4; refactor: update imports and clean up routing code for better readability
+- [x] refactor(ui): migrate auth and booking widgets to hooks
+- [x] refactor(ui): migrate activities and results screens to hooks
+- [x] refactor(ui): migrate search form and home to hooks
+- [x] refactor: replace listenable builders with hooks
+- [x] 0.2.8; refactor: update providers to use explicit types and improve formatting

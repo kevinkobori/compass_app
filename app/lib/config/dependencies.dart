@@ -31,17 +31,21 @@ import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// API client for authentication requests.
-final authApiClientProvider = Provider((ref) => AuthApiClient());
+final Provider<AuthApiClient> authApiClientProvider = Provider(
+  (ref) => AuthApiClient(),
+);
 
 /// Generic API client.
-final apiClientProvider = Provider((ref) => ApiClient());
+final Provider<ApiClient> apiClientProvider = Provider((ref) => ApiClient());
 
 /// Shared preferences service used to store tokens.
-final sharedPreferencesServiceProvider =
+final Provider<SharedPreferencesService> sharedPreferencesServiceProvider =
     Provider((ref) => SharedPreferencesService());
 
 /// Local data service used only in development.
-final localDataServiceProvider = Provider((ref) => LocalDataService());
+final Provider<LocalDataService> localDataServiceProvider = Provider(
+  (ref) => LocalDataService(),
+);
 
 /// Authentication repository used by the router to check login state.
 final authRepositoryProvider = ChangeNotifierProvider<AuthRepository>((ref) {
@@ -68,8 +72,9 @@ final activityRepositoryProvider = Provider<ActivityRepository>((ref) {
 });
 
 /// Itinerary configuration repository stored in memory.
-final itineraryConfigRepositoryProvider =
-    Provider<ItineraryConfigRepository>((ref) => ItineraryConfigRepositoryMemory());
+final itineraryConfigRepositoryProvider = Provider<ItineraryConfigRepository>(
+  (ref) => ItineraryConfigRepositoryMemory(),
+);
 
 /// Booking repository implementation.
 final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
@@ -82,29 +87,47 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
 });
 
 /// Use case to create a booking.
-final bookingCreateUseCaseProvider = Provider((ref) => BookingCreateUseCase(
-      destinationRepository: ref.read(destinationRepositoryProvider),
-      activityRepository: ref.read(activityRepositoryProvider),
-      bookingRepository: ref.read(bookingRepositoryProvider),
-    ));
+final Provider<BookingCreateUseCase> bookingCreateUseCaseProvider = Provider(
+  (ref) => BookingCreateUseCase(
+    destinationRepository: ref.read(destinationRepositoryProvider),
+    activityRepository: ref.read(activityRepositoryProvider),
+    bookingRepository: ref.read(bookingRepositoryProvider),
+  ),
+);
 
 /// Use case to share a booking.
-final bookingShareUseCaseProvider =
-    Provider((ref) => BookingShareUseCase.withSharePlus());
+final Provider<BookingShareUseCase> bookingShareUseCaseProvider = Provider(
+  (ref) => BookingShareUseCase.withSharePlus(),
+);
 
 /// Overrides for local (development) configuration.
 final providersLocal = <Override>[
   authRepositoryProvider.overrideWith((ref) => AuthRepositoryDev()),
-  destinationRepositoryProvider.overrideWith((ref) =>
-      DestinationRepositoryLocal(localDataService: ref.read(localDataServiceProvider))),
-  continentRepositoryProvider.overrideWith((ref) =>
-      ContinentRepositoryLocal(localDataService: ref.read(localDataServiceProvider))),
-  activityRepositoryProvider.overrideWith((ref) =>
-      ActivityRepositoryLocal(localDataService: ref.read(localDataServiceProvider))),
-  bookingRepositoryProvider.overrideWith((ref) =>
-      BookingRepositoryLocal(localDataService: ref.read(localDataServiceProvider))),
-  userRepositoryProvider.overrideWith((ref) =>
-      UserRepositoryLocal(localDataService: ref.read(localDataServiceProvider))),
+  destinationRepositoryProvider.overrideWith(
+    (ref) => DestinationRepositoryLocal(
+      localDataService: ref.read(localDataServiceProvider),
+    ),
+  ),
+  continentRepositoryProvider.overrideWith(
+    (ref) => ContinentRepositoryLocal(
+      localDataService: ref.read(localDataServiceProvider),
+    ),
+  ),
+  activityRepositoryProvider.overrideWith(
+    (ref) => ActivityRepositoryLocal(
+      localDataService: ref.read(localDataServiceProvider),
+    ),
+  ),
+  bookingRepositoryProvider.overrideWith(
+    (ref) => BookingRepositoryLocal(
+      localDataService: ref.read(localDataServiceProvider),
+    ),
+  ),
+  userRepositoryProvider.overrideWith(
+    (ref) => UserRepositoryLocal(
+      localDataService: ref.read(localDataServiceProvider),
+    ),
+  ),
   itineraryConfigRepositoryProvider.overrideWithValue(
     ItineraryConfigRepositoryMemory(),
   ),
