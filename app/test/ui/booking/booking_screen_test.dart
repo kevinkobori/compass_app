@@ -21,6 +21,7 @@ import '../../../testing/mocks.dart';
 import '../../../testing/models/activity.dart';
 import '../../../testing/models/booking.dart';
 import '../../../testing/models/destination.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
   group('BookingScreen widget tests', () {
@@ -59,7 +60,9 @@ void main() {
     Future<void> loadScreen(WidgetTester tester) async {
       await testApp(
         tester,
-        BookingScreen(viewModel: viewModel),
+        ProviderScope(
+          child: BookingScreen(viewModel: viewModel),
+        ),
         goRouter: goRouter,
       );
     }
