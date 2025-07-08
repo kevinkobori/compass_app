@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/data/repositories/auth/auth_repository.dart';
+import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/routing/routes.dart';
 import 'package:compass_app/ui/activities/view_models/activities_viewmodel.dart';
 import 'package:compass_app/ui/activities/widgets/activities_screen.dart';
@@ -18,111 +18,168 @@ import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dar
 import 'package:compass_app/ui/search_form/widgets/search_form_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Top go_router entry point.
 ///
 /// Listens to changes in [AuthTokenRepository] to redirect the user
 /// to /login when the user logs out.
-GoRouter router(AuthRepository authRepository) => GoRouter(
-  initialLocation: Routes.home,
-  debugLogDiagnostics: true,
-  redirect: _redirect,
-  refreshListenable: authRepository,
-  routes: [
-    GoRoute(
-      path: Routes.login,
-      builder: (context, state) {
-        final viewModel = LoginViewModel(authRepository: context.read());
-        return LoginScreen(viewModel: viewModel);
-      },
-    ),
-    GoRoute(
-      path: Routes.home,
-      builder: (context, state) {
-        final viewModel = HomeViewModel(
-          bookingRepository: context.read(),
-          userRepository: context.read(),
-        );
-        return HomeScreen(viewModel: viewModel);
-      },
-      routes: [
-        GoRoute(
-          path: Routes.searchRelative,
-          builder: (context, state) {
-            final viewModel = SearchFormViewModel(
-              continentRepository: context.read(),
-              itineraryConfigRepository: context.read(),
-            );
-            return SearchFormScreen(viewModel: viewModel);
-          },
-        ),
-        GoRoute(
-          path: Routes.resultsRelative,
-          builder: (context, state) {
-            final viewModel = ResultsViewModel(
-              destinationRepository: context.read(),
-              itineraryConfigRepository: context.read(),
-            );
-            return ResultsScreen(viewModel: viewModel);
-          },
-        ),
-        GoRoute(
-          path: Routes.activitiesRelative,
-          builder: (context, state) {
-            final viewModel = ActivitiesViewModel(
-              activityRepository: context.read(),
-              itineraryConfigRepository: context.read(),
-            );
-            return ActivitiesScreen(viewModel: viewModel);
-          },
-        ),
-        GoRoute(
-          path: Routes.bookingRelative,
-          builder: (context, state) {
-            final viewModel = BookingViewModel(
-              itineraryConfigRepository: context.read(),
-              createBookingUseCase: context.read(),
-              shareBookingUseCase: context.read(),
-              bookingRepository: context.read(),
-            );
+typedef Reader = T Function<T>(ProviderListenable<T> provider);
 
-            // When opening the booking screen directly
-            // create a new booking from the stored ItineraryConfig.
-            viewModel.createBooking.execute();
+final routerProvider = Provider<GoRouter>((ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
+  return GoRouter(
+    initialLocation: Routes.home,
+    debugLogDiagnostics: true,
+    redirect: (context, state) => _redirect(context, state, ref.read),
+    refreshListenable: authRepository,
+    routes: [
+      GoRoute(
+        path: Routes.login,
+        builder: (context, state) {
+          return Consumer(
+            builder: (context, ref, _) {
+              final viewModel = LoginViewModel(
+                authRepository: ref.read(authRepositoryProvider),
+              );
+              return LoginScreen(viewModel: viewModel);
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: Routes.home,
+        builder: (context, state) {
+          return Consumer(
+            builder: (context, ref, _) {
+              final viewModel = HomeViewModel(
+                bookingRepository: ref.read(bookingRepositoryProvider),
+                userRepository: ref.read(userRepositoryProvider),
+              );
+              return HomeScreen(viewModel: viewModel);
+            },
+          );
+        },
+        routes: [
+          GoRoute(
+            path: Routes.searchRelative,
+            builder: (context, state) {
+              return Consumer(
+                builder: (context, ref, _) {
+                  final viewModel = SearchFormViewModel(
+                    continentRepository: ref.read(continentRepositoryProvider),
+                    itineraryConfigRepository: ref.read(
+                      itineraryConfigRepositoryProvider,
+                    ),
+                  );
+                  return SearchFormScreen(viewModel: viewModel);
+                },
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.resultsRelative,
+            builder: (context, state) {
+              return Consumer(
+                builder: (context, ref, _) {
+                  final viewModel = ResultsViewModel(
+                    destinationRepository: ref.read(
+                      destinationRepositoryProvider,
+                    ),
+                    itineraryConfigRepository: ref.read(
+                      itineraryConfigRepositoryProvider,
+                    ),
+                  );
+                  return ResultsScreen(viewModel: viewModel);
+                },
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.activitiesRelative,
+            builder: (context, state) {
+              return Consumer(
+                builder: (context, ref, _) {
+                  final viewModel = ActivitiesViewModel(
+                    activityRepository: ref.read(activityRepositoryProvider),
+                    itineraryConfigRepository: ref.read(
+                      itineraryConfigRepositoryProvider,
+                    ),
+                  );
+                  return ActivitiesScreen(viewModel: viewModel);
+                },
+              );
+            },
+          ),
+          GoRoute(
+            path: Routes.bookingRelative,
+            builder: (context, state) {
+              return Consumer(
+                builder: (context, ref, _) {
+                  final viewModel = BookingViewModel(
+                    itineraryConfigRepository: ref.read(
+                      itineraryConfigRepositoryProvider,
+                    ),
+                    createBookingUseCase: ref.read(
+                      bookingCreateUseCaseProvider,
+                    ),
+                    shareBookingUseCase: ref.read(bookingShareUseCaseProvider),
+                    bookingRepository: ref.read(bookingRepositoryProvider),
+                  );
 
-            return BookingScreen(viewModel: viewModel);
-          },
-          routes: [
-            GoRoute(
-              path: ':id',
-              builder: (context, state) {
-                final id = int.parse(state.pathParameters['id']!);
-                final viewModel = BookingViewModel(
-                  itineraryConfigRepository: context.read(),
-                  createBookingUseCase: context.read(),
-                  shareBookingUseCase: context.read(),
-                  bookingRepository: context.read(),
-                );
+                  // When opening the booking screen directly
+                  // create a new booking from the stored ItineraryConfig.
+                  viewModel.createBooking.execute();
 
-                // When opening the booking screen with an existing id
-                // load and display that booking.
-                viewModel.loadBooking.execute(id);
+                  return BookingScreen(viewModel: viewModel);
+                },
+              );
+            },
+            routes: [
+              GoRoute(
+                path: ':id',
+                builder: (context, state) {
+                  final id = int.parse(state.pathParameters['id']!);
+                  return Consumer(
+                    builder: (context, ref, _) {
+                      final viewModel = BookingViewModel(
+                        itineraryConfigRepository: ref.read(
+                          itineraryConfigRepositoryProvider,
+                        ),
+                        createBookingUseCase: ref.read(
+                          bookingCreateUseCaseProvider,
+                        ),
+                        shareBookingUseCase: ref.read(
+                          bookingShareUseCaseProvider,
+                        ),
+                        bookingRepository: ref.read(bookingRepositoryProvider),
+                      );
 
-                return BookingScreen(viewModel: viewModel);
-              },
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
-);
+                      // When opening the booking screen with an existing id
+                      // load and display that booking.
+                      viewModel.loadBooking.execute(id);
+
+                      return BookingScreen(viewModel: viewModel);
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+});
 
 // From https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/redirection.dart
-Future<String?> _redirect(BuildContext context, GoRouterState state) async {
+Future<String?> _redirect(
+  BuildContext context,
+  GoRouterState state,
+  Reader read,
+) async {
   // if the user is not logged in, they need to login
-  final loggedIn = await context.read<AuthRepository>().isAuthenticated;
+  final loggedIn = await read(authRepositoryProvider).isAuthenticated;
   final loggingIn = state.matchedLocation == Routes.login;
   if (!loggedIn) {
     return Routes.login;

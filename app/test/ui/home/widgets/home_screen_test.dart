@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/data/repositories/auth/auth_repository.dart';
-import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/routing/routes.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:compass_app/ui/home/widgets/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:provider/provider.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/app.dart';
@@ -40,12 +39,16 @@ void main() {
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        ChangeNotifierProvider.value(
-          value: FakeAuthRepository() as AuthRepository,
-          child: Provider.value(
-            value: FakeItineraryConfigRepository() as ItineraryConfigRepository,
-            child: HomeScreen(viewModel: viewModel),
-          ),
+        ProviderScope(
+          overrides: [
+            authRepositoryProvider.overrideWith(
+              (ref) => FakeAuthRepository(),
+            ),
+            itineraryConfigRepositoryProvider.overrideWithValue(
+              FakeItineraryConfigRepository(),
+            ),
+          ],
+          child: HomeScreen(viewModel: viewModel),
         ),
         goRouter: goRouter,
       );
