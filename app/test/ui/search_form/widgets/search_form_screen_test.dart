@@ -37,8 +37,9 @@ void main() {
         tester,
         ProviderScope(
           overrides: [
-            authRepositoryProvider
-                .overrideWithValue(FakeAuthRepository()),
+            authRepositoryProvider.overrideWith(
+              (ref) => FakeAuthRepository(),
+            ),
             itineraryConfigRepositoryProvider.overrideWithValue(
               FakeItineraryConfigRepository(),
             ),
