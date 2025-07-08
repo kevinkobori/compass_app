@@ -10,7 +10,7 @@ import 'package:compass_app/ui/home/widgets/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/app.dart';
@@ -40,12 +40,15 @@ void main() {
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        ChangeNotifierProvider.value(
-          value: FakeAuthRepository() as AuthRepository,
-          child: Provider.value(
-            value: FakeItineraryConfigRepository() as ItineraryConfigRepository,
-            child: HomeScreen(viewModel: viewModel),
-          ),
+        ProviderScope(
+          overrides: [
+            authRepositoryProvider
+                .overrideWithValue(FakeAuthRepository()),
+            itineraryConfigRepositoryProvider.overrideWithValue(
+              FakeItineraryConfigRepository(),
+            ),
+          ],
+          child: HomeScreen(viewModel: viewModel),
         ),
         goRouter: goRouter,
       );

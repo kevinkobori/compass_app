@@ -9,7 +9,7 @@ import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({required this.viewModel, super.key});
@@ -38,8 +38,9 @@ class HomeHeader extends StatelessWidget {
             ),
             LogoutButton(
               viewModel: LogoutViewModel(
-                authRepository: context.read(),
-                itineraryConfigRepository: context.read(),
+                authRepository: context.read(authRepositoryProvider),
+                itineraryConfigRepository:
+                    context.read(itineraryConfigRepositoryProvider),
               ),
             ),
           ],

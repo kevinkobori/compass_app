@@ -18,22 +18,27 @@ import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dar
 import 'package:compass_app/ui/search_form/widgets/search_form_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Top go_router entry point.
 ///
 /// Listens to changes in [AuthTokenRepository] to redirect the user
 /// to /login when the user logs out.
-GoRouter router(AuthRepository authRepository) => GoRouter(
-  initialLocation: Routes.home,
-  debugLogDiagnostics: true,
-  redirect: _redirect,
-  refreshListenable: authRepository,
-  routes: [
+typedef Reader = T Function<T>(ProviderListenable<T> provider);
+
+final routerProvider = Provider<GoRouter>((ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
+  return GoRouter(
+    initialLocation: Routes.home,
+    debugLogDiagnostics: true,
+    redirect: (context, state) => _redirect(context, state, ref.read),
+    refreshListenable: authRepository,
+    routes: [
     GoRoute(
       path: Routes.login,
       builder: (context, state) {
-        final viewModel = LoginViewModel(authRepository: context.read());
+        final viewModel =
+            LoginViewModel(authRepository: context.read(authRepositoryProvider));
         return LoginScreen(viewModel: viewModel);
       },
     ),
@@ -41,8 +46,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       path: Routes.home,
       builder: (context, state) {
         final viewModel = HomeViewModel(
-          bookingRepository: context.read(),
-          userRepository: context.read(),
+          bookingRepository: context.read(bookingRepositoryProvider),
+          userRepository: context.read(userRepositoryProvider),
         );
         return HomeScreen(viewModel: viewModel);
       },
@@ -51,8 +56,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           path: Routes.searchRelative,
           builder: (context, state) {
             final viewModel = SearchFormViewModel(
-              continentRepository: context.read(),
-              itineraryConfigRepository: context.read(),
+              continentRepository: context.read(continentRepositoryProvider),
+              itineraryConfigRepository:
+                  context.read(itineraryConfigRepositoryProvider),
             );
             return SearchFormScreen(viewModel: viewModel);
           },
@@ -61,8 +67,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           path: Routes.resultsRelative,
           builder: (context, state) {
             final viewModel = ResultsViewModel(
-              destinationRepository: context.read(),
-              itineraryConfigRepository: context.read(),
+              destinationRepository: context.read(destinationRepositoryProvider),
+              itineraryConfigRepository:
+                  context.read(itineraryConfigRepositoryProvider),
             );
             return ResultsScreen(viewModel: viewModel);
           },
@@ -71,8 +78,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           path: Routes.activitiesRelative,
           builder: (context, state) {
             final viewModel = ActivitiesViewModel(
-              activityRepository: context.read(),
-              itineraryConfigRepository: context.read(),
+              activityRepository: context.read(activityRepositoryProvider),
+              itineraryConfigRepository:
+                  context.read(itineraryConfigRepositoryProvider),
             );
             return ActivitiesScreen(viewModel: viewModel);
           },
@@ -81,10 +89,13 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           path: Routes.bookingRelative,
           builder: (context, state) {
             final viewModel = BookingViewModel(
-              itineraryConfigRepository: context.read(),
-              createBookingUseCase: context.read(),
-              shareBookingUseCase: context.read(),
-              bookingRepository: context.read(),
+              itineraryConfigRepository:
+                  context.read(itineraryConfigRepositoryProvider),
+              createBookingUseCase:
+                  context.read(bookingCreateUseCaseProvider),
+              shareBookingUseCase:
+                  context.read(bookingShareUseCaseProvider),
+              bookingRepository: context.read(bookingRepositoryProvider),
             );
 
             // When opening the booking screen directly
@@ -99,10 +110,13 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               builder: (context, state) {
                 final id = int.parse(state.pathParameters['id']!);
                 final viewModel = BookingViewModel(
-                  itineraryConfigRepository: context.read(),
-                  createBookingUseCase: context.read(),
-                  shareBookingUseCase: context.read(),
-                  bookingRepository: context.read(),
+                  itineraryConfigRepository:
+                      context.read(itineraryConfigRepositoryProvider),
+                  createBookingUseCase:
+                      context.read(bookingCreateUseCaseProvider),
+                  shareBookingUseCase:
+                      context.read(bookingShareUseCaseProvider),
+                  bookingRepository: context.read(bookingRepositoryProvider),
                 );
 
                 // When opening the booking screen with an existing id
@@ -117,12 +131,17 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       ],
     ),
   ],
-);
+  );
+});
 
 // From https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/redirection.dart
-Future<String?> _redirect(BuildContext context, GoRouterState state) async {
+Future<String?> _redirect(
+  BuildContext context,
+  GoRouterState state,
+  Reader read,
+) async {
   // if the user is not logged in, they need to login
-  final loggedIn = await context.read<AuthRepository>().isAuthenticated;
+  final loggedIn = await read(authRepositoryProvider).isAuthenticated;
   final loggingIn = state.matchedLocation == Routes.login;
   if (!loggedIn) {
     return Routes.login;

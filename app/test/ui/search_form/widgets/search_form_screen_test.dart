@@ -11,7 +11,7 @@ import 'package:compass_app/ui/search_form/widgets/search_form_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../testing/app.dart';
 import '../../../../testing/fakes/repositories/fake_auth_repository.dart';
@@ -35,12 +35,15 @@ void main() {
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        ChangeNotifierProvider.value(
-          value: FakeAuthRepository() as AuthRepository,
-          child: Provider.value(
-            value: FakeItineraryConfigRepository() as ItineraryConfigRepository,
-            child: SearchFormScreen(viewModel: viewModel),
-          ),
+        ProviderScope(
+          overrides: [
+            authRepositoryProvider
+                .overrideWithValue(FakeAuthRepository()),
+            itineraryConfigRepositoryProvider.overrideWithValue(
+              FakeItineraryConfigRepository(),
+            ),
+          ],
+          child: SearchFormScreen(viewModel: viewModel),
         ),
         goRouter: goRouter,
       );
