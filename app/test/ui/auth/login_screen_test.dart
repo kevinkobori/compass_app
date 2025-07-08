@@ -11,6 +11,7 @@ import 'package:mocktail_image_network/mocktail_image_network.dart';
 import '../../../testing/app.dart';
 import '../../../testing/fakes/repositories/fake_auth_repository.dart';
 import '../../../testing/mocks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
   group('LoginScreen test', () {
@@ -27,7 +28,9 @@ void main() {
     Future<void> loadScreen(WidgetTester tester) async {
       await testApp(
         tester,
-        LoginScreen(viewModel: viewModel),
+        ProviderScope(
+          child: LoginScreen(viewModel: viewModel),
+        ),
         goRouter: goRouter,
       );
     }
