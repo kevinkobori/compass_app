@@ -49,7 +49,7 @@ class HomeScreen extends HookConsumerWidget {
       return () => viewModel.deleteBooking.removeListener(onResult);
     }, [viewModel]);
 
-    useListenable(viewModel);
+    // Listen for changes on commands only. HomeViewModel is not a Listenable.
     useListenable(viewModel.load);
     useListenable(viewModel.deleteBooking);
 
