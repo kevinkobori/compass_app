@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:compass_app/ui/search_form/widgets/search_form_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../testing/app.dart';
@@ -17,19 +19,30 @@ void main() {
   group('SearchFormSubmit widget tests', () {
     late SearchFormViewModel viewModel;
     late MockGoRouter goRouter;
+    late ProviderContainer container;
 
     setUp(() {
-      viewModel = SearchFormViewModel(
-        continentRepository: FakeContinentRepository(),
-        itineraryConfigRepository: FakeItineraryConfigRepository(),
-      );
+      container = ProviderContainer(overrides: [
+        continentRepositoryProvider.overrideWithValue(FakeContinentRepository()),
+        itineraryConfigRepositoryProvider.overrideWithValue(
+          FakeItineraryConfigRepository(),
+        ),
+      ]);
+      viewModel = container.read(searchFormViewModelProvider.notifier);
       goRouter = MockGoRouter();
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        SearchFormSubmit(viewModel: viewModel),
+        UncontrolledProviderScope(
+          container: container,
+          child: SearchFormSubmit(viewModel: viewModel),
+        ),
         goRouter: goRouter,
       );
     }

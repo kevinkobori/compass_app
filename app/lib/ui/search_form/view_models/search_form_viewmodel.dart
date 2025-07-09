@@ -1,55 +1,84 @@
+import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/data/repositories/continent/continent_repository.dart';
 import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
 import 'package:compass_app/domain/models/continent/continent.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
-class SearchFormViewModel extends ChangeNotifier {
-  SearchFormViewModel({
-    required ContinentRepository continentRepository,
-    required ItineraryConfigRepository itineraryConfigRepository,
-  }) : _continentRepository = continentRepository,
-       _itineraryConfigRepository = itineraryConfigRepository {
+/// Immutable state for [SearchFormViewModel].
+@immutable
+class SearchFormState {
+  const SearchFormState({
+    this.continents = const <Continent>[],
+    this.selectedContinent,
+    this.dateRange,
+    this.guests = 0,
+  });
+
+  final List<Continent> continents;
+  final String? selectedContinent;
+  final DateTimeRange? dateRange;
+  final int guests;
+
+  bool get valid =>
+      guests > 0 && selectedContinent != null && dateRange != null;
+
+  SearchFormState copyWith({
+    List<Continent>? continents,
+    String? selectedContinent,
+    DateTimeRange? dateRange,
+    int? guests,
+  }) {
+    return SearchFormState(
+      continents: continents ?? this.continents,
+      selectedContinent: selectedContinent ?? this.selectedContinent,
+      dateRange: dateRange ?? this.dateRange,
+      guests: guests ?? this.guests,
+    );
+  }
+}
+
+class SearchFormViewModel extends Notifier<SearchFormState> {
+  late ContinentRepository _continentRepository;
+  late ItineraryConfigRepository _itineraryConfigRepository;
+
+  @override
+  SearchFormState build() {
+    _continentRepository = ref.read(continentRepositoryProvider);
+    _itineraryConfigRepository = ref.read(itineraryConfigRepositoryProvider);
     updateItineraryConfig = Command0(_updateItineraryConfig);
     load = Command0(_load)..execute();
+    return const SearchFormState();
   }
 
   final _log = Logger('SearchFormViewModel');
-  final ContinentRepository _continentRepository;
-  final ItineraryConfigRepository _itineraryConfigRepository;
-  List<Continent> _continents = [];
-  String? _selectedContinent;
-  DateTimeRange? _dateRange;
-  int _guests = 0;
 
-  bool get valid =>
-      _guests > 0 && _selectedContinent != null && _dateRange != null;
+  List<Continent> get continents => state.continents;
 
-  List<Continent> get continents => _continents;
-
-  String? get selectedContinent => _selectedContinent;
+  String? get selectedContinent => state.selectedContinent;
   set selectedContinent(String? continent) {
-    _selectedContinent = continent;
+    state = state.copyWith(selectedContinent: continent);
     _log.finest('Selected continent: $continent');
-    notifyListeners();
   }
 
-  DateTimeRange? get dateRange => _dateRange;
+  DateTimeRange? get dateRange => state.dateRange;
   set dateRange(DateTimeRange? dateRange) {
-    _dateRange = dateRange;
+    state = state.copyWith(dateRange: dateRange);
     _log.finest('Selected date range: $dateRange');
-    notifyListeners();
   }
 
-  int get guests => _guests;
+  int get guests => state.guests;
   set guests(int quantity) {
-    _guests = quantity < 0 ? 0 : quantity;
-    _log.finest('Set guests number: $_guests');
-    notifyListeners();
+    final value = quantity < 0 ? 0 : quantity;
+    state = state.copyWith(guests: value);
+    _log.finest('Set guests number: $value');
   }
+
+  bool get valid => state.valid;
 
   late final Command0 load;
   late final Command0 updateItineraryConfig;
@@ -67,12 +96,12 @@ class SearchFormViewModel extends ChangeNotifier {
   Future<Result<Unit>> _loadContinents() async {
     final result = await _continentRepository.getContinents();
     if (result.isSuccess()) {
-      _continents = result.getOrThrow();
-      _log.fine('Continents (${_continents.length}) loaded');
+      final list = result.getOrThrow();
+      state = state.copyWith(continents: list);
+      _log.fine('Continents (${list.length}) loaded');
     } else {
       _log.warning('Failed to load continents', result.exceptionOrNull());
     }
-    notifyListeners();
     return result.map((_) => unit);
   }
 
@@ -80,17 +109,18 @@ class SearchFormViewModel extends ChangeNotifier {
     final result = await _itineraryConfigRepository.getItineraryConfig();
     if (result.isSuccess()) {
       final itineraryConfig = result.getOrThrow();
-      _selectedContinent = itineraryConfig.continent;
-      if (itineraryConfig.startDate != null &&
-          itineraryConfig.endDate != null) {
-        _dateRange = DateTimeRange(
-          start: itineraryConfig.startDate!,
-          end: itineraryConfig.endDate!,
-        );
-      }
-      _guests = itineraryConfig.guests ?? 0;
+      state = state.copyWith(
+        selectedContinent: itineraryConfig.continent,
+        dateRange: itineraryConfig.startDate != null &&
+                itineraryConfig.endDate != null
+            ? DateTimeRange(
+                start: itineraryConfig.startDate!,
+                end: itineraryConfig.endDate!,
+              )
+            : null,
+        guests: itineraryConfig.guests ?? 0,
+      );
       _log.fine('ItineraryConfig loaded');
-      notifyListeners();
     } else {
       _log.warning(
         'Failed to load stored ItineraryConfig',
@@ -104,10 +134,10 @@ class SearchFormViewModel extends ChangeNotifier {
     assert(valid, 'called when valid was false');
     final result = await _itineraryConfigRepository.setItineraryConfig(
       ItineraryConfig(
-        continent: _selectedContinent,
-        startDate: _dateRange!.start,
-        endDate: _dateRange!.end,
-        guests: _guests,
+        continent: state.selectedContinent,
+        startDate: state.dateRange!.start,
+        endDate: state.dateRange!.end,
+        guests: state.guests,
       ),
     );
     if (result.isSuccess()) {
@@ -118,3 +148,7 @@ class SearchFormViewModel extends ChangeNotifier {
     return result.map((_) => unit);
   }
 }
+
+/// Provider exposing the [SearchFormViewModel] state and notifier.
+final searchFormViewModelProvider =
+    NotifierProvider<SearchFormViewModel, SearchFormState>(SearchFormViewModel.new);

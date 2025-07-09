@@ -51,33 +51,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Routes.home,
-        builder: (context, state) {
-          return Consumer(
-            builder: (context, ref, _) {
-              final viewModel = HomeViewModel(
-                bookingRepository: ref.read(bookingRepositoryProvider),
-                userRepository: ref.read(userRepositoryProvider),
-              );
-              return HomeScreen(viewModel: viewModel);
-            },
-          );
-        },
+        builder: (context, state) => const HomeScreen(),
         routes: [
           GoRoute(
             path: Routes.searchRelative,
-            builder: (context, state) {
-              return Consumer(
-                builder: (context, ref, _) {
-                  final viewModel = SearchFormViewModel(
-                    continentRepository: ref.read(continentRepositoryProvider),
-                    itineraryConfigRepository: ref.read(
-                      itineraryConfigRepositoryProvider,
-                    ),
-                  );
-                  return SearchFormScreen(viewModel: viewModel);
-                },
-              );
-            },
+            builder: (context, state) => const SearchFormScreen(),
           ),
           GoRoute(
             path: Routes.resultsRelative,

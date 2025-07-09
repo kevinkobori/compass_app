@@ -25,30 +25,34 @@ void main() {
     late HomeViewModel viewModel;
     late MockGoRouter goRouter;
     late FakeBookingRepository bookingRepository;
+    late ProviderContainer container;
 
     setUp(() {
       bookingRepository = FakeBookingRepository()..createBooking(kBooking);
-      viewModel = HomeViewModel(
-        bookingRepository: bookingRepository,
-        userRepository: FakeUserRepository(),
-      );
+      container = ProviderContainer(overrides: [
+        bookingRepositoryProvider.overrideWithValue(bookingRepository),
+        userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+        authRepositoryProvider.overrideWith((ref) => FakeAuthRepository()),
+        itineraryConfigRepositoryProvider.overrideWithValue(
+          FakeItineraryConfigRepository(),
+        ),
+      ]);
+      viewModel = container.read(homeViewModelProvider.notifier);
       goRouter = MockGoRouter();
       when(() => goRouter.push(any())).thenAnswer((_) => Future.value());
+      when(() => goRouter.go(any())).thenAnswer((_) => Future.value());
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        ProviderScope(
-          overrides: [
-            authRepositoryProvider.overrideWith(
-              (ref) => FakeAuthRepository(),
-            ),
-            itineraryConfigRepositoryProvider.overrideWithValue(
-              FakeItineraryConfigRepository(),
-            ),
-          ],
-          child: HomeScreen(viewModel: viewModel),
+        UncontrolledProviderScope(
+          container: container,
+          child: const HomeScreen(),
         ),
         goRouter: goRouter,
       );
@@ -111,11 +115,18 @@ void main() {
       final repo = _BadFakeBookingRepository();
       await repo.createBooking(kBooking);
 
-      // Create a ViewModel with a repository that will fail to delete
-      viewModel = HomeViewModel(
-        bookingRepository: repo,
-        userRepository: FakeUserRepository(),
-      );
+      // Recreate container with failing repository
+      container.dispose();
+      container = ProviderContainer(overrides: [
+        bookingRepositoryProvider.overrideWithValue(repo),
+        userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+        authRepositoryProvider.overrideWith((ref) => FakeAuthRepository()),
+        itineraryConfigRepositoryProvider.overrideWithValue(
+          FakeItineraryConfigRepository(),
+        ),
+      ]);
+      viewModel = container.read(homeViewModelProvider.notifier);
+
       await loadWidget(tester);
       await tester.pumpAndSettle();
 
