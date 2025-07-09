@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../testing/fakes/repositories/fake_continent_repository.dart';
 import '../../../../testing/fakes/repositories/fake_itinerary_config_repository.dart';
@@ -12,12 +14,20 @@ import '../../../../testing/fakes/repositories/fake_itinerary_config_repository.
 void main() {
   group('SearchFormViewModel Tests', () {
     late SearchFormViewModel viewModel;
+    late ProviderContainer container;
 
     setUp(() {
-      viewModel = SearchFormViewModel(
-        continentRepository: FakeContinentRepository(),
-        itineraryConfigRepository: FakeItineraryConfigRepository(),
-      );
+      container = ProviderContainer(overrides: [
+        continentRepositoryProvider.overrideWithValue(FakeContinentRepository()),
+        itineraryConfigRepositoryProvider.overrideWithValue(
+          FakeItineraryConfigRepository(),
+        ),
+      ]);
+      viewModel = container.read(searchFormViewModelProvider.notifier);
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     test('Initial values are correct', () {

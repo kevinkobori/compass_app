@@ -22,28 +22,30 @@ void main() {
   group('SearchFormScreen widget tests', () {
     late SearchFormViewModel viewModel;
     late MockGoRouter goRouter;
+    late ProviderContainer container;
 
     setUp(() {
-      viewModel = SearchFormViewModel(
-        continentRepository: FakeContinentRepository(),
-        itineraryConfigRepository: FakeItineraryConfigRepository(),
-      );
+      container = ProviderContainer(overrides: [
+        continentRepositoryProvider.overrideWithValue(FakeContinentRepository()),
+        itineraryConfigRepositoryProvider.overrideWithValue(
+          FakeItineraryConfigRepository(),
+        ),
+        authRepositoryProvider.overrideWith((ref) => FakeAuthRepository()),
+      ]);
+      viewModel = container.read(searchFormViewModelProvider.notifier);
       goRouter = MockGoRouter();
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        ProviderScope(
-          overrides: [
-            authRepositoryProvider.overrideWith(
-              (ref) => FakeAuthRepository(),
-            ),
-            itineraryConfigRepositoryProvider.overrideWithValue(
-              FakeItineraryConfigRepository(),
-            ),
-          ],
-          child: SearchFormScreen(viewModel: viewModel),
+        UncontrolledProviderScope(
+          container: container,
+          child: const SearchFormScreen(),
         ),
         goRouter: goRouter,
       );
