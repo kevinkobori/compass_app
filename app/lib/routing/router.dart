@@ -18,8 +18,6 @@ import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dar
 import 'package:compass_app/ui/search_form/widgets/search_form_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:go_router/go_router.dart' show GoRouterRefreshStream;
-import 'package:compass_app/ui/auth/auth_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Top go_router entry point.
