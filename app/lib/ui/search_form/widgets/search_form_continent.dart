@@ -27,7 +27,6 @@ class SearchFormContinent extends HookWidget {
   @override
   Widget build(BuildContext context) {
     useListenable(viewModel.load);
-    useListenable(viewModel);
 
     if (viewModel.load.value.isRunning) {
       return const SizedBox(

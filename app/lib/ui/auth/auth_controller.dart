@@ -8,28 +8,44 @@ import 'package:result_dart/result_dart.dart';
 /// Notifier that exposes the authentication status and operations.
 class AuthController extends AsyncNotifier<bool> {
   late final AuthRepository _authRepository;
+  final _authStateController = StreamController<bool>.broadcast();
+
+  Stream<bool> get stream => _authStateController.stream;
 
   @override
   FutureOr<bool> build() async {
+    ref.onDispose(_authStateController.close);
+
     _authRepository = ref.read(authRepositoryProvider);
-    return _authRepository.isAuthenticated;
+    final isAuth = await _authRepository.isAuthenticated;
+    _authStateController.add(isAuth);
+    return isAuth;
   }
 
-  /// Perform login and update the authentication state.
-  Future<Result<Unit>> login({required String email, required String password}) async {
-    final result = await _authRepository.login(email: email, password: password);
-    state = AsyncData(await _authRepository.isAuthenticated);
+  Future<Result<Unit>> login({
+    required String email,
+    required String password,
+  }) async {
+    final result = await _authRepository.login(
+      email: email,
+      password: password,
+    );
+    final isAuth = await _authRepository.isAuthenticated;
+    _authStateController.add(isAuth);
+    state = AsyncData(isAuth);
     return result;
   }
 
-  /// Perform logout and update the authentication state.
   Future<Result<Unit>> logout() async {
     final result = await _authRepository.logout();
-    state = AsyncData(await _authRepository.isAuthenticated);
+    final isAuth = await _authRepository.isAuthenticated;
+    _authStateController.add(isAuth);
+    state = AsyncData(isAuth);
     return result;
   }
 }
 
 /// Provider for the [AuthController].
-final authControllerProvider =
-    AsyncNotifierProvider<AuthController, bool>(AuthController.new);
+final authControllerProvider = AsyncNotifierProvider<AuthController, bool>(
+  AuthController.new,
+);

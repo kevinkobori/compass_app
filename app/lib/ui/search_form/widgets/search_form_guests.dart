@@ -62,7 +62,6 @@ class _QuantitySelector extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    useListenable(viewModel);
     return SizedBox(
       width: 90,
       child: Row(

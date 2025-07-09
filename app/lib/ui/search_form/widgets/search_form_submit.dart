@@ -35,7 +35,9 @@ class SearchFormSubmit extends HookWidget {
         viewModel.updateItineraryConfig.reset();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalization.of(context).errorWhileSavingItinerary),
+            content: Text(
+              AppLocalization.of(context).errorWhileSavingItinerary,
+            ),
             action: SnackBarAction(
               label: AppLocalization.of(context).tryAgain,
               onPressed: viewModel.updateItineraryConfig.execute,
@@ -50,8 +52,6 @@ class SearchFormSubmit extends HookWidget {
       return () => viewModel.updateItineraryConfig.removeListener(onResult);
     }, [viewModel]);
 
-    useListenable(viewModel);
-
     return Padding(
       padding: EdgeInsets.only(
         top: Dimens.paddingVertical,
@@ -61,8 +61,9 @@ class SearchFormSubmit extends HookWidget {
       ),
       child: FilledButton(
         key: const ValueKey(searchFormSubmitButtonKey),
-        onPressed:
-            viewModel.valid ? viewModel.updateItineraryConfig.execute : null,
+        onPressed: viewModel.valid
+            ? viewModel.updateItineraryConfig.execute
+            : null,
         child: SizedBox(
           height: 52,
           child: Center(child: Text(AppLocalization.of(context).search)),

@@ -39,3 +39,8 @@
 - [x] refactor(ui): migrate search form and home to hooks
 - [x] refactor: replace listenable builders with hooks
 - [x] 0.2.8; refactor: update providers to use explicit types and improve formatting
+- [x] refactor(state): migrate auth and booking to riverpod
+- [x] Refactor activities and results to use Riverpod
+- [x] refactor: switch home and search form to riverpod
+- [x] fix imports and listeners
+- [x] 0.2.13; refactor: improve router and auth controller with stream handling

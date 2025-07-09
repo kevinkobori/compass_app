@@ -3,18 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/config/dependencies.dart';
+import 'package:compass_app/routing/router_refresh.dart';
 import 'package:compass_app/routing/routes.dart';
-import 'package:compass_app/ui/activities/view_models/activities_viewmodel.dart';
 import 'package:compass_app/ui/activities/widgets/activities_screen.dart';
 import 'package:compass_app/ui/auth/login/view_models/login_viewmodel.dart';
 import 'package:compass_app/ui/auth/login/widgets/login_screen.dart';
 import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
 import 'package:compass_app/ui/booking/widgets/booking_screen.dart';
-import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:compass_app/ui/home/widgets/home_screen.dart';
-import 'package:compass_app/ui/results/view_models/results_viewmodel.dart';
 import 'package:compass_app/ui/results/widgets/results_screen.dart';
-import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:compass_app/ui/search_form/widgets/search_form_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -27,7 +24,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 typedef Reader = T Function<T>(ProviderListenable<T> provider);
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final refresh = GoRouterRefreshStream(ref.watch(authControllerProvider.stream));
+  final refresh = GoRouterRefreshStream(
+    ref.watch(authControllerProvider.notifier).stream,
+    // error: The getter 'stream' isn't defined for the type 'AuthController'.
+    // Try importing the library that defines 'stream', correcting the name to the name of an existing getter, or defining a getter or field named 'stream'.
+  );
   return GoRouter(
     initialLocation: Routes.home,
     debugLogDiagnostics: true,
@@ -85,8 +86,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   final id = int.parse(state.pathParameters['id']!);
                   return Consumer(
                     builder: (context, ref, _) {
-                      final notifier =
-                          ref.read(bookingViewModelProvider.notifier);
+                      final notifier = ref.read(
+                        bookingViewModelProvider.notifier,
+                      );
 
                       // Load and display booking with given id.
                       notifier.loadBooking.execute(id);

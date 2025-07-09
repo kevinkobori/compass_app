@@ -80,6 +80,9 @@ class HomeViewModel extends Notifier<HomeState> {
 
       state = state.copyWith(bookings: bookings, user: user);
       return Success(user);
+    } catch (e, stackTrace) {
+      _log.severe('Error loading data', e, stackTrace);
+      return Failure(Exception('Error loading data: $e')); // TODO(Kevin): NOW
     }
   }
 
@@ -87,7 +90,10 @@ class HomeViewModel extends Notifier<HomeState> {
     // Delete booking
     final resultDelete = await _bookingRepository.delete(id);
     if (resultDelete.isError()) {
-      _log.warning('Failed to delete booking $id', resultDelete.exceptionOrNull());
+      _log.warning(
+        'Failed to delete booking $id',
+        resultDelete.exceptionOrNull(),
+      );
       return Failure(
         resultDelete.exceptionOrNull() ?? Exception('Failed to delete booking'),
       );
@@ -97,9 +103,13 @@ class HomeViewModel extends Notifier<HomeState> {
     // Reload bookings after deletion
     final resultLoadBookings = await _bookingRepository.getBookingsList();
     if (resultLoadBookings.isError()) {
-      _log.warning('Failed to load bookings', resultLoadBookings.exceptionOrNull());
+      _log.warning(
+        'Failed to load bookings',
+        resultLoadBookings.exceptionOrNull(),
+      );
       return Failure(
-        resultLoadBookings.exceptionOrNull() ?? Exception('Failed to load bookings'),
+        resultLoadBookings.exceptionOrNull() ??
+            Exception('Failed to load bookings'),
       );
     }
     final bookings = resultLoadBookings.getOrThrow();
@@ -111,5 +121,6 @@ class HomeViewModel extends Notifier<HomeState> {
 }
 
 /// Provider exposing the [HomeViewModel] state and notifier.
-final homeViewModelProvider =
-    NotifierProvider<HomeViewModel, HomeState>(HomeViewModel.new);
+final homeViewModelProvider = NotifierProvider<HomeViewModel, HomeState>(
+  HomeViewModel.new,
+);

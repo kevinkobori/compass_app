@@ -18,9 +18,6 @@ class BookingBody extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Rebuild the widget whenever the view model notifies listeners.
-    useListenable(viewModel);
-
     final booking = viewModel.booking;
     if (booking == null) return const SizedBox();
 

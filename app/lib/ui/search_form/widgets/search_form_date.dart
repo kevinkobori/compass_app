@@ -20,7 +20,6 @@ class SearchFormDate extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    useListenable(viewModel);
     return Padding(
       padding: EdgeInsets.only(
         top: Dimens.paddingVertical,
