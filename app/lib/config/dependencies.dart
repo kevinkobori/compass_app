@@ -79,11 +79,15 @@ final activityRepositoryProvider = Provider<ActivityRepository>((ref) {
 
 /// Itinerary configuration repository stored in memory.
 final itineraryConfigRepositoryProvider = Provider<ItineraryConfigRepository>(
-  (ref) => ItineraryConfigRepositoryMemory(),
+  (ref) {
+    ref.keepAlive();
+    return ItineraryConfigRepositoryMemory();
+  },
 );
 
 /// Booking repository implementation.
 final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
+  ref.keepAlive();
   return BookingRepositoryRemote(apiClient: ref.read(apiClientProvider));
 });
 
