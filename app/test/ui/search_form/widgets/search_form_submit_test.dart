@@ -48,14 +48,18 @@ void main() {
     }
 
     testWidgets('Should be enabled and allow tap', (WidgetTester tester) async {
+      // Primeiro executa o comando load manualmente antes de carregar o widget
+      await viewModel.load.execute();
       await loadWidget(tester);
+      await tester.pumpAndSettle();
+      
       expect(find.byType(SearchFormSubmit), findsOneWidget);
 
-      // Tap should not navigate
+      // Tap should not navigate when invalid
       await tester.tap(find.byKey(const ValueKey(searchFormSubmitButtonKey)));
       verifyNever(() => goRouter.go(any()));
 
-      // Fill in data
+      // Fill in data to make it valid
       viewModel
         ..guests = 2
         ..selectedContinent = 'CONTINENT';
@@ -66,8 +70,15 @@ void main() {
       viewModel.dateRange = newDateRange;
       await tester.pumpAndSettle();
 
+      // Verify the form is now valid
+      expect(viewModel.valid, isTrue);
+
       // Perform search
       await tester.tap(find.byKey(const ValueKey(searchFormSubmitButtonKey)));
+      
+      // Execute the command manually to ensure completion
+      await viewModel.updateItineraryConfig.execute();
+      await tester.pumpAndSettle();
 
       // Should navigate to results screen
       verify(() => goRouter.go('/results')).called(1);

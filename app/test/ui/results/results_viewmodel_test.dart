@@ -39,7 +39,9 @@ void main() {
       container.dispose();
     });
 
-    test('should load items', () {
+    test('should load items', () async {
+      // Executa o comando search manualmente (não é mais automático nos testes)
+      await viewModel.search.execute();
       expect(viewModel.destinations.length, 2);
     });
   });

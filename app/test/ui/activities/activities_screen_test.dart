@@ -60,14 +60,20 @@ void main() {
 
     testWidgets('should load screen', (WidgetTester tester) async {
       await mockNetworkImages(() async {
+        // Executa o comando loadActivities antes de carregar o widget
+        await viewModel.loadActivities.execute();
         await loadScreen(tester);
+        await tester.pumpAndSettle();
         expect(find.byType(ActivitiesScreen), findsOneWidget);
       });
     });
 
     testWidgets('should list activity', (WidgetTester tester) async {
       await mockNetworkImages(() async {
+        // Executa o comando loadActivities antes de carregar o widget
+        await viewModel.loadActivities.execute();
         await loadScreen(tester);
+        await tester.pumpAndSettle();
         expect(find.byType(ActivityEntry), findsOneWidget);
         expect(find.text('NAME'), findsOneWidget);
       });
@@ -77,7 +83,11 @@ void main() {
       WidgetTester tester,
     ) async {
       await mockNetworkImages(() async {
+        // Executa o comando loadActivities antes de carregar o widget
+        await viewModel.loadActivities.execute();
         await loadScreen(tester);
+        await tester.pumpAndSettle();
+        
         // Select one activity
         await tester.tap(find.byKey(const ValueKey('REF-checkbox')));
         expect(viewModel.selectedActivities, contains('REF'));

@@ -59,16 +59,19 @@ void main() {
 
     testWidgets('should load screen', (WidgetTester tester) async {
       await mockNetworkImages(() async {
+        // Executa o comando search antes de carregar o widget
+        await viewModel.search.execute();
         await loadScreen(tester);
+        await tester.pumpAndSettle();
         expect(find.byType(ResultsScreen), findsOneWidget);
       });
     });
 
     testWidgets('should display destination', (WidgetTester tester) async {
       await mockNetworkImages(() async {
+        // Executa o comando search antes de carregar o widget
+        await viewModel.search.execute();
         await loadScreen(tester);
-
-        // Wait for list to load
         await tester.pumpAndSettle();
 
         // Note: Name is converted to uppercase
@@ -81,9 +84,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await mockNetworkImages(() async {
+        // Executa o comando search antes de carregar o widget
+        await viewModel.search.execute();
         await loadScreen(tester);
-
-        // Wait for list to load
         await tester.pumpAndSettle();
 
         // warnIfMissed false because false negative

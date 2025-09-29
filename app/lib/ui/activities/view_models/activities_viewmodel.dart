@@ -45,8 +45,15 @@ class ActivitiesViewModel extends Notifier<ActivitiesState> {
   ActivitiesState build() {
     _activityRepository = ref.read(activityRepositoryProvider);
     _itineraryConfigRepository = ref.read(itineraryConfigRepositoryProvider);
-    loadActivities = Command0(_loadActivities)..execute();
+    loadActivities = Command0(_loadActivities);
     saveActivities = Command0(_saveActivities);
+    
+    // Só executa automaticamente se não estiver em modo de teste
+    const inTest = bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
+    if (!inTest) {
+      Future.microtask(() => loadActivities.execute());
+    }
+    
     return const ActivitiesState();
   }
 

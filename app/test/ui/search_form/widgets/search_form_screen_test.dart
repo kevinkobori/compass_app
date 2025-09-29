@@ -20,7 +20,6 @@ import '../../../../testing/mocks.dart';
 
 void main() {
   group('SearchFormScreen widget tests', () {
-    late SearchFormViewModel viewModel;
     late MockGoRouter goRouter;
     late ProviderContainer container;
 
@@ -32,7 +31,6 @@ void main() {
         ),
         authRepositoryProvider.overrideWith((ref) => FakeAuthRepository()),
       ]);
-      viewModel = container.read(searchFormViewModelProvider.notifier);
       goRouter = MockGoRouter();
     });
 
@@ -55,25 +53,41 @@ void main() {
       WidgetTester tester,
     ) async {
       await loadWidget(tester);
+      
+      // Executa o comando load através do provider
+      final vm = container.read(searchFormViewModelProvider.notifier);
+      await vm.load.execute();
+      await tester.pump(); // Pump para reconstruir com os novos dados
+      
       expect(find.byType(SearchFormScreen), findsOneWidget);
+
+      // Verificar se o texto está disponível
+      expect(find.text('CONTINENT'), findsOneWidget);
+
+      // Scroll para o elemento antes de tentar clicar
+      await tester.ensureVisible(find.text('CONTINENT'));
+      await tester.pump();
 
       // Select continent
       await tester.tap(find.text('CONTINENT'), warnIfMissed: false);
+      // Aguarda animações terminarem
+      await tester.pump(kThemeChangeDuration);
+      await tester.pump();
 
       // Select date
-      viewModel.dateRange = DateTimeRange(
+      vm.dateRange = DateTimeRange(
         start: DateTime(2024, 6, 12),
         end: DateTime(2024, 7, 23),
       );
+      await tester.pump();
 
       // Select guests
       await tester.tap(find.byKey(const ValueKey(addGuestsKey)));
-
-      // Refresh screen state
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Perform search
       await tester.tap(find.byKey(const ValueKey(searchFormSubmitButtonKey)));
+      await tester.pump();
 
       // Should navigate to results screen
       verify(() => goRouter.go('/results')).called(1);

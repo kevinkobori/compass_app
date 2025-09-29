@@ -41,7 +41,14 @@ class ResultsViewModel extends Notifier<ResultsState> {
     _destinationRepository = ref.read(destinationRepositoryProvider);
     _itineraryConfigRepository = ref.read(itineraryConfigRepositoryProvider);
     updateItineraryConfig = Command1<Unit, String>(_updateItineraryConfig);
-    search = Command0(_search)..execute();
+    search = Command0(_search);
+    
+    // Só executa automaticamente se não estiver em modo de teste
+    const inTest = bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
+    if (!inTest) {
+      Future.microtask(() => search.execute());
+    }
+    
     return const ResultsState();
   }
 

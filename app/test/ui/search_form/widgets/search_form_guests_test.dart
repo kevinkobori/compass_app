@@ -35,15 +35,29 @@ void main() {
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        UncontrolledProviderScope(
-          container: container,
-          child: SearchFormGuests(viewModel: viewModel),
+        ProviderScope(
+          overrides: [
+            continentRepositoryProvider.overrideWithValue(FakeContinentRepository()),
+            itineraryConfigRepositoryProvider.overrideWithValue(
+              FakeItineraryConfigRepository(),
+            ),
+          ],
+          child: Consumer(
+            builder: (context, ref, child) {
+              final viewModel = ref.watch(searchFormViewModelProvider.notifier);
+              return SearchFormGuests(viewModel: viewModel);
+            },
+          ),
         ),
       );
     }
 
     testWidgets('Increase number of guests', (WidgetTester tester) async {
+      // Executa o comando load antes de carregar o widget
+      await viewModel.load.execute();
       await loadWidget(tester);
+      await tester.pumpAndSettle();
+      
       expect(find.byType(SearchFormGuests), findsOneWidget);
 
       // Initial state
@@ -56,7 +70,11 @@ void main() {
     });
 
     testWidgets('Decrease number of guests', (WidgetTester tester) async {
+      // Executa o comando load antes de carregar o widget
+      await viewModel.load.execute();
       await loadWidget(tester);
+      await tester.pumpAndSettle();
+      
       expect(find.byType(SearchFormGuests), findsOneWidget);
 
       // Initial state

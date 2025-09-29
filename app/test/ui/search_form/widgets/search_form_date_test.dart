@@ -15,7 +15,6 @@ import '../../../../testing/fakes/repositories/fake_itinerary_config_repository.
 
 void main() {
   group('SearchFormDate widget tests', () {
-    late SearchFormViewModel viewModel;
     late ProviderContainer container;
 
     setUp(() {
@@ -25,7 +24,6 @@ void main() {
           FakeItineraryConfigRepository(),
         ),
       ]);
-      viewModel = container.read(searchFormViewModelProvider.notifier);
     });
 
     tearDown(() {
@@ -37,7 +35,12 @@ void main() {
         tester,
         UncontrolledProviderScope(
           container: container,
-          child: SearchFormDate(viewModel: viewModel),
+          child: Consumer(
+            builder: (context, ref, child) {
+              final viewModel = ref.watch(searchFormViewModelProvider.notifier);
+              return SearchFormDate(viewModel: viewModel);
+            },
+          ),
         ),
       );
     }
@@ -45,7 +48,12 @@ void main() {
     testWidgets('should display date in different month', (
       WidgetTester tester,
     ) async {
+      // Executa o comando load antes de carregar o widget
+      final viewModel = container.read(searchFormViewModelProvider.notifier);
+      await viewModel.load.execute();
       await loadWidget(tester);
+      await tester.pumpAndSettle();
+      
       expect(find.byType(SearchFormDate), findsOneWidget);
 
       // Initial state
@@ -64,7 +72,12 @@ void main() {
     testWidgets('should display date in same month', (
       WidgetTester tester,
     ) async {
+      // Executa o comando load antes de carregar o widget
+      final viewModel = container.read(searchFormViewModelProvider.notifier);
+      await viewModel.load.execute();
       await loadWidget(tester);
+      await tester.pumpAndSettle();
+      
       expect(find.byType(SearchFormDate), findsOneWidget);
 
       // Initial state

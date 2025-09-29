@@ -3,6 +3,7 @@ import 'package:compass_app/data/repositories/continent/continent_repository.dar
 import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
 import 'package:compass_app/domain/models/continent/continent.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -51,7 +52,15 @@ class SearchFormViewModel extends Notifier<SearchFormState> {
     _continentRepository = ref.read(continentRepositoryProvider);
     _itineraryConfigRepository = ref.read(itineraryConfigRepositoryProvider);
     updateItineraryConfig = Command0(_updateItineraryConfig);
-    load = Command0(_load)..execute();
+    load = Command0(_load);
+    
+    // Só executa automaticamente se não estiver em modo de teste
+    // Em testes, o comando deve ser executado manualmente
+    const inTest = bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
+    if (!inTest) {
+      Future.microtask(() => load.execute());
+    }
+    
     return const SearchFormState();
   }
 

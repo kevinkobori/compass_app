@@ -8,18 +8,21 @@ import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/ui/core/ui/date_format_start_end.dart';
 import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Date selection form field.
 ///
 /// Opens a date range picker dialog when tapped.
-class SearchFormDate extends HookWidget {
+class SearchFormDate extends HookConsumerWidget {
   const SearchFormDate({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the state to make it reactive
+    final state = ref.watch(searchFormViewModelProvider);
+    
     return Padding(
       padding: EdgeInsets.only(
         top: Dimens.paddingVertical,
@@ -55,7 +58,7 @@ class SearchFormDate extends HookWidget {
                 ),
                 Builder(
                   builder: (context) {
-                    final dateRange = viewModel.dateRange;
+                    final dateRange = state.dateRange;
                     if (dateRange != null) {
                       return Text(
                         dateFormatStartEnd(dateRange),
