@@ -10,102 +10,114 @@ import 'package:compass_app/ui/core/ui/search_bar.dart';
 import 'package:compass_app/ui/results/view_models/results_viewmodel.dart';
 import 'package:compass_app/ui/results/widgets/result_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ResultsScreen extends HookConsumerWidget {
-  const ResultsScreen({super.key});
+class ResultsScreen extends StatefulWidget {
+  const ResultsScreen({required this.viewModel, super.key});
+
+  final ResultsViewModel viewModel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(resultsViewModelProvider.notifier);
-    ref.watch(resultsViewModelProvider);
+  State<ResultsScreen> createState() => _ResultsScreenState();
+}
 
-    void listener() {
-      if (viewModel.updateItineraryConfig.value.isSuccess) {
-        viewModel.updateItineraryConfig.reset();
-        context.go(Routes.activities);
-      }
+class _ResultsScreenState extends State<ResultsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    widget.viewModel.updateItineraryConfig.addListener(_onResult);
+  }
 
-      if (viewModel.updateItineraryConfig.value.isFailure) {
-        viewModel.updateItineraryConfig.reset();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalization.of(context).errorWhileSavingItinerary,
-            ),
-          ),
-        );
-      }
-    }
+  @override
+  void didUpdateWidget(covariant ResultsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.viewModel.updateItineraryConfig.removeListener(_onResult);
+    widget.viewModel.updateItineraryConfig.addListener(_onResult);
+  }
 
-    useEffect(() {
-      viewModel.updateItineraryConfig.addListener(listener);
-      return () => viewModel.updateItineraryConfig.removeListener(listener);
-    }, [viewModel]);
-    useListenable(viewModel.search);
-    useListenable(viewModel.updateItineraryConfig);
+  @override
+  void dispose() {
+    widget.viewModel.updateItineraryConfig.removeListener(_onResult);
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, r) {
         if (!didPop) context.go(Routes.search);
       },
       child: Scaffold(
-        body: Builder(
-          builder: (context) {
-            if (viewModel.search.value.isRunning) {
-              return Column(
-                children: [
-                  _AppSearchBar(viewModel: viewModel),
+        body: ListenableBuilder(
+          listenable: widget.viewModel.search,
+          builder: (context, child) {
+            if (widget.viewModel.search.value.isSuccess) {
+              return child!;
+            }
+            return Column(
+              children: [
+                _AppSearchBar(widget: widget),
+                if (widget.viewModel.search.value.isRunning)
                   const Expanded(
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                ],
-              );
-            }
-            if (viewModel.search.value.isFailure) {
-              return Column(
-                children: [
-                  _AppSearchBar(viewModel: viewModel),
+                if (widget.viewModel.search.value.isFailure)
                   Expanded(
                     child: Center(
                       child: ErrorIndicator(
-                        title: AppLocalization.of(
-                          context,
-                        ).errorWhileLoadingDestinations,
+                        title:
+                            AppLocalization.of(
+                              context,
+                            ).errorWhileLoadingDestinations,
                         label: AppLocalization.of(context).tryAgain,
-                        onPressed: viewModel.search.execute,
+                        onPressed: widget.viewModel.search.execute,
                       ),
                     ),
                   ),
-                ],
-              );
-            }
-
-            return Padding(
-              padding: Dimens.of(context).edgeInsetsScreenHorizontal,
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: _AppSearchBar(viewModel: viewModel),
-                  ),
-                  _Grid(viewModel: viewModel),
-                ],
-              ),
+              ],
             );
           },
+          child: ListenableBuilder(
+            listenable: widget.viewModel,
+            builder: (context, child) {
+              return Padding(
+                padding: Dimens.of(context).edgeInsetsScreenHorizontal,
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(child: _AppSearchBar(widget: widget)),
+                    _Grid(viewModel: widget.viewModel),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
   }
+
+  void _onResult() {
+    if (widget.viewModel.updateItineraryConfig.value.isSuccess) {
+      widget.viewModel.updateItineraryConfig.reset();
+      context.go(Routes.activities);
+    }
+
+    if (widget.viewModel.updateItineraryConfig.value.isFailure) {
+      widget.viewModel.updateItineraryConfig.reset();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalization.of(context).errorWhileSavingItinerary),
+        ),
+      );
+    }
+  }
 }
 
 class _AppSearchBar extends StatelessWidget {
-  const _AppSearchBar({required this.viewModel});
+  const _AppSearchBar({required this.widget});
 
-  final ResultsViewModel viewModel;
+  final ResultsScreen widget;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +129,7 @@ class _AppSearchBar extends StatelessWidget {
           bottom: Dimens.mobile.paddingScreenVertical,
         ),
         child: AppSearchBar(
-          config: viewModel.config,
+          config: widget.viewModel.config,
           // onTap: () {
           //   // Navigate to SearchFormScreen and edit search
           // context.pop();

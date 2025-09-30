@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/ui/auth/logout/view_models/logout_viewmodel.dart';
 import 'package:compass_app/ui/auth/logout/widgets/logout_button.dart';
 import 'package:compass_app/ui/core/localization/applocalization.dart';
@@ -10,16 +9,16 @@ import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:provider/provider.dart';
 
-class HomeHeader extends HookConsumerWidget {
-  const HomeHeader({required this.state, super.key});
+class HomeHeader extends StatelessWidget {
+  const HomeHeader({required this.viewModel, super.key});
 
-  final HomeState state;
+  final HomeViewModel viewModel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = state.user;
+  Widget build(BuildContext context) {
+    final user = viewModel.user;
     if (user == null) {
       return const SizedBox();
     }
@@ -39,10 +38,8 @@ class HomeHeader extends HookConsumerWidget {
             ),
             LogoutButton(
               viewModel: LogoutViewModel(
-                authController: ref.read(authControllerProvider.notifier),
-                itineraryConfigRepository: ref.read(
-                  itineraryConfigRepositoryProvider,
-                ),
+                authRepository: context.read(),
+                itineraryConfigRepository: context.read(),
               ),
             ),
           ],
@@ -63,11 +60,12 @@ class _Title extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShaderMask(
       blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) => RadialGradient(
-        center: Alignment.bottomLeft,
-        radius: 2,
-        colors: [Colors.purple.shade700, Colors.purple.shade400],
-      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback:
+          (bounds) => RadialGradient(
+            center: Alignment.bottomLeft,
+            radius: 2,
+            colors: [Colors.purple.shade700, Colors.purple.shade400],
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(
         text,
         style: GoogleFonts.rubik(

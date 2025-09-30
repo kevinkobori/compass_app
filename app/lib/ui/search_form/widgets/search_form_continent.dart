@@ -11,7 +11,6 @@ import 'package:compass_app/ui/core/ui/error_indicator.dart';
 import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Continent selection carousel
@@ -19,52 +18,54 @@ import 'package:google_fonts/google_fonts.dart';
 /// Loads a list of continents in a horizontal carousel.
 /// Users can tap one item to select it.
 /// Tapping again the same item will deselect it.
-class SearchFormContinent extends HookWidget {
+class SearchFormContinent extends StatelessWidget {
   const SearchFormContinent({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    useListenable(viewModel.load);
-
-    if (viewModel.load.value.isRunning) {
-      return const SizedBox(
-        height: 140,
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-    if (viewModel.load.value.isFailure) {
-      return SizedBox(
-        height: 140,
-        child: Center(
-          child: ErrorIndicator(
-            title: AppLocalization.of(context).errorWhileLoadingContinents,
-            label: AppLocalization.of(context).tryAgain,
-            onPressed: viewModel.load.execute,
-          ),
-        ),
-      );
-    }
-
     return SizedBox(
       height: 140,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: viewModel.continents.length,
-        padding: Dimens.of(context).edgeInsetsScreenHorizontal,
-        itemBuilder: (BuildContext context, int index) {
-          final Continent(:imageUrl, :name) = viewModel.continents[index];
-          return _CarouselItem(
-            key: ValueKey(name),
-            imageUrl: imageUrl,
-            name: name,
-            viewModel: viewModel,
-          );
+      child: ListenableBuilder(
+        listenable: viewModel.load,
+        builder: (context, child) {
+          if (viewModel.load.value.isRunning) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (viewModel.load.value.isFailure) {
+            return Center(
+              child: ErrorIndicator(
+                title: AppLocalization.of(context).errorWhileLoadingContinents,
+                label: AppLocalization.of(context).tryAgain,
+                onPressed: viewModel.load.execute,
+              ),
+            );
+          }
+          return child!;
         },
-        separatorBuilder: (BuildContext context, int index) {
-          return const SizedBox(width: 8);
-        },
+        child: ListenableBuilder(
+          listenable: viewModel,
+          builder: (context, child) {
+            return ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: viewModel.continents.length,
+              padding: Dimens.of(context).edgeInsetsScreenHorizontal,
+              itemBuilder: (BuildContext context, int index) {
+                final Continent(:imageUrl, :name) = viewModel.continents[index];
+                return _CarouselItem(
+                  key: ValueKey(name),
+                  imageUrl: imageUrl,
+                  name: name,
+                  viewModel: viewModel,
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return const SizedBox(width: 8);
+              },
+            );
+          },
+        ),
       ),
     );
   }

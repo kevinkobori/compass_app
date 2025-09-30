@@ -2,61 +2,31 @@ import 'package:compass_app/data/repositories/destination/destination_repository
 import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
 import 'package:compass_app/domain/models/destination/destination.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
-import 'package:compass_app/config/dependencies.dart';
-import 'package:flutter/foundation.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
-/// State for [ResultsViewModel].
-@immutable
-class ResultsState {
-  const ResultsState({
-    this.destinations = const <Destination>[],
-    this.config = const ItineraryConfig(),
-  });
-
-  final List<Destination> destinations;
-  final ItineraryConfig config;
-
-  ResultsState copyWith({
-    List<Destination>? destinations,
-    ItineraryConfig? config,
-  }) {
-    return ResultsState(
-      destinations: destinations ?? this.destinations,
-      config: config ?? this.config,
-    );
-  }
-}
-
-/// View model backed by Riverpod [Notifier].
-class ResultsViewModel extends Notifier<ResultsState> {
-  late DestinationRepository _destinationRepository;
-  late ItineraryConfigRepository _itineraryConfigRepository;
-
-  @override
-  ResultsState build() {
-    _destinationRepository = ref.read(destinationRepositoryProvider);
-    _itineraryConfigRepository = ref.read(itineraryConfigRepositoryProvider);
+class ResultsViewModel extends ChangeNotifier {
+  ResultsViewModel({
+    required DestinationRepository destinationRepository,
+    required ItineraryConfigRepository itineraryConfigRepository,
+  }) : _destinationRepository = destinationRepository,
+       _itineraryConfigRepository = itineraryConfigRepository {
     updateItineraryConfig = Command1<Unit, String>(_updateItineraryConfig);
-    search = Command0(_search);
-    
-    // Só executa automaticamente se não estiver em modo de teste
-    const inTest = bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
-    if (!inTest) {
-      Future.microtask(() => search.execute());
-    }
-    
-    return const ResultsState();
+    search = Command0(_search)..execute();
   }
 
   final _log = Logger('ResultsViewModel');
 
-  /// Current state values.
-  List<Destination> get destinations => state.destinations;
-  ItineraryConfig get config => state.config;
+  final DestinationRepository _destinationRepository;
+  final ItineraryConfigRepository _itineraryConfigRepository;
+
+  List<Destination> _destinations = [];
+  List<Destination> get destinations => _destinations;
+
+  ItineraryConfig? _itineraryConfig;
+  ItineraryConfig get config => _itineraryConfig ?? const ItineraryConfig();
 
   late final Command0 search;
   late final Command1<void, String> updateItineraryConfig;
@@ -74,23 +44,25 @@ class ResultsViewModel extends Notifier<ResultsState> {
             Exception('Unknown ItineraryConfig error'),
       );
     }
-    final itineraryConfig = resultConfig.getOrThrow();
-    state = state.copyWith(config: itineraryConfig);
+    _itineraryConfig = resultConfig.getOrThrow();
+    notifyListeners();
 
     final result = await _destinationRepository.getDestinations();
     if (result.isSuccess()) {
-      final list = result
-          .getOrThrow()
-          .where(
-            (destination) => destination.continent == itineraryConfig.continent,
-          )
-          .toList();
-      state = state.copyWith(destinations: list);
-      _log.fine('Destinations (${list.length}) loaded');
+      _destinations =
+          result
+              .getOrThrow()
+              .where(
+                (destination) =>
+                    destination.continent == _itineraryConfig!.continent,
+              )
+              .toList();
+      _log.fine('Destinations (${_destinations.length}) loaded');
     } else {
       _log.warning('Failed to load destinations', result.exceptionOrNull());
     }
 
+    notifyListeners();
     return result.map((_) => unit); // sempre retorne Result<Unit>
   }
 
@@ -119,7 +91,3 @@ class ResultsViewModel extends Notifier<ResultsState> {
     return result.map((_) => unit);
   }
 }
-
-/// Provider exposing the [ResultsViewModel].
-final resultsViewModelProvider =
-    NotifierProvider<ResultsViewModel, ResultsState>(ResultsViewModel.new);

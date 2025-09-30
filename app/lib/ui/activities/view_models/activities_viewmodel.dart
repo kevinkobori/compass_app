@@ -3,66 +3,36 @@ import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_
 import 'package:compass_app/domain/models/activity/activity.dart';
 import 'package:compass_app/domain/models/destination/destination.dart'
     show Destination;
-import 'package:compass_app/config/dependencies.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
-/// Immutable state for [ActivitiesViewModel].
-@immutable
-class ActivitiesState {
-  const ActivitiesState({
-    this.daytimeActivities = const <Activity>[],
-    this.eveningActivities = const <Activity>[],
-    this.selectedActivities = const <String>{},
-  });
-
-  final List<Activity> daytimeActivities;
-  final List<Activity> eveningActivities;
-  final Set<String> selectedActivities;
-
-  ActivitiesState copyWith({
-    List<Activity>? daytimeActivities,
-    List<Activity>? eveningActivities,
-    Set<String>? selectedActivities,
-  }) {
-    return ActivitiesState(
-      daytimeActivities: daytimeActivities ?? this.daytimeActivities,
-      eveningActivities: eveningActivities ?? this.eveningActivities,
-      selectedActivities: selectedActivities ?? this.selectedActivities,
-    );
-  }
-}
-
-/// View model backed by Riverpod [Notifier].
-class ActivitiesViewModel extends Notifier<ActivitiesState> {
-  late ActivityRepository _activityRepository;
-  late ItineraryConfigRepository _itineraryConfigRepository;
-
-  @override
-  ActivitiesState build() {
-    _activityRepository = ref.read(activityRepositoryProvider);
-    _itineraryConfigRepository = ref.read(itineraryConfigRepositoryProvider);
-    loadActivities = Command0(_loadActivities);
+class ActivitiesViewModel extends ChangeNotifier {
+  ActivitiesViewModel({
+    required ActivityRepository activityRepository,
+    required ItineraryConfigRepository itineraryConfigRepository,
+  }) : _activityRepository = activityRepository,
+       _itineraryConfigRepository = itineraryConfigRepository {
+    loadActivities = Command0(_loadActivities)..execute();
     saveActivities = Command0(_saveActivities);
-    
-    // Só executa automaticamente se não estiver em modo de teste
-    const inTest = bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
-    if (!inTest) {
-      Future.microtask(() => loadActivities.execute());
-    }
-    
-    return const ActivitiesState();
   }
 
   final _log = Logger('ActivitiesViewModel');
+  final ActivityRepository _activityRepository;
+  final ItineraryConfigRepository _itineraryConfigRepository;
+  List<Activity> _daytimeActivities = <Activity>[];
+  List<Activity> _eveningActivities = <Activity>[];
+  final Set<String> _selectedActivities = <String>{};
 
-  /// Current activities state.
-  List<Activity> get daytimeActivities => state.daytimeActivities;
-  List<Activity> get eveningActivities => state.eveningActivities;
-  Set<String> get selectedActivities => state.selectedActivities;
+  /// List of daytime [Activity] per destination.
+  List<Activity> get daytimeActivities => _daytimeActivities;
+
+  /// List of evening [Activity] per destination.
+  List<Activity> get eveningActivities => _eveningActivities;
+
+  /// Selected [Activity] by ref.
+  Set<String> get selectedActivities => _selectedActivities;
 
   /// Load list of [Activity] for a [Destination] by ref.
   late final Command0 loadActivities;
@@ -89,14 +59,14 @@ class ActivitiesViewModel extends Notifier<ActivitiesState> {
       return Failure(Exception('Destination not found'));
     }
 
-    final selected = <String>{...itineraryConfig.activities};
+    _selectedActivities.addAll(itineraryConfig.activities);
 
     final resultActivities = await _activityRepository.getByDestination(
       destinationRef,
     );
     if (resultActivities.isSuccess()) {
       final activities = resultActivities.getOrThrow();
-      final daytime =
+      _daytimeActivities =
           activities
               .where(
                 (activity) => [
@@ -107,7 +77,7 @@ class ActivitiesViewModel extends Notifier<ActivitiesState> {
               )
               .toList();
 
-      final evening =
+      _eveningActivities =
           activities
               .where(
                 (activity) => [
@@ -118,12 +88,8 @@ class ActivitiesViewModel extends Notifier<ActivitiesState> {
               .toList();
 
       _log.fine(
-        'Activities (daytime: ${daytime.length}, evening: ${evening.length}) loaded',
-      );
-      state = state.copyWith(
-        daytimeActivities: daytime,
-        eveningActivities: evening,
-        selectedActivities: selected,
+        'Activities (daytime: ${_daytimeActivities.length}, '
+        'evening: ${_eveningActivities.length}) loaded',
       );
     } else {
       _log.warning(
@@ -132,34 +98,34 @@ class ActivitiesViewModel extends Notifier<ActivitiesState> {
       );
     }
 
-    state = state.copyWith(selectedActivities: selected);
+    notifyListeners();
     return resultActivities.map((_) => unit);
   }
 
   /// Add [Activity] to selected list.
   void addActivity(String activityRef) {
     assert(
-      (daytimeActivities + eveningActivities).any(
+      (_daytimeActivities + _eveningActivities).any(
         (activity) => activity.ref == activityRef,
       ),
       'Activity $activityRef not found',
     );
-    final updated = <String>{...selectedActivities}..add(activityRef);
-    state = state.copyWith(selectedActivities: updated);
+    _selectedActivities.add(activityRef);
     _log.finest('Activity $activityRef added');
+    notifyListeners();
   }
 
   /// Remove [Activity] from selected list.
   void removeActivity(String activityRef) {
     assert(
-      (daytimeActivities + eveningActivities).any(
+      (_daytimeActivities + _eveningActivities).any(
         (activity) => activity.ref == activityRef,
       ),
       'Activity $activityRef not found',
     );
-    final updated = <String>{...selectedActivities}..remove(activityRef);
-    state = state.copyWith(selectedActivities: updated);
+    _selectedActivities.remove(activityRef);
     _log.finest('Activity $activityRef removed');
+    notifyListeners();
   }
 
   Future<Result<Unit>> _saveActivities() async {
@@ -177,7 +143,7 @@ class ActivitiesViewModel extends Notifier<ActivitiesState> {
 
     final itineraryConfig = resultConfig.getOrThrow();
     final result = await _itineraryConfigRepository.setItineraryConfig(
-      itineraryConfig.copyWith(activities: selectedActivities.toList()),
+      itineraryConfig.copyWith(activities: _selectedActivities.toList()),
     );
     if (result.isError()) {
       _log.warning('Failed to store ItineraryConfig', result.exceptionOrNull());
@@ -186,9 +152,3 @@ class ActivitiesViewModel extends Notifier<ActivitiesState> {
     return result.map((_) => unit);
   }
 }
-
-/// Provider exposing the [ActivitiesViewModel] state and notifier.
-final activitiesViewModelProvider =
-    NotifierProvider<ActivitiesViewModel, ActivitiesState>(
-  ActivitiesViewModel.new,
-);

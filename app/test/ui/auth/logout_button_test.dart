@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:compass_app/ui/auth/logout/view_models/logout_viewmodel.dart';
 import 'package:compass_app/ui/auth/logout/widgets/logout_button.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
 
 import '../../../testing/app.dart';
@@ -21,27 +19,21 @@ void main() {
     late FakeAuthRepository fakeAuthRepository;
     late FakeItineraryConfigRepository fakeItineraryConfigRepository;
     late LogoutViewModel viewModel;
-    late ProviderContainer container;
 
     setUp(() {
       goRouter = MockGoRouter();
-      fakeAuthRepository = FakeAuthRepository()..token = 'TOKEN';
+      fakeAuthRepository =
+          FakeAuthRepository()
+            // Setup a token, should be cleared after logout
+            ..token = 'TOKEN';
+      // Setup an ItineraryConfig with some data, should be cleared after logout
       fakeItineraryConfigRepository = FakeItineraryConfigRepository(
         itineraryConfig: const ItineraryConfig(continent: 'CONTINENT'),
       );
-      container = ProviderContainer(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
-        ],
-      );
       viewModel = LogoutViewModel(
-        authController: container.read(authControllerProvider.notifier),
+        authRepository: fakeAuthRepository,
         itineraryConfigRepository: fakeItineraryConfigRepository,
       );
-    });
-
-    tearDown(() {
-      container.dispose();
     });
 
     Future<void> loadScreen(WidgetTester tester) async {

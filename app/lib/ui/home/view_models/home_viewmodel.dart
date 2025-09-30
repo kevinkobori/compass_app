@@ -1,64 +1,35 @@
 import 'dart:async';
 
-import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/data/repositories/booking/booking_repository.dart';
 import 'package:compass_app/data/repositories/user/user_repository.dart';
 import 'package:compass_app/domain/models/booking/booking_summary.dart';
 import 'package:compass_app/domain/models/user/user.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
-/// Immutable state for [HomeViewModel].
-@immutable
-class HomeState {
-  const HomeState({
-    this.bookings = const <BookingSummary>[],
-    this.user,
-  });
-
-  final List<BookingSummary> bookings;
-  final User? user;
-
-  HomeState copyWith({
-    List<BookingSummary>? bookings,
-    User? user,
-  }) {
-    return HomeState(
-      bookings: bookings ?? this.bookings,
-      user: user ?? this.user,
-    );
-  }
-}
-
-class HomeViewModel extends Notifier<HomeState> {
-  late BookingRepository _bookingRepository;
-  late UserRepository _userRepository;
-
-  @override
-  HomeState build() {
-    _bookingRepository = ref.read(bookingRepositoryProvider);
-    _userRepository = ref.read(userRepositoryProvider);
+class HomeViewModel extends ChangeNotifier {
+  HomeViewModel({
+    required BookingRepository bookingRepository,
+    required UserRepository userRepository,
+  }) : _bookingRepository = bookingRepository,
+       _userRepository = userRepository {
     load = Command0(_load)..execute();
     deleteBooking = Command1(_deleteBooking);
-    return const HomeState();
   }
 
+  final BookingRepository _bookingRepository;
+  final UserRepository _userRepository;
   final _log = Logger('HomeViewModel');
+  List<BookingSummary> _bookings = [];
+  User? _user;
 
   late Command0 load;
   late Command1<void, int> deleteBooking;
 
-  List<BookingSummary> get bookings => state.bookings;
-  User? get user => state.user;
-
-  /// Refresh data by reloading bookings and user.
-  /// This method can be called externally to trigger a data refresh.
-  void refresh() {
-    load.execute();
-  }
+  List<BookingSummary> get bookings => _bookings;
+  User? get user => _user;
 
   Future<Result<User>> _load() async {
     try {
@@ -70,7 +41,7 @@ class HomeViewModel extends Notifier<HomeState> {
           result.exceptionOrNull() ?? Exception('Failed to load bookings'),
         );
       }
-      final bookings = result.getOrThrow();
+      _bookings = result.getOrThrow();
       _log.fine('Loaded bookings');
 
       // Carregar usuário
@@ -81,52 +52,49 @@ class HomeViewModel extends Notifier<HomeState> {
           userResult.exceptionOrNull() ?? Exception('Failed to load user'),
         );
       }
-      final user = userResult.getOrThrow();
+      _user = userResult.getOrThrow();
       _log.fine('Loaded user');
 
-      state = state.copyWith(bookings: bookings, user: user);
-      return Success(user);
-    } catch (e, stackTrace) {
-      _log.severe('Error loading data', e, stackTrace);
-      return Failure(Exception('Error loading data: $e')); // TODO(Kevin): NOW
+      return Success(_user!);
+    } finally {
+      notifyListeners();
     }
   }
 
   Future<Result<Unit>> _deleteBooking(int id) async {
-    // Delete booking
-    final resultDelete = await _bookingRepository.delete(id);
-    if (resultDelete.isError()) {
-      _log.warning(
-        'Failed to delete booking $id',
-        resultDelete.exceptionOrNull(),
-      );
-      return Failure(
-        resultDelete.exceptionOrNull() ?? Exception('Failed to delete booking'),
-      );
-    }
-    _log.fine('Deleted booking $id');
+    try {
+      // Deletar booking
+      final resultDelete = await _bookingRepository.delete(id);
+      if (resultDelete.isError()) {
+        _log.warning(
+          'Failed to delete booking $id',
+          resultDelete.exceptionOrNull(),
+        );
+        return Failure(
+          resultDelete.exceptionOrNull() ??
+              Exception('Failed to delete booking'),
+        );
+      }
+      _log.fine('Deleted booking $id');
 
-    // Reload bookings after deletion
-    final resultLoadBookings = await _bookingRepository.getBookingsList();
-    if (resultLoadBookings.isError()) {
-      _log.warning(
-        'Failed to load bookings',
-        resultLoadBookings.exceptionOrNull(),
-      );
-      return Failure(
-        resultLoadBookings.exceptionOrNull() ??
-            Exception('Failed to load bookings'),
-      );
-    }
-    final bookings = resultLoadBookings.getOrThrow();
-    state = state.copyWith(bookings: bookings);
-    _log.fine('Loaded bookings');
+      // Atualizar lista de bookings
+      final resultLoadBookings = await _bookingRepository.getBookingsList();
+      if (resultLoadBookings.isError()) {
+        _log.warning(
+          'Failed to load bookings',
+          resultLoadBookings.exceptionOrNull(),
+        );
+        return Failure(
+          resultLoadBookings.exceptionOrNull() ??
+              Exception('Failed to load bookings'),
+        );
+      }
+      _bookings = resultLoadBookings.getOrThrow();
+      _log.fine('Loaded bookings');
 
-    return const Success(unit);
+      return const Success(unit);
+    } finally {
+      notifyListeners();
+    }
   }
 }
-
-/// Provider exposing the [HomeViewModel] state and notifier.
-final homeViewModelProvider = NotifierProvider<HomeViewModel, HomeState>(
-  HomeViewModel.new,
-);

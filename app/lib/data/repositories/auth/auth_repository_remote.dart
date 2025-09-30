@@ -79,7 +79,7 @@ class AuthRepositoryRemote extends AuthRepository {
         return Failure(error ?? Exception('Unknown error'));
       }
     } finally {
-      // State changes are handled by [AuthController].
+      notifyListeners();
     }
   }
 
@@ -99,7 +99,7 @@ class AuthRepositoryRemote extends AuthRepository {
       _isAuthenticated = false;
       return result;
     } finally {
-      // State changes are handled by [AuthController].
+      notifyListeners();
     }
   }
 

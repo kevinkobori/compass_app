@@ -17,12 +17,14 @@ class FakeAuthRepository extends AuthRepository {
     required String password,
   }) async {
     token = 'TOKEN';
+    notifyListeners();
     return const Success(unit);
   }
 
   @override
   Future<Result<Unit>> logout() async {
     token = null;
+    notifyListeners();
     return const Success(unit);
   }
 }

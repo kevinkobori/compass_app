@@ -9,7 +9,7 @@ import 'package:compass_app/ui/core/themes/theme.dart';
 import 'package:compass_app/ui/core/ui/scroll_behavior.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:provider/provider.dart';
 
 /// Default main method
 void main() {
@@ -17,11 +17,11 @@ void main() {
   development.main();
 }
 
-class MainApp extends HookConsumerWidget {
+class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return MaterialApp.router(
       localizationsDelegates: [
         ...GlobalMaterialLocalizations.delegates,
@@ -33,7 +33,7 @@ class MainApp extends HookConsumerWidget {
       scrollBehavior: AppCustomScrollBehavior(),
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      routerConfig: ref.watch(routerProvider),
+      routerConfig: router(context.read()),
     );
   }
 }

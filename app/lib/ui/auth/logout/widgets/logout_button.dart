@@ -6,38 +6,38 @@ import 'package:compass_app/ui/auth/logout/view_models/logout_viewmodel.dart';
 import 'package:compass_app/ui/core/localization/applocalization.dart';
 import 'package:compass_app/ui/core/themes/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class LogoutButton extends HookConsumerWidget {
+class LogoutButton extends StatefulWidget {
   const LogoutButton({required this.viewModel, super.key});
 
   final LogoutViewModel viewModel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    void onResult() {
-      // We do not need to navigate to `/login` on logout,
-      // it is done automatically by GoRouter.
-      if (viewModel.logout.value.isFailure) {
-        viewModel.logout.reset();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalization.of(context).errorWhileLogout),
-            action: SnackBarAction(
-              label: AppLocalization.of(context).tryAgain,
-              onPressed: viewModel.logout.execute,
-            ),
-          ),
-        );
-      }
-    }
+  State<LogoutButton> createState() => _LogoutButtonState();
+}
 
-    useEffect(() {
-      viewModel.logout.addListener(onResult);
-      return () => viewModel.logout.removeListener(onResult);
-    }, [viewModel]);
+class _LogoutButtonState extends State<LogoutButton> {
+  @override
+  void initState() {
+    super.initState();
+    widget.viewModel.logout.addListener(_onResult);
+  }
 
+  @override
+  void didUpdateWidget(covariant LogoutButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.viewModel.logout.removeListener(_onResult);
+    widget.viewModel.logout.addListener(_onResult);
+  }
+
+  @override
+  void dispose() {
+    widget.viewModel.logout.removeListener(_onResult);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       height: 40,
       width: 40,
@@ -50,7 +50,7 @@ class LogoutButton extends HookConsumerWidget {
         child: InkResponse(
           borderRadius: BorderRadius.circular(8),
           onTap: () {
-            viewModel.logout.execute();
+            widget.viewModel.logout.execute();
           },
           child: Center(
             child: Icon(
@@ -62,5 +62,23 @@ class LogoutButton extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _onResult() {
+    // We do not need to navigate to `/login` on logout,
+    // it is done automatically by GoRouter.
+
+    if (widget.viewModel.logout.value.isFailure) {
+      widget.viewModel.logout.reset();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalization.of(context).errorWhileLogout),
+          action: SnackBarAction(
+            label: AppLocalization.of(context).tryAgain,
+            onPressed: widget.viewModel.logout.execute,
+          ),
+        ),
+      );
+    }
   }
 }

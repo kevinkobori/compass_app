@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:compass_app/ui/search_form/widgets/search_form_submit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../testing/app.dart';
@@ -19,47 +17,32 @@ void main() {
   group('SearchFormSubmit widget tests', () {
     late SearchFormViewModel viewModel;
     late MockGoRouter goRouter;
-    late ProviderContainer container;
 
     setUp(() {
-      container = ProviderContainer(overrides: [
-        continentRepositoryProvider.overrideWithValue(FakeContinentRepository()),
-        itineraryConfigRepositoryProvider.overrideWithValue(
-          FakeItineraryConfigRepository(),
-        ),
-      ]);
-      viewModel = container.read(searchFormViewModelProvider.notifier);
+      viewModel = SearchFormViewModel(
+        continentRepository: FakeContinentRepository(),
+        itineraryConfigRepository: FakeItineraryConfigRepository(),
+      );
       goRouter = MockGoRouter();
-    });
-
-    tearDown(() {
-      container.dispose();
     });
 
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        UncontrolledProviderScope(
-          container: container,
-          child: SearchFormSubmit(viewModel: viewModel),
-        ),
+        SearchFormSubmit(viewModel: viewModel),
         goRouter: goRouter,
       );
     }
 
     testWidgets('Should be enabled and allow tap', (WidgetTester tester) async {
-      // Primeiro executa o comando load manualmente antes de carregar o widget
-      await viewModel.load.execute();
       await loadWidget(tester);
-      await tester.pumpAndSettle();
-      
       expect(find.byType(SearchFormSubmit), findsOneWidget);
 
-      // Tap should not navigate when invalid
+      // Tap should not navigate
       await tester.tap(find.byKey(const ValueKey(searchFormSubmitButtonKey)));
       verifyNever(() => goRouter.go(any()));
 
-      // Fill in data to make it valid
+      // Fill in data
       viewModel
         ..guests = 2
         ..selectedContinent = 'CONTINENT';
@@ -70,15 +53,8 @@ void main() {
       viewModel.dateRange = newDateRange;
       await tester.pumpAndSettle();
 
-      // Verify the form is now valid
-      expect(viewModel.valid, isTrue);
-
       // Perform search
       await tester.tap(find.byKey(const ValueKey(searchFormSubmitButtonKey)));
-      
-      // Execute the command manually to ensure completion
-      await viewModel.updateItineraryConfig.execute();
-      await tester.pumpAndSettle();
 
       // Should navigate to results screen
       verify(() => goRouter.go('/results')).called(1);

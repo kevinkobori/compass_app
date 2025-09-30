@@ -2,46 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:compass_app/ui/results/view_models/results_viewmodel.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../testing/fakes/repositories/fake_destination_repository.dart';
 import '../../../testing/fakes/repositories/fake_itinerary_config_repository.dart';
 
 void main() {
   group('ResultsViewModel tests', () {
-    late ProviderContainer container;
-    late ResultsViewModel viewModel;
-
-    setUp(() {
-      container = ProviderContainer(overrides: [
-        destinationRepositoryProvider.overrideWithValue(
-          FakeDestinationRepository(),
+    final viewModel = ResultsViewModel(
+      destinationRepository: FakeDestinationRepository(),
+      itineraryConfigRepository: FakeItineraryConfigRepository(
+        itineraryConfig: ItineraryConfig(
+          continent: 'Europe',
+          startDate: DateTime(2024),
+          endDate: DateTime(2024, 01, 31),
+          guests: 2,
         ),
-        itineraryConfigRepositoryProvider.overrideWith(
-          (ref) => FakeItineraryConfigRepository(
-            itineraryConfig: ItineraryConfig(
-              continent: 'Europe',
-              startDate: DateTime(2024),
-              endDate: DateTime(2024, 01, 31),
-              guests: 2,
-            ),
-          ),
-        ),
-      ]);
-      viewModel = container.read(resultsViewModelProvider.notifier);
-    });
+      ),
+    );
 
-    tearDown(() {
-      container.dispose();
-    });
-
+    // perform a simple test
+    // verifies that the list of items is properly loaded
     test('should load items', () async {
-      // Executa o comando search manualmente (não é mais automático nos testes)
-      await viewModel.search.execute();
       expect(viewModel.destinations.length, 2);
     });
   });

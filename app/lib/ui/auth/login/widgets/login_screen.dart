@@ -8,49 +8,46 @@ import 'package:compass_app/ui/auth/login/widgets/tilted_cards.dart';
 import 'package:compass_app/ui/core/localization/applocalization.dart';
 import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class LoginScreen extends HookConsumerWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({required this.viewModel, super.key});
 
   final LoginViewModel viewModel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final email = useTextEditingController(text: 'email@example.com');
-    final password = useTextEditingController(text: 'password');
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
-    void onResult() {
-      if (viewModel.login.value.isSuccess) {
-        viewModel.login.reset();
-        context.go(Routes.home);
-      }
-      if (viewModel.login.value.isFailure) {
-        viewModel.login.reset();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalization.of(context).errorWhileLogin),
-            action: SnackBarAction(
-              label: AppLocalization.of(context).tryAgain,
-              onPressed: () => viewModel.login.execute((
-                email.value.text,
-                password.value.text,
-              )),
-            ),
-          ),
-        );
-      }
-    }
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _email = TextEditingController(
+    text: 'email@example.com',
+  );
+  final TextEditingController _password = TextEditingController(
+    text: 'password',
+  );
 
-    useEffect(() {
-      viewModel.login.addListener(onResult);
-      return () => viewModel.login.removeListener(onResult);
-    }, [viewModel]);
+  @override
+  void initState() {
+    super.initState();
+    widget.viewModel.login.addListener(_onResult);
+  }
 
-    useListenable(viewModel.login);
+  @override
+  void didUpdateWidget(covariant LoginScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.viewModel.login.removeListener(_onResult);
+    widget.viewModel.login.addListener(_onResult);
+  }
 
+  @override
+  void dispose() {
+    widget.viewModel.login.removeListener(_onResult);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -61,18 +58,23 @@ class LoginScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextField(controller: email),
+                TextField(controller: _email),
                 const SizedBox(height: Dimens.paddingVertical),
-                TextField(controller: password, obscureText: true),
+                TextField(controller: _password, obscureText: true),
                 const SizedBox(height: Dimens.paddingVertical),
-                FilledButton(
-                  onPressed: () {
-                    viewModel.login.execute((
-                      email.value.text,
-                      password.value.text,
-                    ));
+                ListenableBuilder(
+                  listenable: widget.viewModel.login,
+                  builder: (context, _) {
+                    return FilledButton(
+                      onPressed: () {
+                        widget.viewModel.login.execute((
+                          _email.value.text,
+                          _password.value.text,
+                        ));
+                      },
+                      child: Text(AppLocalization.of(context).login),
+                    );
                   },
-                  child: Text(AppLocalization.of(context).login),
                 ),
               ],
             ),
@@ -80,5 +82,29 @@ class LoginScreen extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _onResult() {
+    if (widget.viewModel.login.value.isSuccess) {
+      widget.viewModel.login.reset();
+      context.go(Routes.home);
+    }
+
+    if (widget.viewModel.login.value.isFailure) {
+      widget.viewModel.login.reset();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalization.of(context).errorWhileLogin),
+          action: SnackBarAction(
+            label: AppLocalization.of(context).tryAgain,
+            onPressed:
+                () => widget.viewModel.login.execute((
+                  _email.value.text,
+                  _password.value.text,
+                )),
+          ),
+        ),
+      );
+    }
   }
 }

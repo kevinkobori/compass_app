@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:compass_app/ui/search_form/widgets/search_form_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../testing/app.dart';
 import '../../../../testing/fakes/repositories/fake_continent_repository.dart';
@@ -15,45 +13,23 @@ import '../../../../testing/fakes/repositories/fake_itinerary_config_repository.
 
 void main() {
   group('SearchFormDate widget tests', () {
-    late ProviderContainer container;
+    late SearchFormViewModel viewModel;
 
     setUp(() {
-      container = ProviderContainer(overrides: [
-        continentRepositoryProvider.overrideWithValue(FakeContinentRepository()),
-        itineraryConfigRepositoryProvider.overrideWithValue(
-          FakeItineraryConfigRepository(),
-        ),
-      ]);
-    });
-
-    tearDown(() {
-      container.dispose();
+      viewModel = SearchFormViewModel(
+        continentRepository: FakeContinentRepository(),
+        itineraryConfigRepository: FakeItineraryConfigRepository(),
+      );
     });
 
     Future<void> loadWidget(WidgetTester tester) async {
-      await testApp(
-        tester,
-        UncontrolledProviderScope(
-          container: container,
-          child: Consumer(
-            builder: (context, ref, child) {
-              final viewModel = ref.watch(searchFormViewModelProvider.notifier);
-              return SearchFormDate(viewModel: viewModel);
-            },
-          ),
-        ),
-      );
+      await testApp(tester, SearchFormDate(viewModel: viewModel));
     }
 
     testWidgets('should display date in different month', (
       WidgetTester tester,
     ) async {
-      // Executa o comando load antes de carregar o widget
-      final viewModel = container.read(searchFormViewModelProvider.notifier);
-      await viewModel.load.execute();
       await loadWidget(tester);
-      await tester.pumpAndSettle();
-      
       expect(find.byType(SearchFormDate), findsOneWidget);
 
       // Initial state
@@ -72,12 +48,7 @@ void main() {
     testWidgets('should display date in same month', (
       WidgetTester tester,
     ) async {
-      // Executa o comando load antes de carregar o widget
-      final viewModel = container.read(searchFormViewModelProvider.notifier);
-      await viewModel.load.execute();
       await loadWidget(tester);
-      await tester.pumpAndSettle();
-      
       expect(find.byType(SearchFormDate), findsOneWidget);
 
       // Initial state

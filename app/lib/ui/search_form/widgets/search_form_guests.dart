@@ -7,8 +7,6 @@ import 'package:compass_app/ui/core/themes/colors.dart';
 import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 const String removeGuestsKey = 'remove-guests';
 const String addGuestsKey = 'add-guests';
@@ -17,7 +15,7 @@ const String addGuestsKey = 'add-guests';
 ///
 /// Users can tap the Plus and Minus icons to increase or decrease
 /// the number of guests.
-class SearchFormGuests extends HookWidget {
+class SearchFormGuests extends StatelessWidget {
   const SearchFormGuests({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
@@ -56,16 +54,13 @@ class SearchFormGuests extends HookWidget {
   }
 }
 
-class _QuantitySelector extends HookConsumerWidget {
+class _QuantitySelector extends StatelessWidget {
   const _QuantitySelector(this.viewModel);
 
   final SearchFormViewModel viewModel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the state to make it reactive
-    final state = ref.watch(searchFormViewModelProvider);
-    
+  Widget build(BuildContext context) {
     return SizedBox(
       width: 90,
       child: Row(
@@ -81,11 +76,16 @@ class _QuantitySelector extends HookConsumerWidget {
               color: AppColors.grey3,
             ),
           ),
-          Text(
-            state.guests.toString(),
-            style: state.guests == 0
-                ? Theme.of(context).inputDecorationTheme.hintStyle
-                : Theme.of(context).textTheme.bodyMedium,
+          ListenableBuilder(
+            listenable: viewModel,
+            builder:
+                (context, _) => Text(
+                  viewModel.guests.toString(),
+                  style:
+                      viewModel.guests == 0
+                          ? Theme.of(context).inputDecorationTheme.hintStyle
+                          : Theme.of(context).textTheme.bodyMedium,
+                ),
           ),
           InkWell(
             key: const ValueKey(addGuestsKey),

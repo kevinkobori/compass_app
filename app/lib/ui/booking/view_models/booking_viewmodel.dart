@@ -3,34 +3,34 @@ import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_
 import 'package:compass_app/domain/models/booking/booking.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_create_use_case.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart';
-import 'package:compass_app/config/dependencies.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
-class BookingViewModel extends Notifier<Booking?> {
-  late BookingCreateUseCase _createUseCase;
-  late BookingShareUseCase _shareUseCase;
-  late ItineraryConfigRepository _itineraryConfigRepository;
-  late BookingRepository _bookingRepository;
-
-  @override
-  Booking? build() {
-    _createUseCase = ref.read(bookingCreateUseCaseProvider);
-    _shareUseCase = ref.read(bookingShareUseCaseProvider);
-    _itineraryConfigRepository = ref.read(itineraryConfigRepositoryProvider);
-    _bookingRepository = ref.read(bookingRepositoryProvider);
+class BookingViewModel extends ChangeNotifier {
+  BookingViewModel({
+    required BookingCreateUseCase createBookingUseCase,
+    required BookingShareUseCase shareBookingUseCase,
+    required ItineraryConfigRepository itineraryConfigRepository,
+    required BookingRepository bookingRepository,
+  }) : _createUseCase = createBookingUseCase,
+       _shareUseCase = shareBookingUseCase,
+       _itineraryConfigRepository = itineraryConfigRepository,
+       _bookingRepository = bookingRepository {
     createBooking = Command0(_createBooking);
-    shareBooking = Command0(() => _shareUseCase.shareBooking(state!));
+    shareBooking = Command0(() => _shareUseCase.shareBooking(_booking!));
     loadBooking = Command1(_load);
-    return null;
   }
 
+  final BookingCreateUseCase _createUseCase;
+  final BookingShareUseCase _shareUseCase;
+  final ItineraryConfigRepository _itineraryConfigRepository;
+  final BookingRepository _bookingRepository;
   final _log = Logger('BookingViewModel');
+  Booking? _booking;
 
-  /// Current booking loaded or created.
-  Booking? get booking => state;
+  Booking? get booking => _booking;
 
   /// Creates a booking from the ItineraryConfig
   /// and saves it to the user bookings
@@ -50,6 +50,7 @@ class BookingViewModel extends Notifier<Booking?> {
       _log.warning(
         'ItineraryConfig error: ${itineraryResult.exceptionOrNull()}',
       );
+      notifyListeners();
       return Failure(
         itineraryResult.exceptionOrNull() ??
             Exception('Unknown ItineraryConfig error'),
@@ -62,12 +63,14 @@ class BookingViewModel extends Notifier<Booking?> {
     );
     if (bookingResult.isError()) {
       _log.warning('Booking error: ${bookingResult.exceptionOrNull()}');
+      notifyListeners();
       return Failure(
         bookingResult.exceptionOrNull() ?? Exception('Unknown Booking error'),
       );
     }
     _log.fine('Created Booking');
-    state = bookingResult.getOrThrow();
+    _booking = bookingResult.getOrThrow();
+    notifyListeners();
     return const Success(unit);
   }
 
@@ -80,11 +83,8 @@ class BookingViewModel extends Notifier<Booking?> {
       );
     }
     _log.fine('Loaded booking $id');
-    state = result.getOrThrow();
+    _booking = result.getOrThrow();
+    notifyListeners();
     return const Success(unit);
   }
 }
-
-/// Provider that exposes the [BookingViewModel] and its [Booking] state.
-final bookingViewModelProvider =
-    NotifierProvider<BookingViewModel, Booking?>(BookingViewModel.new);
