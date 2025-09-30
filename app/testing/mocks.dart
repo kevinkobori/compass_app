@@ -8,7 +8,22 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 
-class MockGoRouter extends Mock implements GoRouter {}
+class MockGoRouter extends Mock implements GoRouter {
+  @override
+  GoRouterDelegate get routerDelegate {
+    final delegate = MockGoRouterDelegate();
+    when(() => delegate.currentConfiguration).thenReturn(
+      RouteMatchList(
+        matches: const <RouteMatch>[],
+        uri: Uri.parse('/'),
+        pathParameters: const <String, String>{},
+      ),
+    );
+    return delegate;
+  }
+}
+
+class MockGoRouterDelegate extends Mock implements GoRouterDelegate {}
 
 class MockHttpClient extends Mock implements http.Client {}
 

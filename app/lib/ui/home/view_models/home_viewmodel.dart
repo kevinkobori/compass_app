@@ -54,6 +54,12 @@ class HomeViewModel extends Notifier<HomeState> {
   List<BookingSummary> get bookings => state.bookings;
   User? get user => state.user;
 
+  /// Refresh data by reloading bookings and user.
+  /// This method can be called externally to trigger a data refresh.
+  void refresh() {
+    load.execute();
+  }
+
   Future<Result<User>> _load() async {
     try {
       // Carregar lista de bookings

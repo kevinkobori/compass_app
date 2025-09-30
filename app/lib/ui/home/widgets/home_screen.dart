@@ -24,7 +24,41 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(homeViewModelProvider.notifier);
-    ref.watch(homeViewModelProvider);
+    final state = ref.watch(homeViewModelProvider);
+
+    // Initial load and setup route listener
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        viewModel.refresh();
+      });
+      return null;
+    }, []);
+
+    // Auto-refresh data when navigating back to home screen
+    useEffect(() {
+      void handleRouteChange() {
+        final router = GoRouter.of(context);
+        final currentRoute = router.routerDelegate.currentConfiguration.uri
+            .toString();
+
+        if (currentRoute == Routes.home) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            viewModel.refresh();
+          });
+        }
+      }
+
+      // // Initial load and setup route listener
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   viewModel.refresh();
+      // });
+
+      final router = GoRouter.of(context);
+      router.routerDelegate.addListener(handleRouteChange);
+
+      return () => router.routerDelegate.removeListener(handleRouteChange);
+    }, []);
+
     void onResult() {
       if (viewModel.deleteBooking.value.isSuccess) {
         viewModel.deleteBooking.reset();
@@ -37,8 +71,9 @@ class HomeScreen extends HookConsumerWidget {
         viewModel.deleteBooking.reset();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text(AppLocalization.of(context).errorWhileDeletingBooking),
+            content: Text(
+              AppLocalization.of(context).errorWhileDeletingBooking,
+            ),
           ),
         );
       }
@@ -71,23 +106,23 @@ class HomeScreen extends HookConsumerWidget {
                 vertical: Dimens.of(context).paddingScreenVertical,
                 horizontal: Dimens.of(context).paddingScreenHorizontal,
               ),
-              child: HomeHeader(viewModel: viewModel),
+              child: HomeHeader(state: state),
             ),
           ),
           SliverList.builder(
-            itemCount: viewModel.bookings.length,
+            itemCount: state.bookings.length,
             itemBuilder: (_, index) => _Booking(
-              key: ValueKey(viewModel.bookings[index].id),
-              booking: viewModel.bookings[index],
+              key: ValueKey(state.bookings[index].id),
+              booking: state.bookings[index],
               onTap: () => context.push(
                 Routes.bookingWithId(
-                  viewModel.bookings[index].id,
+                  state.bookings[index].id,
                 ),
               ),
               confirmDismiss: (_) async {
                 // Wait for the command to complete
                 await viewModel.deleteBooking.execute(
-                  viewModel.bookings[index].id,
+                  state.bookings[index].id,
                 );
                 // Remove the item if the delete command succeeded
                 return viewModel.deleteBooking.value.isSuccess;

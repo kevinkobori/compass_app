@@ -20,6 +20,7 @@ Future<void> testApp(
   tester.view.devicePixelRatio = 1.0;
   await tester.binding.setSurfaceSize(const Size(1200, 800));
   await mockNetworkImages(() async {
+    final router = goRouter ?? MockGoRouter();
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: [
@@ -28,12 +29,21 @@ Future<void> testApp(
           AppLocalizationDelegate(),
         ],
         locale: const Locale('en', 'US'),
-        // locale: Locale('pt', 'BR'),
         supportedLocales: const [Locale('en', 'US'), Locale('pt', 'BR')],
         theme: AppTheme.lightTheme,
+        builder: (context, child) {
+          // Ensure localization is properly initialized
+          return Localizations.override(
+            context: context,
+            locale: const Locale('en', 'US'),
+            child: child,
+          );
+        },
         home: InheritedGoRouter(
-          goRouter: goRouter ?? MockGoRouter(),
-          child: Scaffold(body: body),
+          goRouter: router,
+          child: Scaffold(
+            body: body,
+          ),
         ),
       ),
     );

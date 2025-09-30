@@ -13,13 +13,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class HomeHeader extends HookConsumerWidget {
-  const HomeHeader({required this.viewModel, super.key});
+  const HomeHeader({required this.state, super.key});
 
-  final HomeViewModel viewModel;
+  final HomeState state;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = viewModel.user;
+    final user = state.user;
     if (user == null) {
       return const SizedBox();
     }
