@@ -2,52 +2,137 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/domain/models/booking/booking_summary.dart';
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/date_format_start_end.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
+import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
+import 'package:compass_app/ui/home/widgets/home_title.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../domain/models/booking/booking_summary.dart';
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/colors.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/date_format_start_end.dart';
-import '../../core/ui/error_indicator.dart';
-import '../view_models/home_viewmodel.dart';
-import 'home_title.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 const String bookingButtonKey = 'booking-button';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.viewModel});
-
-  final HomeViewModel viewModel;
+class HomeScreen extends HookConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(homeViewModelProvider.notifier);
+    final state = ref.watch(homeViewModelProvider);
 
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    widget.viewModel.deleteBooking.addListener(_onResult);
-  }
+    // Initial load and setup route listener
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        viewModel.refresh();
+      });
+      return null;
+    }, []);
 
-  @override
-  void didUpdateWidget(covariant HomeScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    oldWidget.viewModel.deleteBooking.removeListener(_onResult);
-    widget.viewModel.deleteBooking.addListener(_onResult);
-  }
+    // Auto-refresh data when navigating back to home screen
+    useEffect(() {
+      void handleRouteChange() {
+        final router = GoRouter.of(context);
+        final currentRoute = router.routerDelegate.currentConfiguration.uri
+            .toString();
 
-  @override
-  void dispose() {
-    widget.viewModel.deleteBooking.removeListener(_onResult);
-    super.dispose();
-  }
+        if (currentRoute == Routes.home) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            viewModel.refresh();
+          });
+        }
+      }
 
-  @override
-  Widget build(BuildContext context) {
+      // // Initial load and setup route listener
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   viewModel.refresh();
+      // });
+
+      final router = GoRouter.of(context);
+      router.routerDelegate.addListener(handleRouteChange);
+
+      return () => router.routerDelegate.removeListener(handleRouteChange);
+    }, []);
+
+    void onResult() {
+      if (viewModel.deleteBooking.value.isSuccess) {
+        viewModel.deleteBooking.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalization.of(context).bookingDeleted)),
+        );
+      }
+
+      if (viewModel.deleteBooking.value.isFailure) {
+        viewModel.deleteBooking.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalization.of(context).errorWhileDeletingBooking,
+            ),
+          ),
+        );
+      }
+    }
+
+    useEffect(() {
+      viewModel.deleteBooking.addListener(onResult);
+      return () => viewModel.deleteBooking.removeListener(onResult);
+    }, [viewModel]);
+
+    // Listen for changes on commands only. HomeViewModel is not a Listenable.
+    useListenable(viewModel.load);
+    useListenable(viewModel.deleteBooking);
+
+    final Widget body;
+    if (viewModel.load.value.isRunning) {
+      body = const Center(child: CircularProgressIndicator());
+    } else if (viewModel.load.value.isFailure) {
+      body = ErrorIndicator(
+        title: AppLocalization.of(context).errorWhileLoadingHome,
+        label: AppLocalization.of(context).tryAgain,
+        onPressed: viewModel.load.execute,
+      );
+    } else {
+      body = CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: Dimens.of(context).paddingScreenVertical,
+                horizontal: Dimens.of(context).paddingScreenHorizontal,
+              ),
+              child: HomeHeader(state: state),
+            ),
+          ),
+          SliverList.builder(
+            itemCount: state.bookings.length,
+            itemBuilder: (_, index) => _Booking(
+              key: ValueKey(state.bookings[index].id),
+              booking: state.bookings[index],
+              onTap: () => context.push(
+                Routes.bookingWithId(
+                  state.bookings[index].id,
+                ),
+              ),
+              confirmDismiss: (_) async {
+                // Wait for the command to complete
+                await viewModel.deleteBooking.execute(
+                  state.bookings[index].id,
+                );
+                // Remove the item if the delete command succeeded
+                return viewModel.deleteBooking.value.isSuccess;
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         // Workaround for https://github.com/flutter/flutter/issues/115358#issuecomment-2117157419
@@ -57,102 +142,17 @@ class _HomeScreenState extends State<HomeScreen> {
         label: Text(AppLocalization.of(context).bookNewTrip),
         icon: const Icon(Icons.add_location_outlined),
       ),
-      body: SafeArea(
-        top: true,
-        bottom: true,
-        child: ListenableBuilder(
-          listenable: widget.viewModel.load,
-          builder: (context, child) {
-            if (widget.viewModel.load.running) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (widget.viewModel.load.error) {
-              return ErrorIndicator(
-                title: AppLocalization.of(context).errorWhileLoadingHome,
-                label: AppLocalization.of(context).tryAgain,
-                onPressed: widget.viewModel.load.execute,
-              );
-            }
-
-            return child!;
-          },
-          child: ListenableBuilder(
-            listenable: widget.viewModel,
-            builder: (context, _) {
-              return CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: Dimens.of(context).paddingScreenVertical,
-                        horizontal: Dimens.of(context).paddingScreenHorizontal,
-                      ),
-                      child: HomeHeader(viewModel: widget.viewModel),
-                    ),
-                  ),
-                  SliverList.builder(
-                    itemCount: widget.viewModel.bookings.length,
-                    itemBuilder:
-                        (_, index) => _Booking(
-                          key: ValueKey(widget.viewModel.bookings[index].id),
-                          booking: widget.viewModel.bookings[index],
-                          onTap:
-                              () => context.push(
-                                Routes.bookingWithId(
-                                  widget.viewModel.bookings[index].id,
-                                ),
-                              ),
-                          confirmDismiss: (_) async {
-                            // wait for command to complete
-                            await widget.viewModel.deleteBooking.execute(
-                              widget.viewModel.bookings[index].id,
-                            );
-                            // if command completed successfully, return true
-                            if (widget.viewModel.deleteBooking.completed) {
-                              // removes the dismissable from the list
-                              return true;
-                            } else {
-                              // the dismissable stays in the list
-                              return false;
-                            }
-                          },
-                        ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
+      body: SafeArea(child: body),
     );
-  }
-
-  void _onResult() {
-    if (widget.viewModel.deleteBooking.completed) {
-      widget.viewModel.deleteBooking.clearResult();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalization.of(context).bookingDeleted)),
-      );
-    }
-
-    if (widget.viewModel.deleteBooking.error) {
-      widget.viewModel.deleteBooking.clearResult();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalization.of(context).errorWhileDeletingBooking),
-        ),
-      );
-    }
   }
 }
 
 class _Booking extends StatelessWidget {
   const _Booking({
-    super.key,
     required this.booking,
     required this.onTap,
     required this.confirmDismiss,
+    super.key,
   });
 
   final BookingSummary booking;
@@ -165,9 +165,9 @@ class _Booking extends StatelessWidget {
       key: ValueKey(booking.id),
       direction: DismissDirection.endToStart,
       confirmDismiss: confirmDismiss,
-      background: Container(
+      background: const ColoredBox(
         color: AppColors.grey1,
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Padding(

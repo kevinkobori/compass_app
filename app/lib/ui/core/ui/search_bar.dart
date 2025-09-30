@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/date_format_start_end.dart';
+import 'package:compass_app/ui/core/ui/home_button.dart';
 import 'package:flutter/material.dart';
-
-import '../../../domain/models/itinerary_config/itinerary_config.dart';
-import '../localization/applocalization.dart';
-import '../themes/colors.dart';
-import '../themes/dimens.dart';
-import 'date_format_start_end.dart';
-import 'home_button.dart';
 
 /// Application top search bar.
 ///
@@ -27,13 +26,13 @@ class AppSearchBar extends StatelessWidget {
       children: [
         Expanded(
           child: InkWell(
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(16),
             onTap: onTap,
             child: Container(
               height: 64,
               decoration: BoxDecoration(
                 border: Border.all(color: AppColors.grey1),
-                borderRadius: BorderRadius.circular(16.0),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -89,8 +88,6 @@ class _EmptySearch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         const Icon(Icons.search),
         const SizedBox(width: 12),

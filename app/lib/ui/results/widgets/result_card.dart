@@ -1,16 +1,12 @@
-// Copyright 2024 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
+import 'package:compass_app/ui/core/ui/tag_chip.dart';
+import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../domain/models/destination/destination.dart';
-import '../../../utils/image_error_listener.dart';
-import '../../core/ui/tag_chip.dart';
 
 class ResultCard extends StatelessWidget {
-  const ResultCard({super.key, required this.destination, required this.onTap});
+  const ResultCard({required this.destination, required this.onTap, super.key});
 
   final Destination destination;
   final GestureTapCallback onTap;
@@ -18,7 +14,7 @@ class ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10.0),
+      borderRadius: BorderRadius.circular(10),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -29,9 +25,9 @@ class ResultCard extends StatelessWidget {
             errorListener: imageErrorListener,
           ),
           Positioned(
-            bottom: 12.0,
-            left: 12.0,
-            right: 12.0,
+            bottom: 12,
+            left: 12,
+            right: 12,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,9 +35,8 @@ class ResultCard extends StatelessWidget {
                 Text(destination.name.toUpperCase(), style: _cardTitleStyle),
                 const SizedBox(height: 6),
                 Wrap(
-                  spacing: 4.0,
-                  runSpacing: 4.0,
-                  direction: Axis.horizontal,
+                  spacing: 4,
+                  runSpacing: 4,
                   children:
                       destination.tags.map((e) => TagChip(tag: e)).toList(),
                 ),
@@ -61,15 +56,15 @@ class ResultCard extends StatelessWidget {
   }
 }
 
-final _cardTitleStyle = GoogleFonts.rubik(
+final TextStyle _cardTitleStyle = GoogleFonts.rubik(
   textStyle: const TextStyle(
     fontWeight: FontWeight.w800,
-    fontSize: 15.0,
+    fontSize: 15,
     color: Colors.white,
     letterSpacing: 1,
     shadows: [
       // Helps to read the text a bit better
-      Shadow(blurRadius: 3.0, color: Colors.black),
+      Shadow(blurRadius: 3),
     ],
   ),
 );

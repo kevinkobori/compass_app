@@ -3,38 +3,55 @@
 // found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:io';
 
-import '../../../utils/result.dart';
-import 'model/login_request/login_request.dart';
-import 'model/login_response/login_response.dart';
+import 'package:compass_app/data/services/api/model/login_request/login_request.dart';
+import 'package:compass_app/data/services/api/model/login_response/login_response.dart';
+import 'package:http/http.dart' as http;
+import 'package:result_dart/result_dart.dart';
 
 class AuthApiClient {
-  AuthApiClient({String? host, int? port, HttpClient Function()? clientFactory})
-    : _host = host ?? 'localhost',
-      _port = port ?? 8080,
-      _clientFactory = clientFactory ?? HttpClient.new;
+  AuthApiClient({
+    String? host,
+    int? port,
+    http.Client Function()? clientFactory,
+  }) : _host = host ?? 'localhost',
+       _port = port ?? 8080,
+       _clientFactory = clientFactory ?? http.Client.new;
 
   final String _host;
   final int _port;
-  final HttpClient Function() _clientFactory;
+  final http.Client Function() _clientFactory;
 
-  Future<Result<LoginResponse>> login(LoginRequest loginRequest) async {
+  Future<Result<T>> _send<T extends Object>(
+    Future<http.Response> Function(http.Client) requestFn,
+    T Function(String body) parse,
+    int expectedStatus,
+  ) async {
     final client = _clientFactory();
     try {
-      final request = await client.post(_host, _port, '/login');
-      request.write(jsonEncode(loginRequest));
-      final response = await request.close();
-      if (response.statusCode == 200) {
-        final stringData = await response.transform(utf8.decoder).join();
-        return Result.ok(LoginResponse.fromJson(jsonDecode(stringData)));
+      final response = await requestFn(client);
+      if (response.statusCode == expectedStatus) {
+        return Success(parse(response.body));
       } else {
-        return const Result.error(HttpException("Login error"));
+        return Failure(Exception('Login error'));
       }
     } on Exception catch (error) {
-      return Result.error(error);
+      return Failure(error);
     } finally {
       client.close();
     }
+  }
+
+  Future<Result<LoginResponse>> login(LoginRequest loginRequest) async {
+    return _send(
+      (client) => client.post(
+        Uri.http('$_host:$_port', '/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(loginRequest),
+      ),
+      (body) =>
+          LoginResponse.fromJson(jsonDecode(body) as Map<String, dynamic>),
+      200,
+    );
   }
 }

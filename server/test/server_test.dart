@@ -200,4 +200,13 @@ void main() {
 
     expect(response.statusCode, 401);
   });
+
+  test('CORS preflight', () async {
+    final client = Client();
+    final req = Request('OPTIONS', Uri.parse('$host/login'));
+    final streamed = await client.send(req);
+    final res = await Response.fromStream(streamed);
+    expect(res.statusCode, 200);
+    expect(res.headers['access-control-allow-origin'], '*');
+  });
 }

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../domain/models/destination/destination.dart';
-import '../../../utils/result.dart';
-import '../../services/local/local_data_service.dart';
-import 'destination_repository.dart';
+import 'package:compass_app/data/repositories/destination/destination_repository.dart';
+import 'package:compass_app/data/services/local/local_data_service.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
+import 'package:result_dart/result_dart.dart';
 
 /// Local implementation of DestinationRepository
 /// Uses data from assets folder
@@ -19,9 +19,9 @@ class DestinationRepositoryLocal implements DestinationRepository {
   @override
   Future<Result<List<Destination>>> getDestinations() async {
     try {
-      return Result.ok(await _localDataService.getDestinations());
+      return Success(await _localDataService.getDestinations());
     } on Exception catch (error) {
-      return Result.error(error);
+      return Failure(error);
     }
   }
 }

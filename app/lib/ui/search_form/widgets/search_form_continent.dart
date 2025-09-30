@@ -3,70 +3,68 @@
 // found in the LICENSE file.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
+import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
+import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../../../domain/models/continent/continent.dart';
-import '../../../utils/image_error_listener.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/colors.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/error_indicator.dart';
-import '../view_models/search_form_viewmodel.dart';
 
 /// Continent selection carousel
 ///
 /// Loads a list of continents in a horizontal carousel.
 /// Users can tap one item to select it.
 /// Tapping again the same item will deselect it.
-class SearchFormContinent extends StatelessWidget {
-  const SearchFormContinent({super.key, required this.viewModel});
+class SearchFormContinent extends HookWidget {
+  const SearchFormContinent({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
+    useListenable(viewModel.load);
+
+    if (viewModel.load.value.isRunning) {
+      return const SizedBox(
+        height: 140,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (viewModel.load.value.isFailure) {
+      return SizedBox(
+        height: 140,
+        child: Center(
+          child: ErrorIndicator(
+            title: AppLocalization.of(context).errorWhileLoadingContinents,
+            label: AppLocalization.of(context).tryAgain,
+            onPressed: viewModel.load.execute,
+          ),
+        ),
+      );
+    }
+
     return SizedBox(
       height: 140,
-      child: ListenableBuilder(
-        listenable: viewModel.load,
-        builder: (context, child) {
-          if (viewModel.load.running) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (viewModel.load.error) {
-            return Center(
-              child: ErrorIndicator(
-                title: AppLocalization.of(context).errorWhileLoadingContinents,
-                label: AppLocalization.of(context).tryAgain,
-                onPressed: viewModel.load.execute,
-              ),
-            );
-          }
-          return child!;
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: viewModel.continents.length,
+        padding: Dimens.of(context).edgeInsetsScreenHorizontal,
+        itemBuilder: (BuildContext context, int index) {
+          final Continent(:imageUrl, :name) = viewModel.continents[index];
+          return _CarouselItem(
+            key: ValueKey(name),
+            imageUrl: imageUrl,
+            name: name,
+            viewModel: viewModel,
+          );
         },
-        child: ListenableBuilder(
-          listenable: viewModel,
-          builder: (context, child) {
-            return ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: viewModel.continents.length,
-              padding: Dimens.of(context).edgeInsetsScreenHorizontal,
-              itemBuilder: (BuildContext context, int index) {
-                final Continent(:imageUrl, :name) = viewModel.continents[index];
-                return _CarouselItem(
-                  key: ValueKey(name),
-                  imageUrl: imageUrl,
-                  name: name,
-                  viewModel: viewModel,
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(width: 8);
-              },
-            );
-          },
-        ),
+        separatorBuilder: (BuildContext context, int index) {
+          return const SizedBox(width: 8);
+        },
       ),
     );
   }
@@ -74,10 +72,10 @@ class SearchFormContinent extends StatelessWidget {
 
 class _CarouselItem extends StatelessWidget {
   const _CarouselItem({
-    super.key,
     required this.imageUrl,
     required this.name,
     required this.viewModel,
+    super.key,
   });
 
   final String imageUrl;
@@ -102,7 +100,8 @@ class _CarouselItem extends StatelessWidget {
               fit: BoxFit.cover,
               errorListener: imageErrorListener,
               errorWidget: (context, url, error) {
-                // NOTE: Getting "invalid image data" error for some of the images
+                // NOTE: Getting "invalid image data" error for some of the
+                // images
                 // e.g. https://rstr.in/google/tripedia/jlbgFDrSUVE
                 return const DecoratedBox(
                   decoration: BoxDecoration(color: AppColors.grey3),
@@ -111,9 +110,8 @@ class _CarouselItem extends StatelessWidget {
               },
             ),
             Align(
-              alignment: Alignment.center,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Text(
                   name,
                   textAlign: TextAlign.center,

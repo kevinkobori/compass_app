@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/back_button.dart';
+import 'package:compass_app/ui/core/ui/home_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/back_button.dart';
-import '../../core/ui/home_button.dart';
 
 class ActivitiesHeader extends StatelessWidget {
   const ActivitiesHeader({super.key});
@@ -17,7 +16,6 @@ class ActivitiesHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: true,
       bottom: false,
       child: Padding(
         padding: EdgeInsets.only(

@@ -13,11 +13,13 @@ abstract final class Assets {
   static const _destinations = '../app/assets/destinations.json';
 
   static final List<Destination> destinations =
-      (json.decode(File(Assets._destinations).readAsStringSync()) as List)
+      (json.decode(File(Assets._destinations).readAsStringSync())
+              as List<dynamic>)
           .map((element) => Destination.fromJson(element))
           .toList();
   static final List<Activity> activities =
-      (json.decode(File(Assets._activities).readAsStringSync()) as List)
+      (json.decode(File(Assets._activities).readAsStringSync())
+              as List<dynamic>)
           .map((element) => Activity.fromJson(element))
           .toList();
 }

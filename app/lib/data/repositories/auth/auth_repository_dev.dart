@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../utils/result.dart';
-import 'auth_repository.dart';
+import 'package:compass_app/data/repositories/auth/auth_repository.dart';
+import 'package:result_dart/result_dart.dart';
 
 class AuthRepositoryDev extends AuthRepository {
   /// User is always authenticated in dev scenarios
@@ -12,16 +12,16 @@ class AuthRepositoryDev extends AuthRepository {
 
   /// Login is always successful in dev scenarios
   @override
-  Future<Result<void>> login({
+  Future<Result<Unit>> login({
     required String email,
     required String password,
   }) async {
-    return const Result.ok(null);
+    return const Success(unit);
   }
 
   /// Logout is always successful in dev scenarios
   @override
-  Future<Result<void>> logout() async {
-    return const Result.ok(null);
+  Future<Result<Unit>> logout() async {
+    return const Success(unit);
   }
 }

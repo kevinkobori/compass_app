@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/ui/blur_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../themes/colors.dart';
-import 'blur_filter.dart';
 
 /// Custom back button to pop navigation.
 class CustomBackButton extends StatelessWidget {
@@ -18,24 +17,24 @@ class CustomBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40.0,
-      width: 40.0,
+      height: 40,
+      width: 40,
       child: Stack(
         children: [
           if (blur)
             ClipRect(
               child: BackdropFilter(
                 filter: kBlurFilter,
-                child: const SizedBox(height: 40.0, width: 40.0),
+                child: const SizedBox(height: 40, width: 40),
               ),
             ),
           DecoratedBox(
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.grey1),
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: InkWell(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(8),
               onTap: () {
                 if (onTap != null) {
                   onTap!();
@@ -45,7 +44,7 @@ class CustomBackButton extends StatelessWidget {
               },
               child: Center(
                 child: Icon(
-                  size: 24.0,
+                  size: 24,
                   Icons.arrow_back,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

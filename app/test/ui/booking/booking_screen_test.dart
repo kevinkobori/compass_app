@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_create_use_case.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart';
 import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
 import 'package:compass_app/ui/booking/widgets/booking_screen.dart';
+import 'package:compass_app/config/dependencies.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../testing/app.dart';
 import '../../../testing/fakes/repositories/fake_activities_repository.dart';
@@ -26,38 +30,53 @@ void main() {
     late BookingViewModel viewModel;
     late bool shared;
     late FakeBookingRepository bookingRepository;
+    late ProviderContainer container;
 
     setUp(() {
       shared = false;
       bookingRepository = FakeBookingRepository();
-      viewModel = BookingViewModel(
-        itineraryConfigRepository: FakeItineraryConfigRepository(
-          itineraryConfig: ItineraryConfig(
-            continent: 'Europe',
-            startDate: DateTime(2024, 01, 01),
-            endDate: DateTime(2024, 01, 31),
-            guests: 2,
-            destination: kDestination1.ref,
-            activities: [kActivity.ref],
+      container = ProviderContainer(overrides: [
+        itineraryConfigRepositoryProvider.overrideWith(
+          (ref) => FakeItineraryConfigRepository(
+            itineraryConfig: ItineraryConfig(
+              continent: 'Europe',
+              startDate: DateTime(2024),
+              endDate: DateTime(2024, 01, 31),
+              guests: 2,
+              destination: kDestination1.ref,
+              activities: [kActivity.ref],
+            ),
           ),
         ),
-        createBookingUseCase: BookingCreateUseCase(
-          activityRepository: FakeActivityRepository(),
-          destinationRepository: FakeDestinationRepository(),
-          bookingRepository: bookingRepository,
+        bookingRepositoryProvider.overrideWithValue(bookingRepository),
+        bookingCreateUseCaseProvider.overrideWith(
+          (ref) => BookingCreateUseCase(
+            activityRepository: FakeActivityRepository(),
+            destinationRepository: FakeDestinationRepository(),
+            bookingRepository: bookingRepository,
+          ),
         ),
-        shareBookingUseCase: BookingShareUseCase.custom((text) async {
-          shared = true;
-        }),
-        bookingRepository: bookingRepository,
-      );
+        bookingShareUseCaseProvider.overrideWith(
+          (ref) => BookingShareUseCase.custom((text) async {
+                shared = true;
+              }),
+        ),
+      ]);
+      viewModel = container.read(bookingViewModelProvider.notifier);
       goRouter = MockGoRouter();
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     Future<void> loadScreen(WidgetTester tester) async {
       await testApp(
         tester,
-        BookingScreen(viewModel: viewModel),
+        UncontrolledProviderScope(
+          container: container,
+          child: const BookingScreen(),
+        ),
         goRouter: goRouter,
       );
     }
@@ -69,13 +88,13 @@ void main() {
 
     testWidgets('should display booking from ID', (WidgetTester tester) async {
       // Add a booking to repository
-      bookingRepository.createBooking(kBooking);
+      unawaited(bookingRepository.createBooking(kBooking));
 
       // Load screen
       await loadScreen(tester);
 
       // Load booking with ID 0
-      viewModel.loadBooking.execute(0);
+      unawaited(viewModel.loadBooking.execute(0));
 
       // Wait for booking to load
       await tester.pumpAndSettle();
@@ -90,7 +109,7 @@ void main() {
       await loadScreen(tester);
 
       // Create a new booking from stored itinerary config
-      viewModel.createBooking.execute();
+      unawaited(viewModel.createBooking.execute());
 
       // Wait for booking to load
       await tester.pumpAndSettle();
@@ -103,9 +122,9 @@ void main() {
     });
 
     testWidgets('should share booking', (WidgetTester tester) async {
-      bookingRepository.createBooking(kBooking);
+      unawaited(bookingRepository.createBooking(kBooking));
       await loadScreen(tester);
-      viewModel.loadBooking.execute(0);
+      unawaited(viewModel.loadBooking.execute(0));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('share-button')));
       expect(shared, true);

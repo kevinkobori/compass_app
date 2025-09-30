@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../domain/models/continent/continent.dart';
-import '../../../utils/result.dart';
-import '../../services/local/local_data_service.dart';
-import 'continent_repository.dart';
+import 'package:compass_app/data/repositories/continent/continent_repository.dart';
+import 'package:compass_app/data/services/local/local_data_service.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
+import 'package:result_dart/result_dart.dart';
 
 /// Local data source with all possible continents.
 class ContinentRepositoryLocal implements ContinentRepository {
@@ -16,6 +16,6 @@ class ContinentRepositoryLocal implements ContinentRepository {
 
   @override
   Future<Result<List<Continent>>> getContinents() async {
-    return Future.value(Result.ok(_localDataService.getContinents()));
+    return Future.value(Success(_localDataService.getContinents()));
   }
 }

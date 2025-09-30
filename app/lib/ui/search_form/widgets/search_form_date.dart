@@ -2,24 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/date_format_start_end.dart';
+import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/colors.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/date_format_start_end.dart';
-import '../view_models/search_form_viewmodel.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Date selection form field.
 ///
 /// Opens a date range picker dialog when tapped.
-class SearchFormDate extends StatelessWidget {
-  const SearchFormDate({super.key, required this.viewModel});
+class SearchFormDate extends HookConsumerWidget {
+  const SearchFormDate({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the state to make it reactive
+    final state = ref.watch(searchFormViewModelProvider);
+    
     return Padding(
       padding: EdgeInsets.only(
         top: Dimens.paddingVertical,
@@ -27,19 +30,20 @@ class SearchFormDate extends StatelessWidget {
         right: Dimens.of(context).paddingScreenHorizontal,
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(16),
         onTap: () {
           showDateRangePicker(
             context: context,
             firstDate: DateTime.now(),
             lastDate: DateTime.now().add(const Duration(days: 365)),
+            saveText: AppLocalization.of(context).save,
           ).then((dateRange) => viewModel.dateRange = dateRange);
         },
         child: Container(
           height: 64,
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.grey1),
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -52,10 +56,9 @@ class SearchFormDate extends StatelessWidget {
                   AppLocalization.of(context).when,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                ListenableBuilder(
-                  listenable: viewModel,
-                  builder: (context, _) {
-                    final dateRange = viewModel.dateRange;
+                Builder(
+                  builder: (context) {
+                    final dateRange = state.dateRange;
                     if (dateRange != null) {
                       return Text(
                         dateFormatStartEnd(dateRange),

@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
+import 'package:result_dart/result_dart.dart';
 
-import '../../../utils/result.dart';
-
-abstract class AuthRepository extends ChangeNotifier {
+abstract class AuthRepository {
   /// Returns true when the user is logged in
   /// Returns [Future] because it will load a stored auth state the first time.
   Future<bool> get isAuthenticated;
 
   /// Perform login
-  Future<Result<void>> login({required String email, required String password});
+  Future<Result<Unit>> login({required String email, required String password});
 
   /// Perform logout
-  Future<Result<void>> logout();
+  Future<Result<Unit>> logout();
 }

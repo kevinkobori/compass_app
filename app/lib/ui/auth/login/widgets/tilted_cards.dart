@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
-import '../../../../utils/image_error_listener.dart';
 
 class TiltedCards extends StatelessWidget {
   const TiltedCards({super.key});

@@ -4,8 +4,8 @@
 
 import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
-import 'package:compass_app/utils/result.dart';
 import 'package:flutter/foundation.dart';
+import 'package:result_dart/result_dart.dart';
 
 class FakeItineraryConfigRepository implements ItineraryConfigRepository {
   FakeItineraryConfigRepository({this.itineraryConfig});
@@ -15,13 +15,13 @@ class FakeItineraryConfigRepository implements ItineraryConfigRepository {
   @override
   Future<Result<ItineraryConfig>> getItineraryConfig() {
     return SynchronousFuture(
-      Result.ok(itineraryConfig ?? const ItineraryConfig()),
+      Success(itineraryConfig ?? const ItineraryConfig()),
     );
   }
 
   @override
-  Future<Result<void>> setItineraryConfig(ItineraryConfig itineraryConfig) {
+  Future<Result<Unit>> setItineraryConfig(ItineraryConfig itineraryConfig) {
     this.itineraryConfig = itineraryConfig;
-    return SynchronousFuture(Result.ok(null));
+    return SynchronousFuture(const Success(unit));
   }
 }

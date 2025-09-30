@@ -2,31 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/auth/auth_controller.dart';
 import 'package:logging/logging.dart';
-
-import '../../../../data/repositories/auth/auth_repository.dart';
-import '../../../../utils/command.dart';
-import '../../../../utils/result.dart';
+import 'package:result_command/result_command.dart';
+import 'package:result_dart/result_dart.dart';
 
 class LoginViewModel {
-  LoginViewModel({required AuthRepository authRepository})
-    : _authRepository = authRepository {
-    login = Command1<void, (String email, String password)>(_login);
+  LoginViewModel({required AuthController authController})
+    : _authController = authController {
+    login = Command1<Unit, (String email, String password)>(_login);
   }
 
-  final AuthRepository _authRepository;
+  final AuthController _authController;
   final _log = Logger('LoginViewModel');
 
-  late Command1 login;
+  late Command1<Object, dynamic> login;
 
-  Future<Result<void>> _login((String, String) credentials) async {
+  Future<Result<Unit>> _login((String, String) credentials) async {
     final (email, password) = credentials;
-    final result = await _authRepository.login(
+    final result = await _authController.login(
       email: email,
       password: password,
     );
-    if (result is Error<void>) {
-      _log.warning('Login failed! ${result.error}');
+    if (result.isError()) {
+      _log.warning('Login failed! ${result.exceptionOrNull()}');
     }
     return result;
   }

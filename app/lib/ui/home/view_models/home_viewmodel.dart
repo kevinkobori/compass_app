@@ -1,95 +1,132 @@
-// Copyright 2024 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 
+import 'package:compass_app/config/dependencies.dart';
+import 'package:compass_app/data/repositories/booking/booking_repository.dart';
+import 'package:compass_app/data/repositories/user/user_repository.dart';
+import 'package:compass_app/domain/models/booking/booking_summary.dart';
+import 'package:compass_app/domain/models/user/user.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:result_command/result_command.dart';
+import 'package:result_dart/result_dart.dart';
 
-import '../../../data/repositories/booking/booking_repository.dart';
-import '../../../data/repositories/user/user_repository.dart';
-import '../../../domain/models/booking/booking_summary.dart';
-import '../../../domain/models/user/user.dart';
-import '../../../utils/command.dart';
-import '../../../utils/result.dart';
+/// Immutable state for [HomeViewModel].
+@immutable
+class HomeState {
+  const HomeState({
+    this.bookings = const <BookingSummary>[],
+    this.user,
+  });
 
-class HomeViewModel extends ChangeNotifier {
-  HomeViewModel({
-    required BookingRepository bookingRepository,
-    required UserRepository userRepository,
-  }) : _bookingRepository = bookingRepository,
-       _userRepository = userRepository {
+  final List<BookingSummary> bookings;
+  final User? user;
+
+  HomeState copyWith({
+    List<BookingSummary>? bookings,
+    User? user,
+  }) {
+    return HomeState(
+      bookings: bookings ?? this.bookings,
+      user: user ?? this.user,
+    );
+  }
+}
+
+class HomeViewModel extends Notifier<HomeState> {
+  late BookingRepository _bookingRepository;
+  late UserRepository _userRepository;
+
+  @override
+  HomeState build() {
+    _bookingRepository = ref.read(bookingRepositoryProvider);
+    _userRepository = ref.read(userRepositoryProvider);
     load = Command0(_load)..execute();
     deleteBooking = Command1(_deleteBooking);
+    return const HomeState();
   }
 
-  final BookingRepository _bookingRepository;
-  final UserRepository _userRepository;
   final _log = Logger('HomeViewModel');
-  List<BookingSummary> _bookings = [];
-  User? _user;
 
   late Command0 load;
   late Command1<void, int> deleteBooking;
 
-  List<BookingSummary> get bookings => _bookings;
+  List<BookingSummary> get bookings => state.bookings;
+  User? get user => state.user;
 
-  User? get user => _user;
+  /// Refresh data by reloading bookings and user.
+  /// This method can be called externally to trigger a data refresh.
+  void refresh() {
+    load.execute();
+  }
 
-  Future<Result> _load() async {
+  Future<Result<User>> _load() async {
     try {
+      // Carregar lista de bookings
       final result = await _bookingRepository.getBookingsList();
-      switch (result) {
-        case Ok<List<BookingSummary>>():
-          _bookings = result.value;
-          _log.fine('Loaded bookings');
-        case Error<List<BookingSummary>>():
-          _log.warning('Failed to load bookings', result.error);
-          return result;
+      if (result.isError()) {
+        _log.warning('Failed to load bookings', result.exceptionOrNull());
+        return Failure(
+          result.exceptionOrNull() ?? Exception('Failed to load bookings'),
+        );
       }
+      final bookings = result.getOrThrow();
+      _log.fine('Loaded bookings');
 
+      // Carregar usuário
       final userResult = await _userRepository.getUser();
-      switch (userResult) {
-        case Ok<User>():
-          _user = userResult.value;
-          _log.fine('Loaded user');
-        case Error<User>():
-          _log.warning('Failed to load user', userResult.error);
+      if (userResult.isError()) {
+        _log.warning('Failed to load user', userResult.exceptionOrNull());
+        return Failure(
+          userResult.exceptionOrNull() ?? Exception('Failed to load user'),
+        );
       }
+      final user = userResult.getOrThrow();
+      _log.fine('Loaded user');
 
-      return userResult;
-    } finally {
-      notifyListeners();
+      state = state.copyWith(bookings: bookings, user: user);
+      return Success(user);
+    } catch (e, stackTrace) {
+      _log.severe('Error loading data', e, stackTrace);
+      return Failure(Exception('Error loading data: $e')); // TODO(Kevin): NOW
     }
   }
 
-  Future<Result<void>> _deleteBooking(int id) async {
-    try {
-      final resultDelete = await _bookingRepository.delete(id);
-      switch (resultDelete) {
-        case Ok<void>():
-          _log.fine('Deleted booking $id');
-        case Error<void>():
-          _log.warning('Failed to delete booking $id', resultDelete.error);
-          return resultDelete;
-      }
-
-      // After deleting the booking, we need to reload the bookings list.
-      // BookingRepository is the source of truth for bookings.
-      final resultLoadBookings = await _bookingRepository.getBookingsList();
-      switch (resultLoadBookings) {
-        case Ok<List<BookingSummary>>():
-          _bookings = resultLoadBookings.value;
-          _log.fine('Loaded bookings');
-        case Error<List<BookingSummary>>():
-          _log.warning('Failed to load bookings', resultLoadBookings.error);
-          return resultLoadBookings;
-      }
-
-      return resultLoadBookings;
-    } finally {
-      notifyListeners();
+  Future<Result<Unit>> _deleteBooking(int id) async {
+    // Delete booking
+    final resultDelete = await _bookingRepository.delete(id);
+    if (resultDelete.isError()) {
+      _log.warning(
+        'Failed to delete booking $id',
+        resultDelete.exceptionOrNull(),
+      );
+      return Failure(
+        resultDelete.exceptionOrNull() ?? Exception('Failed to delete booking'),
+      );
     }
+    _log.fine('Deleted booking $id');
+
+    // Reload bookings after deletion
+    final resultLoadBookings = await _bookingRepository.getBookingsList();
+    if (resultLoadBookings.isError()) {
+      _log.warning(
+        'Failed to load bookings',
+        resultLoadBookings.exceptionOrNull(),
+      );
+      return Failure(
+        resultLoadBookings.exceptionOrNull() ??
+            Exception('Failed to load bookings'),
+      );
+    }
+    final bookings = resultLoadBookings.getOrThrow();
+    state = state.copyWith(bookings: bookings);
+    _log.fine('Loaded bookings');
+
+    return const Success(unit);
   }
 }
+
+/// Provider exposing the [HomeViewModel] state and notifier.
+final homeViewModelProvider = NotifierProvider<HomeViewModel, HomeState>(
+  HomeViewModel.new,
+);

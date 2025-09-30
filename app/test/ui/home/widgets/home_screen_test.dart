@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/data/repositories/auth/auth_repository.dart';
-import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
+import 'package:compass_app/config/dependencies.dart';
 import 'package:compass_app/routing/routes.dart';
 import 'package:compass_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:compass_app/ui/home/widgets/home_screen.dart';
-import 'package:compass_app/utils/result.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:provider/provider.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/app.dart';
 import '../../../../testing/fakes/repositories/fake_auth_repository.dart';
@@ -26,26 +25,34 @@ void main() {
     late HomeViewModel viewModel;
     late MockGoRouter goRouter;
     late FakeBookingRepository bookingRepository;
+    late ProviderContainer container;
 
     setUp(() {
       bookingRepository = FakeBookingRepository()..createBooking(kBooking);
-      viewModel = HomeViewModel(
-        bookingRepository: bookingRepository,
-        userRepository: FakeUserRepository(),
-      );
+      container = ProviderContainer(overrides: [
+        bookingRepositoryProvider.overrideWithValue(bookingRepository),
+        userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+        authRepositoryProvider.overrideWith((ref) => FakeAuthRepository()),
+        itineraryConfigRepositoryProvider.overrideWithValue(
+          FakeItineraryConfigRepository(),
+        ),
+      ]);
+      viewModel = container.read(homeViewModelProvider.notifier);
       goRouter = MockGoRouter();
-      when(() => goRouter.push(any())).thenAnswer((_) => Future.value(null));
+      when(() => goRouter.push(any())).thenAnswer((_) => Future.value());
+      when(() => goRouter.go(any())).thenAnswer((_) => Future.value());
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     Future<void> loadWidget(WidgetTester tester) async {
       await testApp(
         tester,
-        ChangeNotifierProvider.value(
-          value: FakeAuthRepository() as AuthRepository,
-          child: Provider.value(
-            value: FakeItineraryConfigRepository() as ItineraryConfigRepository,
-            child: HomeScreen(viewModel: viewModel),
-          ),
+        UncontrolledProviderScope(
+          container: container,
+          child: const HomeScreen(),
         ),
         goRouter: goRouter,
       );
@@ -62,7 +69,7 @@ void main() {
       await loadWidget(tester);
       await tester.pumpAndSettle();
 
-      expect(find.text('NAME\'s Trips'), findsOneWidget);
+      expect(find.text("NAME's Trips"), findsOneWidget);
     });
 
     testWidgets('should navigate to search', (tester) async {
@@ -105,11 +112,21 @@ void main() {
     });
 
     testWidgets('fail to delete booking', (tester) async {
-      // Create a ViewModel with a repository that will fail to delete
-      viewModel = HomeViewModel(
-        bookingRepository: _BadFakeBookingRepository()..createBooking(kBooking),
-        userRepository: FakeUserRepository(),
-      );
+      final repo = _BadFakeBookingRepository();
+      await repo.createBooking(kBooking);
+
+      // Recreate container with failing repository
+      container.dispose();
+      container = ProviderContainer(overrides: [
+        bookingRepositoryProvider.overrideWithValue(repo),
+        userRepositoryProvider.overrideWithValue(FakeUserRepository()),
+        authRepositoryProvider.overrideWith((ref) => FakeAuthRepository()),
+        itineraryConfigRepositoryProvider.overrideWithValue(
+          FakeItineraryConfigRepository(),
+        ),
+      ]);
+      viewModel = container.read(homeViewModelProvider.notifier);
+
       await loadWidget(tester);
       await tester.pumpAndSettle();
 
@@ -125,7 +142,7 @@ void main() {
 
 class _BadFakeBookingRepository extends FakeBookingRepository {
   @override
-  Future<Result<void>> delete(int id) async {
-    return Result.error(Exception('Failed to delete booking'));
+  Future<Result<Unit>> delete(int id) async {
+    return Failure(Exception('Failed to delete booking'));
   }
 }

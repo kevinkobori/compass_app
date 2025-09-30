@@ -1,11 +1,7 @@
-// Copyright 2024 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-import '../../../domain/models/destination/destination.dart';
-import '../../../utils/result.dart';
-import '../../services/api/api_client.dart';
-import 'destination_repository.dart';
+import 'package:compass_app/data/repositories/destination/destination_repository.dart';
+import 'package:compass_app/data/services/api/api_client.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
+import 'package:result_dart/result_dart.dart';
 
 /// Remote data source for [Destination].
 /// Implements basic local caching.
@@ -23,14 +19,14 @@ class DestinationRepositoryRemote implements DestinationRepository {
     if (_cachedData == null) {
       // No cached data, request destinations
       final result = await _apiClient.getDestinations();
-      if (result is Ok<List<Destination>>) {
-        // Store value if result Ok
-        _cachedData = result.value;
+      if (result.isSuccess()) {
+        // Store value if result Success
+        _cachedData = result.getOrThrow();
       }
       return result;
     } else {
       // Return cached data if available
-      return Result.ok(_cachedData!);
+      return Success(_cachedData!);
     }
   }
 }

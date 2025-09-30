@@ -7,6 +7,8 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
+import '../utils/response_utils.dart';
+
 import '../config/constants.dart';
 import '../model/login_request/login_request.dart';
 import '../model/login_response/login_response.dart';
@@ -31,11 +33,8 @@ class LoginApi {
 
       if (loginRequest.email == Constants.email &&
           loginRequest.password == Constants.password) {
-        return Response.ok(
-          json.encode(
-            LoginResponse(token: Constants.token, userId: Constants.userId),
-          ),
-          headers: {'Content-Type': 'application/json'},
+        return jsonResponse(
+          LoginResponse(token: Constants.token, userId: Constants.userId),
         );
       }
 

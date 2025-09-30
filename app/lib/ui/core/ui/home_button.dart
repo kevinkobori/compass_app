@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/ui/blur_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../routing/routes.dart';
-import '../themes/colors.dart';
-import 'blur_filter.dart';
 
 /// Home button to navigate back to the '/' path.
 class HomeButton extends StatelessWidget {
@@ -18,8 +17,8 @@ class HomeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40.0,
-      width: 40.0,
+      height: 40,
+      width: 40,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -27,23 +26,23 @@ class HomeButton extends StatelessWidget {
             ClipRect(
               child: BackdropFilter(
                 filter: kBlurFilter,
-                child: const SizedBox(height: 40.0, width: 40.0),
+                child: const SizedBox(height: 40, width: 40),
               ),
             ),
           DecoratedBox(
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.grey1),
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(8),
               color: Colors.transparent,
             ),
             child: InkWell(
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(8),
               onTap: () {
                 context.go(Routes.home);
               },
               child: Center(
                 child: Icon(
-                  size: 24.0,
+                  size: 24,
                   Icons.home_outlined,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

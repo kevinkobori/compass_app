@@ -2,85 +2,78 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
+import 'package:compass_app/ui/booking/widgets/booking_body.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/ui/error_indicator.dart';
-import '../view_models/booking_viewmodel.dart';
-import 'booking_body.dart';
-
-class BookingScreen extends StatefulWidget {
-  const BookingScreen({super.key, required this.viewModel});
-
-  final BookingViewModel viewModel;
+class BookingScreen extends HookConsumerWidget {
+  const BookingScreen({super.key});
 
   @override
-  State<BookingScreen> createState() => _BookingScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(bookingViewModelProvider.notifier);
+    final booking = ref.watch(bookingViewModelProvider);
 
-class _BookingScreenState extends State<BookingScreen> {
-  @override
-  void initState() {
-    super.initState();
-    widget.viewModel.shareBooking.addListener(_listener);
-  }
+    void listener() {
+      if (viewModel.shareBooking.value.isFailure) {
+        viewModel.shareBooking.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalization.of(context).errorWhileSharing),
+            action: SnackBarAction(
+              label: AppLocalization.of(context).tryAgain,
+              onPressed: viewModel.shareBooking.execute,
+            ),
+          ),
+        );
+      }
+    }
 
-  @override
-  void dispose() {
-    widget.viewModel.shareBooking.removeListener(_listener);
-    super.dispose();
-  }
+    useEffect(() {
+      viewModel.shareBooking.addListener(listener);
+      return () => viewModel.shareBooking.removeListener(listener);
+    }, [viewModel]);
 
-  @override
-  Widget build(BuildContext context) {
+    useListenable(viewModel.createBooking);
+    useListenable(viewModel.loadBooking);
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, r) {
-        // Back navigation always goes to home
         if (!didPop) context.go(Routes.home);
       },
       child: Scaffold(
-        floatingActionButton: ListenableBuilder(
-          listenable: widget.viewModel,
-          builder:
-              (context, _) => FloatingActionButton.extended(
-                // Workaround for https://github.com/flutter/flutter/issues/115358#issuecomment-2117157419
-                heroTag: null,
-                key: const ValueKey('share-button'),
-                onPressed:
-                    widget.viewModel.booking != null
-                        ? widget.viewModel.shareBooking.execute
-                        : null,
-                label: Text(AppLocalization.of(context).shareTrip),
-                icon: const Icon(Icons.share_outlined),
-              ),
+        floatingActionButton: FloatingActionButton.extended(
+          heroTag:
+              null, // Workaround for https://github.com/flutter/flutter/issues/115358#issuecomment-2117157419
+          key: const ValueKey('share-button'),
+          onPressed:
+              booking != null ? viewModel.shareBooking.execute : null,
+          label: Text(AppLocalization.of(context).shareTrip),
+          icon: const Icon(Icons.share_outlined),
         ),
-        body: ListenableBuilder(
-          // Listen to changes in both commands
-          listenable: Listenable.merge([
-            widget.viewModel.createBooking,
-            widget.viewModel.loadBooking,
-          ]),
-          builder: (context, child) {
-            // If either command is running, show progress indicator
-            if (widget.viewModel.createBooking.running ||
-                widget.viewModel.loadBooking.running) {
+        body: Builder(
+          builder: (context) {
+            if (viewModel.createBooking.value.isRunning ||
+                viewModel.loadBooking.value.isRunning) {
               return const Center(child: CircularProgressIndicator());
             }
-            // If fails to create booking, tap to try again
-            if (widget.viewModel.createBooking.error) {
+            if (viewModel.createBooking.value.isFailure) {
               return Center(
                 child: ErrorIndicator(
                   title: AppLocalization.of(context).errorWhileLoadingBooking,
                   label: AppLocalization.of(context).tryAgain,
-                  onPressed: widget.viewModel.createBooking.execute,
+                  onPressed: viewModel.createBooking.execute,
                 ),
               );
             }
-            // If existing booking fails to load, tap to go /home
-            if (widget.viewModel.loadBooking.error) {
+            if (viewModel.loadBooking.value.isFailure) {
               return Center(
                 child: ErrorIndicator(
                   title: AppLocalization.of(context).errorWhileLoadingBooking,
@@ -89,26 +82,10 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               );
             }
-            return child!;
+            return BookingBody(viewModel: viewModel);
           },
-          child: BookingBody(viewModel: widget.viewModel),
         ),
       ),
     );
-  }
-
-  void _listener() {
-    if (widget.viewModel.shareBooking.error) {
-      widget.viewModel.shareBooking.clearResult();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalization.of(context).errorWhileSharing),
-          action: SnackBarAction(
-            label: AppLocalization.of(context).tryAgain,
-            onPressed: widget.viewModel.shareBooking.execute,
-          ),
-        ),
-      );
-    }
   }
 }

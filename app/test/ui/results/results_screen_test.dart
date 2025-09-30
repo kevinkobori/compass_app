@@ -5,6 +5,8 @@
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
 import 'package:compass_app/ui/results/view_models/results_viewmodel.dart';
 import 'package:compass_app/ui/results/widgets/results_screen.dart';
+import 'package:compass_app/config/dependencies.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
@@ -18,42 +20,58 @@ void main() {
   group('ResultsScreen widget tests', () {
     late MockGoRouter goRouter;
     late ResultsViewModel viewModel;
+    late ProviderContainer container;
 
     setUp(() {
-      viewModel = ResultsViewModel(
-        destinationRepository: FakeDestinationRepository(),
-        itineraryConfigRepository: FakeItineraryConfigRepository(
-          itineraryConfig: ItineraryConfig(
-            continent: 'Europe',
-            startDate: DateTime(2024, 01, 01),
-            endDate: DateTime(2024, 01, 31),
-            guests: 2,
+      container = ProviderContainer(overrides: [
+        destinationRepositoryProvider.overrideWithValue(
+          FakeDestinationRepository(),
+        ),
+        itineraryConfigRepositoryProvider.overrideWith(
+          (ref) => FakeItineraryConfigRepository(
+            itineraryConfig: ItineraryConfig(
+              continent: 'Europe',
+              startDate: DateTime(2024),
+              endDate: DateTime(2024, 01, 31),
+              guests: 2,
+            ),
           ),
         ),
-      );
+      ]);
+      viewModel = container.read(resultsViewModelProvider.notifier);
       goRouter = MockGoRouter();
+    });
+
+    tearDown(() {
+      container.dispose();
     });
 
     Future<void> loadScreen(WidgetTester tester) async {
       await testApp(
         tester,
-        ResultsScreen(viewModel: viewModel),
+        UncontrolledProviderScope(
+          container: container,
+          child: const ResultsScreen(),
+        ),
         goRouter: goRouter,
       );
     }
 
     testWidgets('should load screen', (WidgetTester tester) async {
       await mockNetworkImages(() async {
+        // Executa o comando search antes de carregar o widget
+        await viewModel.search.execute();
         await loadScreen(tester);
+        await tester.pumpAndSettle();
         expect(find.byType(ResultsScreen), findsOneWidget);
       });
     });
 
     testWidgets('should display destination', (WidgetTester tester) async {
       await mockNetworkImages(() async {
+        // Executa o comando search antes de carregar o widget
+        await viewModel.search.execute();
         await loadScreen(tester);
-
-        // Wait for list to load
         await tester.pumpAndSettle();
 
         // Note: Name is converted to uppercase
@@ -66,9 +84,9 @@ void main() {
       WidgetTester tester,
     ) async {
       await mockNetworkImages(() async {
+        // Executa o comando search antes de carregar o widget
+        await viewModel.search.execute();
         await loadScreen(tester);
-
-        // Wait for list to load
         await tester.pumpAndSettle();
 
         // warnIfMissed false because false negative

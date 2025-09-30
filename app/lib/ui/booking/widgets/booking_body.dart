@@ -3,39 +3,35 @@
 // found in the LICENSE file.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:compass_app/domain/models/activity/activity.dart';
+import 'package:compass_app/ui/booking/view_models/booking_viewmodel.dart';
+import 'package:compass_app/ui/booking/widgets/booking_header.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/utils/image_error_listener.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../../domain/models/activity/activity.dart';
-import '../../../utils/image_error_listener.dart';
-import '../../core/themes/dimens.dart';
-import '../view_models/booking_viewmodel.dart';
-import 'booking_header.dart';
-
-class BookingBody extends StatelessWidget {
-  const BookingBody({super.key, required this.viewModel});
+class BookingBody extends HookWidget {
+  const BookingBody({required this.viewModel, super.key});
 
   final BookingViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: viewModel,
-      builder: (context, _) {
-        final booking = viewModel.booking;
-        if (booking == null) return const SizedBox();
-        return CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: BookingHeader(booking: booking)),
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final activity = booking.activity[index];
-                return _Activity(activity: activity);
-              }, childCount: booking.activity.length),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 200)),
-          ],
-        );
-      },
+    final booking = viewModel.booking;
+    if (booking == null) return const SizedBox();
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: BookingHeader(booking: booking)),
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final activity = booking.activity[index];
+            return _Activity(activity: activity);
+          }, childCount: booking.activity.length),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 200)),
+      ],
     );
   }
 }
@@ -68,7 +64,6 @@ class _Activity extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   activity.timeOfDay.name.toUpperCase(),

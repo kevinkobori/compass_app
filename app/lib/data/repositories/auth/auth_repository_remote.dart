@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/data/repositories/auth/auth_repository.dart';
+import 'package:compass_app/data/services/api/api_client.dart';
+import 'package:compass_app/data/services/api/auth_api_client.dart';
+import 'package:compass_app/data/services/api/model/login_request/login_request.dart';
+import 'package:compass_app/data/services/shared_preferences_service.dart';
 import 'package:logging/logging.dart';
-
-import '../../../utils/result.dart';
-import '../../services/api/api_client.dart';
-import '../../services/api/auth_api_client.dart';
-import '../../services/api/model/login_request/login_request.dart';
-import '../../services/api/model/login_response/login_response.dart';
-import '../../services/shared_preferences_service.dart';
-import 'auth_repository.dart';
+import 'package:result_dart/result_dart.dart';
 
 class AuthRepositoryRemote extends AuthRepository {
   AuthRepositoryRemote({
@@ -34,16 +32,17 @@ class AuthRepositoryRemote extends AuthRepository {
   /// Fetch token from shared preferences
   Future<void> _fetch() async {
     final result = await _sharedPreferencesService.fetchToken();
-    switch (result) {
-      case Ok<String?>():
-        _authToken = result.value;
-        _isAuthenticated = result.value != null;
-      case Error<String?>():
-        _log.severe(
-          'Failed to fech Token from SharedPreferences',
-          result.error,
-        );
-    }
+    result.fold(
+      (token) {
+        _authToken = token;
+        _isAuthenticated = true;
+      },
+      (error) {
+        _authToken = null;
+        _isAuthenticated = false;
+        _log.severe('Failed to fetch Token from SharedPreferences', error);
+      },
+    );
   }
 
   @override
@@ -58,7 +57,7 @@ class AuthRepositoryRemote extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> login({
+  Future<Result<Unit>> login({
     required String email,
     required String password,
   }) async {
@@ -66,41 +65,41 @@ class AuthRepositoryRemote extends AuthRepository {
       final result = await _authApiClient.login(
         LoginRequest(email: email, password: password),
       );
-      switch (result) {
-        case Ok<LoginResponse>():
-          _log.info('User logged int');
-          // Set auth status
-          _isAuthenticated = true;
-          _authToken = result.value.token;
-          // Store in Shared preferences
-          return await _sharedPreferencesService.saveToken(result.value.token);
-        case Error<LoginResponse>():
-          _log.warning('Error logging in: ${result.error}');
-          return Result.error(result.error);
+
+      if (result.isSuccess()) {
+        final loginResponse = result.getOrThrow();
+        _log.info('User logged in');
+        _isAuthenticated = true;
+        _authToken = loginResponse.token;
+        // Chama método async e retorna
+        return await _sharedPreferencesService.saveToken(loginResponse.token);
+      } else {
+        final error = result.exceptionOrNull();
+        _log.warning('Error logging in: $error');
+        return Failure(error ?? Exception('Unknown error'));
       }
     } finally {
-      notifyListeners();
+      // State changes are handled by [AuthController].
     }
   }
 
   @override
-  Future<Result<void>> logout() async {
+  Future<Result<Unit>> logout() async {
     _log.info('User logged out');
     try {
-      // Clear stored auth token
+      // Limpa o token salvo
       final result = await _sharedPreferencesService.saveToken(null);
-      if (result is Error<void>) {
-        _log.severe('Failed to clear stored auth token');
+      if (result.isError()) {
+        _log.severe(
+          'Failed to clear stored auth token: ${result.exceptionOrNull()}',
+        );
       }
-
-      // Clear token in ApiClient
+      // Limpa o token no ApiClient
       _authToken = null;
-
-      // Clear authenticated status
       _isAuthenticated = false;
       return result;
     } finally {
-      notifyListeners();
+      // State changes are handled by [AuthController].
     }
   }
 

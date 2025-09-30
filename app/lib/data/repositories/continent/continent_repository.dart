@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../domain/models/continent/continent.dart';
-import '../../../utils/result.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
+import 'package:result_dart/result_dart.dart';
 
 /// Data source with all possible continents.
-abstract class ContinentRepository {
+mixin ContinentRepository {
   /// Get complete list of continents.
   Future<Result<List<Continent>>> getContinents();
 }

@@ -2,25 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/core/localization/app_strings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'app_strings.dart';
-
 class AppLocalization {
-  final Locale locale;
-  late final AppStrings _strings;
-
   AppLocalization(this.locale) {
     switch (locale.toString()) {
       case 'pt_BR':
         _strings = AppStringsPtBr();
-        break;
       case 'en_US':
       default:
         _strings = AppStringsEnUs();
     }
   }
+  final Locale locale;
+  late final AppStrings _strings;
 
   static AppLocalization of(BuildContext context) {
     return Localizations.of(context, AppLocalization)!;
@@ -51,6 +48,7 @@ class AppLocalization {
   String get evening => _strings.evening;
   String get login => _strings.login;
   String nameTrips(String name) => _strings.nameTrips(name);
+  String get save => _strings.save;
   String get search => _strings.search;
   String get searchDestination => _strings.searchDestination;
   String selected(int value) => _strings.selected(value);

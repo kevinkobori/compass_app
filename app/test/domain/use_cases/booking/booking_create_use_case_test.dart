@@ -12,7 +12,6 @@ import '../../../../testing/fakes/repositories/fake_destination_repository.dart'
 import '../../../../testing/models/activity.dart';
 import '../../../../testing/models/booking.dart';
 import '../../../../testing/models/destination.dart';
-import '../../../../testing/utils/result.dart';
 
 void main() {
   group('BookingCreateUseCase tests', () {
@@ -25,14 +24,14 @@ void main() {
 
       final booking = await useCase.createFrom(
         ItineraryConfig(
-          startDate: DateTime(2024, 01, 01),
+          startDate: DateTime(2024),
           endDate: DateTime(2024, 02, 12),
           destination: kDestination1.ref,
           activities: [kActivity.ref],
         ),
       );
 
-      expect(booking.asOk.value, kBooking);
+      expect(booking.getOrThrow(), kBooking);
     });
   });
 }

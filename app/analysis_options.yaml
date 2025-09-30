@@ -1,11 +1,31 @@
-include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.yaml
 
 linter:
   rules:
+    # public_member_api_docs: false
     - combinators_ordering
     - directives_ordering
-    - omit_local_variable_types
+    # - omit_local_variable_types
     - prefer_final_fields
     - prefer_final_in_for_each
     - prefer_final_locals
-    - prefer_relative_imports
+    # - prefer_relative_imports
+
+analyzer:
+  exclude:
+    - build/**
+    - lib/src/core/presentation/i18n/**
+    - "**/*.g.dart"
+    - lib/generated_plugin_registrant.dart
+    - lib/firebase_options_dev.dart
+    - lib/firebase_options_prod.dart
+  errors:
+    constant_identifier_names: ignore
+    invalid_annotation_target: ignore
+    avoid_positional_boolean_parameters: ignore
+    public_member_api_docs: ignore # TODO(Kevin): remove this
+    avoid_setters_without_getters: ignore
+    # parameter_assignments: ignore
+
+formatter:
+  trailing_commas: preserve

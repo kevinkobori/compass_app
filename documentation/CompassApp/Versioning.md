@@ -1,9 +1,46 @@
 - [x] 0.1.0; feat: add Google Compass App project following new official Flutter app architecture.
-	- Based on: https://docs.flutter.dev/app-architecture
+  - Based on: https://docs.flutter.dev/app-architecture
 - [x] 0.1.1; docs: move Obsidian notes to dedicated 'CompassApp' folder
 - [x] 0.1.2; refactor(localization): migrate localization logic from Map-based to strongly-typed language classes
-	- Replace translation maps with language-specific classes implementing the AppStrings interface.
-	- Update AppLocalization to delegate lookups to typed classes.
-	- Delegate and public interface remain compatible.
-	- Improves IDE autocomplete, reduces typos, and eases refactoring.
-	- Note: Suitable for small projects. For large-scale or production apps, prefer the .arb standard and codegen.
+  - Replace translation maps with language-specific classes implementing the AppStrings interface.
+  - Update AppLocalization to delegate lookups to typed classes.
+  - Delegate and public interface remain compatible.
+  - Improves IDE autocomplete, reduces typos, and eases refactoring.
+  - Note: Suitable for small projects. For large-scale or production apps, prefer the .arb standard and codegen.
+- [x] 0.1.3; test(integration): internationalization of local and server integration tests
+  - Parameterizes integration tests to run automatically for both supported locales (en_US and pt_BR).
+  - Updates all text matching and interactions to use strongly-typed AppStrings, ensuring multi-language compatibility.
+  - Ensures full coverage of critical flows regardless of the active locale.
+  - Fixes use of the 'Save' button label to be dynamic based on the current language.
+  - Improves test robustness and prevents i18n-related regressions.
+    Related files:
+  - integration_test/app_local_data_test.dart
+  - integration_test/app_server_data_test.dart
+- [x] Add isolate helpers for JSON parsing
+- [x] Replace HttpClient with cross-platform http package
+- [x] Add CORS middleware and tests
+- [x] 0.1.7; refactor(cross-platform): fix runtime errors and add new launch configuration
+- [x] chore: migrate to result_command
+- [x] 0.1.8; refactor(project): fix all project errors to migrate to result_command 2.1.0 and result_dart 2.1.1. Not including tests
+- [x] test: update for result_dart
+- [x] 0.1.10; fix Compile time tests errors
+- [x] 0.1.11; dart format .
+- [x] 0.1.12; introduce very_good_analysis
+- [x] 0.1.13; enhance the code
+- [x] 0.1.14; fix: resolve all project warnings
+- [x] 0.1.15; chore: update SDK version and dependencies across project files
+- [x] Replace Provider with Riverpod
+- [x] Fix Riverpod integration
+- [x] Fix provider overrides in tests
+- [x] Use hooks_riverpod for state management
+- [x] 0.2.4; refactor: update imports and clean up routing code for better readability
+- [x] refactor(ui): migrate auth and booking widgets to hooks
+- [x] refactor(ui): migrate activities and results screens to hooks
+- [x] refactor(ui): migrate search form and home to hooks
+- [x] refactor: replace listenable builders with hooks
+- [x] 0.2.8; refactor: update providers to use explicit types and improve formatting
+- [x] refactor(state): migrate auth and booking to riverpod
+- [x] Refactor activities and results to use Riverpod
+- [x] refactor: switch home and search form to riverpod
+- [x] fix imports and listeners
+- [x] 0.2.13; refactor: improve router and auth controller with stream handling

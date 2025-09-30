@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/main_development.dart' as development;
+import 'package:compass_app/routing/router.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/theme.dart';
+import 'package:compass_app/ui/core/ui/scroll_behavior.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
-
-import 'main_development.dart' as development;
-import 'routing/router.dart';
-import 'ui/core/localization/applocalization.dart';
-import 'ui/core/themes/theme.dart';
-import 'ui/core/ui/scroll_behavior.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Default main method
 void main() {
@@ -18,25 +17,23 @@ void main() {
   development.main();
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends HookConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       localizationsDelegates: [
-        GlobalWidgetsLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
         AppLocalizationDelegate(),
       ],
       // locale: Locale('en', 'US'),
-      locale: Locale('pt', 'BR'),
+      locale: const Locale('pt', 'BR'),
       supportedLocales: const [Locale('en', 'US'), Locale('pt', 'BR')],
       scrollBehavior: AppCustomScrollBehavior(),
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      routerConfig: router(context.read()),
+      routerConfig: ref.watch(routerProvider),
     );
   }
 }

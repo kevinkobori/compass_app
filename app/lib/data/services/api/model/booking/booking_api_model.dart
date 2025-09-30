@@ -10,9 +10,6 @@ part 'booking_api_model.g.dart';
 @freezed
 class BookingApiModel with _$BookingApiModel {
   const factory BookingApiModel({
-    /// Booking ID. Generated when stored in server.
-    int? id,
-
     /// Start date of the trip
     required DateTime startDate,
 
@@ -28,6 +25,9 @@ class BookingApiModel with _$BookingApiModel {
 
     /// List of chosen activities
     required List<String> activitiesRef,
+
+    /// Booking ID. Generated when stored in server.
+    int? id,
   }) = _BookingApiModel;
 
   factory BookingApiModel.fromJson(Map<String, Object?> json) =>

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/colors.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/search_form/view_models/search_form_viewmodel.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/colors.dart';
-import '../../core/themes/dimens.dart';
-import '../view_models/search_form_viewmodel.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 const String removeGuestsKey = 'remove-guests';
 const String addGuestsKey = 'add-guests';
@@ -16,8 +17,8 @@ const String addGuestsKey = 'add-guests';
 ///
 /// Users can tap the Plus and Minus icons to increase or decrease
 /// the number of guests.
-class SearchFormGuests extends StatelessWidget {
-  const SearchFormGuests({super.key, required this.viewModel});
+class SearchFormGuests extends HookWidget {
+  const SearchFormGuests({required this.viewModel, super.key});
 
   final SearchFormViewModel viewModel;
 
@@ -33,7 +34,7 @@ class SearchFormGuests extends StatelessWidget {
         height: 64,
         decoration: BoxDecoration(
           border: Border.all(color: AppColors.grey1),
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -55,13 +56,16 @@ class SearchFormGuests extends StatelessWidget {
   }
 }
 
-class _QuantitySelector extends StatelessWidget {
+class _QuantitySelector extends HookConsumerWidget {
   const _QuantitySelector(this.viewModel);
 
   final SearchFormViewModel viewModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the state to make it reactive
+    final state = ref.watch(searchFormViewModelProvider);
+    
     return SizedBox(
       width: 90,
       child: Row(
@@ -77,16 +81,11 @@ class _QuantitySelector extends StatelessWidget {
               color: AppColors.grey3,
             ),
           ),
-          ListenableBuilder(
-            listenable: viewModel,
-            builder:
-                (context, _) => Text(
-                  viewModel.guests.toString(),
-                  style:
-                      viewModel.guests == 0
-                          ? Theme.of(context).inputDecorationTheme.hintStyle
-                          : Theme.of(context).textTheme.bodyMedium,
-                ),
+          Text(
+            state.guests.toString(),
+            style: state.guests == 0
+                ? Theme.of(context).inputDecorationTheme.hintStyle
+                : Theme.of(context).textTheme.bodyMedium,
           ),
           InkWell(
             key: const ValueKey(addGuestsKey),

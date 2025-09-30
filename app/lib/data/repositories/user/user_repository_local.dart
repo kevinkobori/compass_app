@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../domain/models/user/user.dart';
-import '../../../utils/result.dart';
-import '../../services/local/local_data_service.dart';
-import 'user_repository.dart';
+import 'package:compass_app/data/repositories/user/user_repository.dart';
+import 'package:compass_app/data/services/local/local_data_service.dart';
+import 'package:compass_app/domain/models/user/user.dart';
+import 'package:result_dart/result_dart.dart';
 
 class UserRepositoryLocal implements UserRepository {
   UserRepositoryLocal({required LocalDataService localDataService})
@@ -15,6 +15,6 @@ class UserRepositoryLocal implements UserRepository {
 
   @override
   Future<Result<User>> getUser() async {
-    return Result.ok(_localDataService.getUser());
+    return Success(_localDataService.getUser());
   }
 }

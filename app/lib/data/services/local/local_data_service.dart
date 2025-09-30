@@ -4,13 +4,14 @@
 
 import 'dart:convert';
 
+import 'package:compass_app/config/assets.dart';
+import 'package:compass_app/domain/models/activity/activity.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
+import 'package:compass_app/domain/models/destination/destination.dart';
+import 'package:compass_app/domain/models/user/user.dart';
+import 'package:compass_app/utils/json_isolate.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
-
-import '../../../config/assets.dart';
-import '../../../domain/models/activity/activity.dart';
-import '../../../domain/models/continent/continent.dart';
-import '../../../domain/models/destination/destination.dart';
-import '../../../domain/models/user/user.dart';
 
 class LocalDataService {
   List<Continent> getContinents() {
@@ -58,7 +59,13 @@ class LocalDataService {
 
   Future<List<Map<String, dynamic>>> _loadStringAsset(String asset) async {
     final localData = await rootBundle.loadString(asset);
-    return (jsonDecode(localData) as List).cast<Map<String, dynamic>>();
+
+    if (kIsWeb) {
+      return (jsonDecode(localData) as List<dynamic>)
+          .cast<Map<String, dynamic>>();
+    } else {
+      return parseMapListInIsolate(localData);
+    }
   }
 
   User getUser() {

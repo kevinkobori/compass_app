@@ -4,11 +4,10 @@
 
 import 'package:compass_app/data/repositories/destination/destination_repository.dart';
 import 'package:compass_app/data/repositories/destination/destination_repository_remote.dart';
-import 'package:compass_app/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
-import '../../../../testing/utils/result.dart';
 
 void main() {
   group('DestinationRepositoryRemote tests', () {
@@ -22,9 +21,9 @@ void main() {
 
     test('should get destinations', () async {
       final result = await repository.getDestinations();
-      expect(result, isA<Ok>());
+      expect(result, isA<Success>());
 
-      final list = result.asOk.value;
+      final list = result.getOrThrow();
       expect(list.length, 2);
 
       final destination = list.first;
@@ -37,11 +36,11 @@ void main() {
     test('should get destinations from cache', () async {
       // Request destination once
       var result = await repository.getDestinations();
-      expect(result, isA<Ok>());
+      expect(result, isA<Success>());
 
       // Request destination another time
       result = await repository.getDestinations();
-      expect(result, isA<Ok>());
+      expect(result, isA<Success>());
 
       // Only one request happened
       expect(apiClient.requestCount, 1);

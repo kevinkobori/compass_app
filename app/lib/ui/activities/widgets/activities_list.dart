@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/ui/activities/view_models/activities_viewmodel.dart';
+import 'package:compass_app/ui/activities/widgets/activity_entry.dart';
+import 'package:compass_app/ui/activities/widgets/activity_time_of_day.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/themes/dimens.dart';
-import '../view_models/activities_viewmodel.dart';
-import 'activity_entry.dart';
-import 'activity_time_of_day.dart';
 
 class ActivitiesList extends StatelessWidget {
   const ActivitiesList({
-    super.key,
     required this.viewModel,
     required this.activityTimeOfDay,
+    super.key,
   });
 
   final ActivitiesViewModel viewModel;

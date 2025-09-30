@@ -2,128 +2,114 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:compass_app/routing/routes.dart';
+import 'package:compass_app/ui/core/localization/applocalization.dart';
+import 'package:compass_app/ui/core/themes/dimens.dart';
+import 'package:compass_app/ui/core/ui/error_indicator.dart';
+import 'package:compass_app/ui/core/ui/search_bar.dart';
+import 'package:compass_app/ui/results/view_models/results_viewmodel.dart';
+import 'package:compass_app/ui/results/widgets/result_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../routing/routes.dart';
-import '../../core/localization/applocalization.dart';
-import '../../core/themes/dimens.dart';
-import '../../core/ui/error_indicator.dart';
-import '../../core/ui/search_bar.dart';
-import '../view_models/results_viewmodel.dart';
-import 'result_card.dart';
-
-class ResultsScreen extends StatefulWidget {
-  const ResultsScreen({super.key, required this.viewModel});
-
-  final ResultsViewModel viewModel;
+class ResultsScreen extends HookConsumerWidget {
+  const ResultsScreen({super.key});
 
   @override
-  State<ResultsScreen> createState() => _ResultsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(resultsViewModelProvider.notifier);
+    ref.watch(resultsViewModelProvider);
 
-class _ResultsScreenState extends State<ResultsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    widget.viewModel.updateItineraryConfig.addListener(_onResult);
-  }
+    void listener() {
+      if (viewModel.updateItineraryConfig.value.isSuccess) {
+        viewModel.updateItineraryConfig.reset();
+        context.go(Routes.activities);
+      }
 
-  @override
-  void didUpdateWidget(covariant ResultsScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    oldWidget.viewModel.updateItineraryConfig.removeListener(_onResult);
-    widget.viewModel.updateItineraryConfig.addListener(_onResult);
-  }
+      if (viewModel.updateItineraryConfig.value.isFailure) {
+        viewModel.updateItineraryConfig.reset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalization.of(context).errorWhileSavingItinerary,
+            ),
+          ),
+        );
+      }
+    }
 
-  @override
-  void dispose() {
-    widget.viewModel.updateItineraryConfig.removeListener(_onResult);
-    super.dispose();
-  }
+    useEffect(() {
+      viewModel.updateItineraryConfig.addListener(listener);
+      return () => viewModel.updateItineraryConfig.removeListener(listener);
+    }, [viewModel]);
+    useListenable(viewModel.search);
+    useListenable(viewModel.updateItineraryConfig);
 
-  @override
-  Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, r) {
         if (!didPop) context.go(Routes.search);
       },
       child: Scaffold(
-        body: ListenableBuilder(
-          listenable: widget.viewModel.search,
-          builder: (context, child) {
-            if (widget.viewModel.search.completed) {
-              return child!;
-            }
-            return Column(
-              children: [
-                _AppSearchBar(widget: widget),
-                if (widget.viewModel.search.running)
+        body: Builder(
+          builder: (context) {
+            if (viewModel.search.value.isRunning) {
+              return Column(
+                children: [
+                  _AppSearchBar(viewModel: viewModel),
                   const Expanded(
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                if (widget.viewModel.search.error)
+                ],
+              );
+            }
+            if (viewModel.search.value.isFailure) {
+              return Column(
+                children: [
+                  _AppSearchBar(viewModel: viewModel),
                   Expanded(
                     child: Center(
                       child: ErrorIndicator(
-                        title:
-                            AppLocalization.of(
-                              context,
-                            ).errorWhileLoadingDestinations,
+                        title: AppLocalization.of(
+                          context,
+                        ).errorWhileLoadingDestinations,
                         label: AppLocalization.of(context).tryAgain,
-                        onPressed: widget.viewModel.search.execute,
+                        onPressed: viewModel.search.execute,
                       ),
                     ),
                   ),
-              ],
+                ],
+              );
+            }
+
+            return Padding(
+              padding: Dimens.of(context).edgeInsetsScreenHorizontal,
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: _AppSearchBar(viewModel: viewModel),
+                  ),
+                  _Grid(viewModel: viewModel),
+                ],
+              ),
             );
           },
-          child: ListenableBuilder(
-            listenable: widget.viewModel,
-            builder: (context, child) {
-              return Padding(
-                padding: Dimens.of(context).edgeInsetsScreenHorizontal,
-                child: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(child: _AppSearchBar(widget: widget)),
-                    _Grid(viewModel: widget.viewModel),
-                  ],
-                ),
-              );
-            },
-          ),
         ),
       ),
     );
   }
-
-  void _onResult() {
-    if (widget.viewModel.updateItineraryConfig.completed) {
-      widget.viewModel.updateItineraryConfig.clearResult();
-      context.go(Routes.activities);
-    }
-
-    if (widget.viewModel.updateItineraryConfig.error) {
-      widget.viewModel.updateItineraryConfig.clearResult();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalization.of(context).errorWhileSavingItinerary),
-        ),
-      );
-    }
-  }
 }
 
 class _AppSearchBar extends StatelessWidget {
-  const _AppSearchBar({required this.widget});
+  const _AppSearchBar({required this.viewModel});
 
-  final ResultsScreen widget;
+  final ResultsViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: true,
       bottom: false,
       child: Padding(
         padding: EdgeInsets.only(
@@ -131,11 +117,11 @@ class _AppSearchBar extends StatelessWidget {
           bottom: Dimens.mobile.paddingScreenVertical,
         ),
         child: AppSearchBar(
-          config: widget.viewModel.config,
-          onTap: () {
-            // Navigate to SearchFormScreen and edit search
-            context.pop();
-          },
+          config: viewModel.config,
+          // onTap: () {
+          //   // Navigate to SearchFormScreen and edit search
+          // context.pop();
+          // },
         ),
       ),
     );
@@ -152,8 +138,8 @@ class _Grid extends StatelessWidget {
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 8.0,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
         childAspectRatio: 182 / 222,
       ),
       delegate: SliverChildBuilderDelegate((context, index) {

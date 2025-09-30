@@ -8,7 +8,6 @@ import 'package:compass_app/data/services/api/model/login_response/login_respons
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../testing/mocks.dart';
-import '../../../../testing/utils/result.dart';
 
 void main() {
   group('AuthApiClient', () {
@@ -26,7 +25,7 @@ void main() {
       final result = await apiClient.login(
         const LoginRequest(email: 'EMAIL', password: 'PASSWORD'),
       );
-      expect(result.asOk.value, loginResponse);
+      expect(result.getOrThrow(), loginResponse);
     });
   });
 }
