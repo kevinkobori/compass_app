@@ -10,6 +10,10 @@ linter:
     - prefer_final_in_for_each
     - prefer_final_locals
     # - prefer_relative_imports
+    - unawaited_futures  # ← Força uso de await em Futures
+    
+    # Desabilitar regras do very_good_analysis que conflitam com await
+    - no_unawaited_futures: false
 
 analyzer:
   exclude:
@@ -26,6 +30,13 @@ analyzer:
     public_member_api_docs: ignore # TODO(Kevin): remove this
     avoid_setters_without_getters: ignore
     # parameter_assignments: ignore
+    
+    # FORÇAR await como ERRO
+    unawaited_futures: error
+    
+    # DESABILITAR warnings que sugerem remover await
+    unnecessary_await_in_return: ignore
+    await_only_futures: ignore
 
 formatter:
   trailing_commas: preserve

@@ -4,24 +4,28 @@ import 'package:compass_app/data/repositories/booking/booking_repository.dart';
 import 'package:compass_app/data/repositories/user/user_repository.dart';
 import 'package:compass_app/domain/models/booking/booking_summary.dart';
 import 'package:compass_app/domain/models/user/user.dart';
-import 'package:flutter/foundation.dart';
-import 'package:logging/logging.dart';
+import 'package:compass_app/utils/base_viewmodel.dart';
+import 'package:compass_app/utils/result_extensions.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
-class HomeViewModel extends ChangeNotifier {
+class HomeViewModel extends BaseViewModel {
   HomeViewModel({
     required BookingRepository bookingRepository,
     required UserRepository userRepository,
   }) : _bookingRepository = bookingRepository,
-       _userRepository = userRepository {
+       _userRepository = userRepository,
+       super('HomeViewModel') {
+    _initializeCommands();
+  }
+
+  void _initializeCommands() {
     load = Command0(_load)..execute();
     deleteBooking = Command1(_deleteBooking);
   }
 
   final BookingRepository _bookingRepository;
   final UserRepository _userRepository;
-  final _log = Logger('HomeViewModel');
   List<BookingSummary> _bookings = [];
   User? _user;
 
@@ -31,70 +35,55 @@ class HomeViewModel extends ChangeNotifier {
   List<BookingSummary> get bookings => _bookings;
   User? get user => _user;
 
-  Future<Result<User>> _load() async {
-    try {
-      // Carregar lista de bookings
-      final result = await _bookingRepository.getBookingsList();
-      if (result.isError()) {
-        _log.warning('Failed to load bookings', result.exceptionOrNull());
-        return Failure(
-          result.exceptionOrNull() ?? Exception('Failed to load bookings'),
-        );
-      }
-      _bookings = result.getOrThrow();
-      _log.fine('Loaded bookings');
+  Future<Result<User>> _load() => executeWithNotification(
+    () async {
+      final bookingsResult = await _bookingRepository.getBookingsList();
 
-      // Carregar usuário
-      final userResult = await _userRepository.getUser();
-      if (userResult.isError()) {
-        _log.warning('Failed to load user', userResult.exceptionOrNull());
-        return Failure(
-          userResult.exceptionOrNull() ?? Exception('Failed to load user'),
-        );
-      }
-      _user = userResult.getOrThrow();
-      _log.fine('Loaded user');
+      return await bookingsResult.handle<User>(
+        logger: logger,
+        successMessage: 'Loaded bookings',
+        failureMessage: 'Failed to load bookings',
+        onSuccess: (bookings) async {
+          _bookings = bookings;
 
-      return Success(_user!);
-    } finally {
-      notifyListeners();
-    }
-  }
+          final userResult = await _userRepository.getUser();
 
-  Future<Result<Unit>> _deleteBooking(int id) async {
-    try {
-      // Deletar booking
-      final resultDelete = await _bookingRepository.delete(id);
-      if (resultDelete.isError()) {
-        _log.warning(
-          'Failed to delete booking $id',
-          resultDelete.exceptionOrNull(),
-        );
-        return Failure(
-          resultDelete.exceptionOrNull() ??
-              Exception('Failed to delete booking'),
-        );
-      }
-      _log.fine('Deleted booking $id');
+          return await userResult.handle<User>(
+            logger: logger,
+            successMessage: 'Loaded user',
+            failureMessage: 'Failed to load user',
+            onSuccess: (user) async {
+              _user = user;
+              return Success(user);
+            },
+          );
+        },
+      );
+    },
+  );
 
-      // Atualizar lista de bookings
-      final resultLoadBookings = await _bookingRepository.getBookingsList();
-      if (resultLoadBookings.isError()) {
-        _log.warning(
-          'Failed to load bookings',
-          resultLoadBookings.exceptionOrNull(),
-        );
-        return Failure(
-          resultLoadBookings.exceptionOrNull() ??
-              Exception('Failed to load bookings'),
-        );
-      }
-      _bookings = resultLoadBookings.getOrThrow();
-      _log.fine('Loaded bookings');
+  Future<Result<Unit>> _deleteBooking(int id) => executeWithNotification(
+    () async {
+      final deleteResult = await _bookingRepository.delete(id);
 
-      return const Success(unit);
-    } finally {
-      notifyListeners();
-    }
-  }
+      return deleteResult.handle<Unit>(
+        logger: logger,
+        successMessage: 'Deleted booking $id',
+        failureMessage: 'Failed to delete booking $id',
+        onSuccess: (_) async {
+          final reloadResult = await _bookingRepository.getBookingsList();
+
+          return await reloadResult.handle<Unit>(
+            logger: logger,
+            successMessage: 'Reloaded bookings',
+            failureMessage: 'Failed to reload bookings',
+            onSuccess: (bookings) async {
+              _bookings = bookings;
+              return const Success(unit);
+            },
+          );
+        },
+      );
+    },
+  );
 }

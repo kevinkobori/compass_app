@@ -2,7 +2,7 @@ name: compass_app
 description: >-
   A sample app that helps users build and book itineraries for trips.
 publish_to: none
-version: 0.2.18
+version: 0.2.19
 
 environment:
   sdk: ^3.8.0
