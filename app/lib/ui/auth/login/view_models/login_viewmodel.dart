@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/auth/auth_repository.dart';
+import 'package:compass_app/utils/result_extensions.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
@@ -24,9 +25,12 @@ class LoginViewModel {
       email: email,
       password: password,
     );
-    if (result.isError()) {
-      _log.warning('Login failed! ${result.exceptionOrNull()}');
-    }
-    return result;
+
+    return result.handleSync<Unit>(
+      logger: _log,
+      successMessage: 'Login successful for $email',
+      failureMessage: 'Login failed',
+      onSuccess: (_) => result,
+    );
   }
 }

@@ -2,6 +2,7 @@ import 'package:compass_app/data/repositories/continent/continent_repository.dar
 import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
 import 'package:compass_app/domain/models/continent/continent.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
+import 'package:compass_app/utils/result_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
@@ -55,49 +56,41 @@ class SearchFormViewModel extends ChangeNotifier {
   late final Command0 updateItineraryConfig;
 
   Future<Result<Unit>> _load() async {
-    final result = await _loadContinents();
-    if (result.isError()) {
-      return Failure(
-        result.exceptionOrNull() ?? Exception('Failed to load continents'),
-      );
-    }
-    return _loadItineraryConfig();
-  }
-
-  Future<Result<Unit>> _loadContinents() async {
     final result = await _continentRepository.getContinents();
-    if (result.isSuccess()) {
-      _continents = result.getOrThrow();
-      _log.fine('Continents (${_continents.length}) loaded');
-    } else {
-      _log.warning('Failed to load continents', result.exceptionOrNull());
-    }
-    notifyListeners();
-    return result.map((_) => unit);
+
+    return await result.handle<Unit>(
+      logger: _log,
+      successMessage: 'Continents (${result.getOrNull()?.length ?? 0}) loaded',
+      failureMessage: 'Failed to load continents',
+      onSuccess: (continents) async {
+        _continents = continents;
+        notifyListeners();
+        return await _loadItineraryConfig();
+      },
+    );
   }
 
   Future<Result<Unit>> _loadItineraryConfig() async {
     final result = await _itineraryConfigRepository.getItineraryConfig();
-    if (result.isSuccess()) {
-      final itineraryConfig = result.getOrThrow();
-      _selectedContinent = itineraryConfig.continent;
-      if (itineraryConfig.startDate != null &&
-          itineraryConfig.endDate != null) {
-        _dateRange = DateTimeRange(
-          start: itineraryConfig.startDate!,
-          end: itineraryConfig.endDate!,
-        );
-      }
-      _guests = itineraryConfig.guests ?? 0;
-      _log.fine('ItineraryConfig loaded');
-      notifyListeners();
-    } else {
-      _log.warning(
-        'Failed to load stored ItineraryConfig',
-        result.exceptionOrNull(),
-      );
-    }
-    return result.map((_) => unit);
+
+    return result.handleSync<Unit>(
+      logger: _log,
+      successMessage: 'ItineraryConfig loaded',
+      failureMessage: 'Failed to load stored ItineraryConfig',
+      onSuccess: (itineraryConfig) {
+        _selectedContinent = itineraryConfig.continent;
+        if (itineraryConfig.startDate != null &&
+            itineraryConfig.endDate != null) {
+          _dateRange = DateTimeRange(
+            start: itineraryConfig.startDate!,
+            end: itineraryConfig.endDate!,
+          );
+        }
+        _guests = itineraryConfig.guests ?? 0;
+        notifyListeners();
+        return const Success(unit);
+      },
+    );
   }
 
   Future<Result<Unit>> _updateItineraryConfig() async {
@@ -110,11 +103,12 @@ class SearchFormViewModel extends ChangeNotifier {
         guests: _guests,
       ),
     );
-    if (result.isSuccess()) {
-      _log.fine('ItineraryConfig saved');
-    } else {
-      _log.warning('Failed to store ItineraryConfig', result.exceptionOrNull());
-    }
-    return result.map((_) => unit);
+
+    return result.handleSync<Unit>(
+      logger: _log,
+      successMessage: 'ItineraryConfig saved',
+      failureMessage: 'Failed to store ItineraryConfig',
+      onSuccess: (_) => const Success(unit),
+    );
   }
 }

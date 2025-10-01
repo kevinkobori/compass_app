@@ -1,6 +1,8 @@
 import 'package:compass_app/data/repositories/auth/auth_repository.dart';
 import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
+import 'package:compass_app/utils/result_extensions.dart';
+import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -15,18 +17,27 @@ class LogoutViewModel {
 
   final AuthRepository _authLogoutRepository;
   final ItineraryConfigRepository _itineraryConfigRepository;
+  final _log = Logger('LogoutViewModel');
   late Command0 logout;
 
   Future<Result<Unit>> _logout() async {
-    final result = await _authLogoutRepository.logout();
-    if (result.isError()) {
-      return Failure(result.exceptionOrNull() ?? Exception('Logout failed'));
-    }
+    final logoutResult = await _authLogoutRepository.logout();
 
-    return _itineraryConfigRepository
-        .setItineraryConfig(const ItineraryConfig())
-        .then(
-          (res) => res.map((_) => unit),
+    return await logoutResult.handle<Unit>(
+      logger: _log,
+      successMessage: 'Logout successful',
+      failureMessage: 'Logout failed',
+      onSuccess: (_) async {
+        final clearConfigResult = await _itineraryConfigRepository
+            .setItineraryConfig(const ItineraryConfig());
+
+        return clearConfigResult.handleSync<Unit>(
+          logger: _log,
+          successMessage: 'ItineraryConfig cleared',
+          failureMessage: 'Failed to clear ItineraryConfig',
+          onSuccess: (_) => const Success(unit),
         );
+      },
+    );
   }
 }

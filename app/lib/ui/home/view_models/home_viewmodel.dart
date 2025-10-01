@@ -33,6 +33,7 @@ class HomeViewModel extends BaseViewModel {
   late Command1<void, int> deleteBooking;
 
   List<BookingSummary> get bookings => _bookings;
+
   User? get user => _user;
 
   Future<Result<User>> _load() => executeWithNotification(

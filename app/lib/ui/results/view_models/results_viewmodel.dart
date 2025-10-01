@@ -2,6 +2,7 @@ import 'package:compass_app/data/repositories/destination/destination_repository
 import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
 import 'package:compass_app/domain/models/destination/destination.dart';
 import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart';
+import 'package:compass_app/utils/result_extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:logging/logging.dart';
 import 'package:result_command/result_command.dart';
@@ -33,61 +34,63 @@ class ResultsViewModel extends ChangeNotifier {
 
   Future<Result<Unit>> _search() async {
     // Load current itinerary config
-    final resultConfig = await _itineraryConfigRepository.getItineraryConfig();
-    if (resultConfig.isError()) {
-      _log.warning(
-        'Failed to load stored ItineraryConfig',
-        resultConfig.exceptionOrNull(),
-      );
-      return Failure(
-        resultConfig.exceptionOrNull() ??
-            Exception('Unknown ItineraryConfig error'),
-      );
-    }
-    _itineraryConfig = resultConfig.getOrThrow();
-    notifyListeners();
+    final configResult = await _itineraryConfigRepository.getItineraryConfig();
 
-    final result = await _destinationRepository.getDestinations();
-    if (result.isSuccess()) {
-      _destinations =
-          result
-              .getOrThrow()
-              .where(
-                (destination) =>
-                    destination.continent == _itineraryConfig!.continent,
-              )
-              .toList();
-      _log.fine('Destinations (${_destinations.length}) loaded');
-    } else {
-      _log.warning('Failed to load destinations', result.exceptionOrNull());
-    }
+    return await configResult.handle<Unit>(
+      logger: _log,
+      successMessage: 'ItineraryConfig loaded',
+      failureMessage: 'Failed to load stored ItineraryConfig',
+      onSuccess: (itineraryConfig) async {
+        _itineraryConfig = itineraryConfig;
+        notifyListeners();
 
-    notifyListeners();
-    return result.map((_) => unit); // sempre retorne Result<Unit>
+        final destinationsResult = await _destinationRepository
+            .getDestinations();
+
+        return await destinationsResult.handle<Unit>(
+          logger: _log,
+          successMessage:
+              'Destinations (${destinationsResult.getOrNull()?.length ?? 0}) loaded',
+          failureMessage: 'Failed to load destinations',
+          onSuccess: (allDestinations) async {
+            _destinations = allDestinations
+                .where(
+                  (destination) =>
+                      destination.continent == _itineraryConfig!.continent,
+                )
+                .toList();
+            notifyListeners();
+            return const Success(unit);
+          },
+        );
+      },
+    );
   }
 
   Future<Result<Unit>> _updateItineraryConfig(String destinationRef) async {
     assert(destinationRef.isNotEmpty, 'destinationRef should not be empty');
 
-    final resultConfig = await _itineraryConfigRepository.getItineraryConfig();
-    if (resultConfig.isError()) {
-      _log.warning(
-        'Failed to load stored ItineraryConfig',
-        resultConfig.exceptionOrNull(),
-      );
-      return Failure(
-        resultConfig.exceptionOrNull() ??
-            Exception('Unknown ItineraryConfig error'),
-      );
-    }
+    final configResult = await _itineraryConfigRepository.getItineraryConfig();
 
-    final itineraryConfig = resultConfig.getOrThrow();
-    final result = await _itineraryConfigRepository.setItineraryConfig(
-      itineraryConfig.copyWith(destination: destinationRef, activities: []),
+    return await configResult.handle<Unit>(
+      logger: _log,
+      successMessage: 'ItineraryConfig loaded for update',
+      failureMessage: 'Failed to load stored ItineraryConfig',
+      onSuccess: (itineraryConfig) async {
+        final saveResult = await _itineraryConfigRepository.setItineraryConfig(
+          itineraryConfig.copyWith(
+            destination: destinationRef,
+            activities: [],
+          ),
+        );
+
+        return saveResult.handleSync<Unit>(
+          logger: _log,
+          successMessage: 'ItineraryConfig updated with destination',
+          failureMessage: 'Failed to store ItineraryConfig',
+          onSuccess: (_) => const Success(unit),
+        );
+      },
     );
-    if (result.isError()) {
-      _log.warning('Failed to store ItineraryConfig', result.exceptionOrNull());
-    }
-    return result.map((_) => unit);
   }
 }
