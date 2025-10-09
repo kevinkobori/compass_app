@@ -5,7 +5,7 @@ import 'package:compass_app/domain/models/itinerary_config/itinerary_config.dart
 import 'package:result_dart/result_dart.dart';
 
 /// In-memory implementation of [ItineraryConfigRepository].
-class ItineraryConfigRepositoryMemory implements ItineraryConfigRepository {
+class MemoryItineraryConfigRepository implements ItineraryConfigRepository {
   ItineraryConfig? _itineraryConfig;
 
   @override

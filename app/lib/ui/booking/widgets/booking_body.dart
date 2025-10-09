@@ -25,10 +25,13 @@ class BookingBody extends HookWidget {
       slivers: [
         SliverToBoxAdapter(child: BookingHeader(booking: booking)),
         SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            final activity = booking.activity[index];
-            return _Activity(activity: activity);
-          }, childCount: booking.activity.length),
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final activity = booking.activity[index];
+              return _Activity(activity: activity);
+            },
+            childCount: booking.activity.length,
+          ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 200)),
       ],

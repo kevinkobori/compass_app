@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/activity/activity_repository.dart';
-import 'package:compass_app/data/repositories/activity/activity_repository_remote.dart';
+import 'package:compass_app/data/repositories/activity/remote_activity_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
 
 void main() {
-  group('ActivityRepositoryRemote tests', () {
+  group('RemoteActivityRepository tests', () {
     late FakeApiClient apiClient;
     late ActivityRepository repository;
 
     setUp(() {
       apiClient = FakeApiClient();
-      repository = ActivityRepositoryRemote(apiClient: apiClient);
+      repository = RemoteActivityRepository(apiClient: apiClient);
     });
 
     test('should get activities for destination', () async {

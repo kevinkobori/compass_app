@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/booking/booking_repository.dart';
-import 'package:compass_app/data/repositories/booking/booking_repository_remote.dart';
+import 'package:compass_app/data/repositories/booking/remote_booking_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -11,13 +11,13 @@ import '../../../../testing/fakes/services/fake_api_client.dart';
 import '../../../../testing/models/booking.dart';
 
 void main() {
-  group('BookingRepositoryRemote tests', () {
+  group('RemoteBookingRepository tests', () {
     late BookingRepository bookingRepository;
     late FakeApiClient fakeApiClient;
 
     setUp(() {
       fakeApiClient = FakeApiClient();
-      bookingRepository = BookingRepositoryRemote(apiClient: fakeApiClient);
+      bookingRepository = RemoteBookingRepository(apiClient: fakeApiClient);
     });
 
     test('should get booking', () async {

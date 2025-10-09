@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/continent/continent_repository.dart';
-import 'package:compass_app/data/repositories/continent/continent_repository_remote.dart';
+import 'package:compass_app/data/repositories/continent/remote_continent_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
 
 void main() {
-  group('ContinentRepositoryRemote tests', () {
+  group('RemoteContinentRepository tests', () {
     late FakeApiClient apiClient;
     late ContinentRepository repository;
 
     setUp(() {
       apiClient = FakeApiClient();
-      repository = ContinentRepositoryRemote(apiClient: apiClient);
+      repository = RemoteContinentRepository(apiClient: apiClient);
     });
 
     test('should get continents', () async {

@@ -6,8 +6,8 @@ import 'package:compass_app/domain/models/booking/booking_summary.dart';
 import 'package:compass_app/domain/models/destination/destination.dart';
 import 'package:result_dart/result_dart.dart';
 
-class BookingRepositoryRemote implements BookingRepository {
-  BookingRepositoryRemote({required ApiClient apiClient})
+class RemoteBookingRepository implements BookingRepository {
+  RemoteBookingRepository({required ApiClient apiClient})
     : _apiClient = apiClient;
 
   final ApiClient _apiClient;
@@ -22,8 +22,9 @@ class BookingRepositoryRemote implements BookingRepository {
         endDate: booking.endDate,
         name: '${booking.destination.name}, ${booking.destination.continent}',
         destinationRef: booking.destination.ref,
-        activitiesRef:
-            booking.activity.map((activity) => activity.ref).toList(),
+        activitiesRef: booking.activity
+            .map((activity) => activity.ref)
+            .toList(),
       );
       final result = await _apiClient.postBooking(bookingApiModel);
       return result.map((_) => unit); // converte o resultado para Unit
@@ -71,11 +72,10 @@ class BookingRepositoryRemote implements BookingRepository {
               Exception('Unknown activity error'),
         );
       }
-      final activities =
-          resultActivities
-              .getOrThrow()
-              .where((activity) => booking.activitiesRef.contains(activity.ref))
-              .toList();
+      final activities = resultActivities
+          .getOrThrow()
+          .where((activity) => booking.activitiesRef.contains(activity.ref))
+          .toList();
 
       return Success(
         Booking(

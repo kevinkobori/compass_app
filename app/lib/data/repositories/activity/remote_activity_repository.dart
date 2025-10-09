@@ -10,8 +10,8 @@ import 'package:result_dart/result_dart.dart';
 /// Remote data source for [Activity].
 /// Implements basic local caching.
 /// See: https://docs.flutter.dev/get-started/fwe/local-caching
-class ActivityRepositoryRemote implements ActivityRepository {
-  ActivityRepositoryRemote({required ApiClient apiClient})
+class RemoteActivityRepository implements ActivityRepository {
+  RemoteActivityRepository({required ApiClient apiClient})
     : _apiClient = apiClient;
 
   final ApiClient _apiClient;

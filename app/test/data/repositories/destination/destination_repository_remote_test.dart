@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/destination/destination_repository.dart';
-import 'package:compass_app/data/repositories/destination/destination_repository_remote.dart';
+import 'package:compass_app/data/repositories/destination/remote_destination_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../testing/fakes/services/fake_api_client.dart';
 
 void main() {
-  group('DestinationRepositoryRemote tests', () {
+  group('RemoteDestinationRepository tests', () {
     late FakeApiClient apiClient;
     late DestinationRepository repository;
 
     setUp(() {
       apiClient = FakeApiClient();
-      repository = DestinationRepositoryRemote(apiClient: apiClient);
+      repository = RemoteDestinationRepository(apiClient: apiClient);
     });
 
     test('should get destinations', () async {

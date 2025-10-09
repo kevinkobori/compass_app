@@ -5,7 +5,7 @@
 import 'package:compass_app/data/repositories/auth/auth_repository.dart';
 import 'package:result_dart/result_dart.dart';
 
-class AuthRepositoryDev extends AuthRepository {
+class DevAuthRepository extends AuthRepository {
   /// User is always authenticated in dev scenarios
   @override
   Future<bool> get isAuthenticated => Future.value(true);

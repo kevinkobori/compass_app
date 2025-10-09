@@ -1,24 +1,24 @@
-import 'package:compass_app/data/repositories/destination/destination_repository.dart';
+import 'package:compass_app/data/repositories/continent/continent_repository.dart';
 import 'package:compass_app/data/services/api/api_client.dart';
-import 'package:compass_app/domain/models/destination/destination.dart';
+import 'package:compass_app/domain/models/continent/continent.dart';
 import 'package:result_dart/result_dart.dart';
 
-/// Remote data source for [Destination].
+/// Remote data source for [Continent].
 /// Implements basic local caching.
 /// See: https://docs.flutter.dev/get-started/fwe/local-caching
-class DestinationRepositoryRemote implements DestinationRepository {
-  DestinationRepositoryRemote({required ApiClient apiClient})
+class RemoteContinentRepository implements ContinentRepository {
+  RemoteContinentRepository({required ApiClient apiClient})
     : _apiClient = apiClient;
 
   final ApiClient _apiClient;
 
-  List<Destination>? _cachedData;
+  List<Continent>? _cachedData;
 
   @override
-  Future<Result<List<Destination>>> getDestinations() async {
+  Future<Result<List<Continent>>> getContinents() async {
     if (_cachedData == null) {
-      // No cached data, request destinations
-      final result = await _apiClient.getDestinations();
+      // No cached data, request continents
+      final result = await _apiClient.getContinents();
       if (result.isSuccess()) {
         // Store value if result Success
         _cachedData = result.getOrThrow();

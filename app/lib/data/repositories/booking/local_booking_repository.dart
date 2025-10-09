@@ -10,8 +10,8 @@ import 'package:compass_app/domain/models/booking/booking.dart';
 import 'package:compass_app/domain/models/booking/booking_summary.dart';
 import 'package:result_dart/result_dart.dart';
 
-class BookingRepositoryLocal implements BookingRepository {
-  BookingRepositoryLocal({required LocalDataService localDataService})
+class LocalBookingRepository implements BookingRepository {
+  LocalBookingRepository({required LocalDataService localDataService})
     : _localDataService = localDataService;
 
   // Only create default booking once
@@ -68,11 +68,10 @@ class BookingRepositoryLocal implements BookingRepository {
     // create a default booking the first time
     if (_bookings.isEmpty) {
       final destination = (await _localDataService.getDestinations()).first;
-      final activities =
-          (await _localDataService.getActivities())
-              .where((activity) => activity.destinationRef == destination.ref)
-              .take(4)
-              .toList();
+      final activities = (await _localDataService.getActivities())
+          .where((activity) => activity.destinationRef == destination.ref)
+          .take(4)
+          .toList();
 
       _bookings.add(
         Booking(

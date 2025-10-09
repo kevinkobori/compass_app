@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:compass_app/data/repositories/activity/activity_repository_local.dart';
+import 'package:compass_app/data/repositories/activity/local_activity_repository.dart';
 import 'package:compass_app/data/services/local/local_data_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:result_dart/result_dart.dart';
 
 void main() {
-  group('ActivityRepositoryLocal tests', () {
+  group('LocalActivityRepository tests', () {
     // To load assets
     TestWidgetsFlutterBinding.ensureInitialized();
 
-    final repository = ActivityRepositoryLocal(
+    final repository = LocalActivityRepository(
       localDataService: LocalDataService(),
     );
 

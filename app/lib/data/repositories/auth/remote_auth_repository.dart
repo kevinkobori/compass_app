@@ -10,8 +10,8 @@ import 'package:compass_app/data/services/shared_preferences_service.dart';
 import 'package:logging/logging.dart';
 import 'package:result_dart/result_dart.dart';
 
-class AuthRepositoryRemote extends AuthRepository {
-  AuthRepositoryRemote({
+class RemoteAuthRepository extends AuthRepository {
+  RemoteAuthRepository({
     required ApiClient apiClient,
     required AuthApiClient authApiClient,
     required SharedPreferencesService sharedPreferencesService,
@@ -27,7 +27,7 @@ class AuthRepositoryRemote extends AuthRepository {
 
   bool? _isAuthenticated;
   String? _authToken;
-  final _log = Logger('AuthRepositoryRemote');
+  final _log = Logger('RemoteAuthRepository');
 
   /// Fetch token from shared preferences
   Future<void> _fetch() async {

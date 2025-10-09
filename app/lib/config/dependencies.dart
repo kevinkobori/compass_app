@@ -3,32 +3,32 @@
 // found in the LICENSE file.
 
 import 'package:compass_app/data/repositories/activity/activity_repository.dart';
-import 'package:compass_app/data/repositories/activity/activity_repository_local.dart';
-import 'package:compass_app/data/repositories/activity/activity_repository_remote.dart';
+import 'package:compass_app/data/repositories/activity/local_activity_repository.dart';
+import 'package:compass_app/data/repositories/activity/remote_activity_repository.dart';
 import 'package:compass_app/data/repositories/auth/auth_repository.dart';
-import 'package:compass_app/data/repositories/auth/auth_repository_dev.dart';
-import 'package:compass_app/data/repositories/auth/auth_repository_remote.dart';
+import 'package:compass_app/data/repositories/auth/dev_auth_repository.dart';
+import 'package:compass_app/data/repositories/auth/remote_auth_repository.dart';
 import 'package:compass_app/data/repositories/booking/booking_repository.dart';
-import 'package:compass_app/data/repositories/booking/booking_repository_local.dart';
-import 'package:compass_app/data/repositories/booking/booking_repository_remote.dart';
+import 'package:compass_app/data/repositories/booking/local_booking_repository.dart';
+import 'package:compass_app/data/repositories/booking/remote_booking_repository.dart';
 import 'package:compass_app/data/repositories/continent/continent_repository.dart';
-import 'package:compass_app/data/repositories/continent/continent_repository_local.dart';
-import 'package:compass_app/data/repositories/continent/continent_repository_remote.dart';
+import 'package:compass_app/data/repositories/continent/local_continent_repository.dart';
+import 'package:compass_app/data/repositories/continent/remote_continent_repository.dart';
 import 'package:compass_app/data/repositories/destination/destination_repository.dart';
-import 'package:compass_app/data/repositories/destination/destination_repository_local.dart';
-import 'package:compass_app/data/repositories/destination/destination_repository_remote.dart';
+import 'package:compass_app/data/repositories/destination/local_destination_repository.dart';
+import 'package:compass_app/data/repositories/destination/remote_destination_repository.dart';
 import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository.dart';
-import 'package:compass_app/data/repositories/itinerary_config/itinerary_config_repository_memory.dart';
+import 'package:compass_app/data/repositories/itinerary_config/memory_itinerary_config_repository.dart';
+import 'package:compass_app/data/repositories/user/local_user_repository.dart';
+import 'package:compass_app/data/repositories/user/remote_user_repository.dart';
 import 'package:compass_app/data/repositories/user/user_repository.dart';
-import 'package:compass_app/data/repositories/user/user_repository_local.dart';
-import 'package:compass_app/data/repositories/user/user_repository_remote.dart';
 import 'package:compass_app/data/services/api/api_client.dart';
 import 'package:compass_app/data/services/api/auth_api_client.dart';
 import 'package:compass_app/data/services/local/local_data_service.dart';
 import 'package:compass_app/data/services/shared_preferences_service.dart';
-import 'package:compass_app/ui/auth/auth_controller.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_create_use_case.dart';
 import 'package:compass_app/domain/use_cases/booking/booking_share_use_case.dart';
+import 'package:compass_app/ui/auth/auth_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// API client for authentication requests.
@@ -51,7 +51,7 @@ final Provider<LocalDataService> localDataServiceProvider = Provider(
 /// Authentication repository used by the router to check login state.
 /// Authentication repository used by [AuthController].
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepositoryRemote(
+  return RemoteAuthRepository(
     apiClient: ref.read(apiClientProvider),
     authApiClient: ref.read(authApiClientProvider),
     sharedPreferencesService: ref.read(sharedPreferencesServiceProvider),
@@ -59,41 +59,42 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 /// Authentication controller exposing the user's login state.
-final authControllerProvider =
-    AsyncNotifierProvider<AuthController, bool>(AuthController.new);
+final authControllerProvider = AsyncNotifierProvider<AuthController, bool>(
+  AuthController.new,
+);
 
 /// Destination repository implementation.
 final destinationRepositoryProvider = Provider<DestinationRepository>((ref) {
-  return DestinationRepositoryRemote(apiClient: ref.read(apiClientProvider));
+  return RemoteDestinationRepository(apiClient: ref.read(apiClientProvider));
 });
 
 /// Continent repository implementation.
 final continentRepositoryProvider = Provider<ContinentRepository>((ref) {
-  return ContinentRepositoryRemote(apiClient: ref.read(apiClientProvider));
+  return RemoteContinentRepository(apiClient: ref.read(apiClientProvider));
 });
 
 /// Activity repository implementation.
 final activityRepositoryProvider = Provider<ActivityRepository>((ref) {
-  return ActivityRepositoryRemote(apiClient: ref.read(apiClientProvider));
+  return RemoteActivityRepository(apiClient: ref.read(apiClientProvider));
 });
 
 /// Itinerary configuration repository stored in memory.
 final itineraryConfigRepositoryProvider = Provider<ItineraryConfigRepository>(
   (ref) {
     ref.keepAlive();
-    return ItineraryConfigRepositoryMemory();
+    return MemoryItineraryConfigRepository();
   },
 );
 
 /// Booking repository implementation.
 final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
   ref.keepAlive();
-  return BookingRepositoryRemote(apiClient: ref.read(apiClientProvider));
+  return RemoteBookingRepository(apiClient: ref.read(apiClientProvider));
 });
 
 /// User repository implementation.
 final userRepositoryProvider = Provider<UserRepository>((ref) {
-  return UserRepositoryRemote(apiClient: ref.read(apiClientProvider));
+  return RemoteUserRepository(apiClient: ref.read(apiClientProvider));
 });
 
 /// Use case to create a booking.
@@ -112,34 +113,34 @@ final Provider<BookingShareUseCase> bookingShareUseCaseProvider = Provider(
 
 /// Overrides for local (development) configuration.
 final providersLocal = <Override>[
-  authRepositoryProvider.overrideWith((ref) => AuthRepositoryDev()),
+  authRepositoryProvider.overrideWith((ref) => DevAuthRepository()),
   destinationRepositoryProvider.overrideWith(
-    (ref) => DestinationRepositoryLocal(
+    (ref) => LocalDestinationRepository(
       localDataService: ref.read(localDataServiceProvider),
     ),
   ),
   continentRepositoryProvider.overrideWith(
-    (ref) => ContinentRepositoryLocal(
+    (ref) => LocalContinentRepository(
       localDataService: ref.read(localDataServiceProvider),
     ),
   ),
   activityRepositoryProvider.overrideWith(
-    (ref) => ActivityRepositoryLocal(
+    (ref) => LocalActivityRepository(
       localDataService: ref.read(localDataServiceProvider),
     ),
   ),
   bookingRepositoryProvider.overrideWith(
-    (ref) => BookingRepositoryLocal(
+    (ref) => LocalBookingRepository(
       localDataService: ref.read(localDataServiceProvider),
     ),
   ),
   userRepositoryProvider.overrideWith(
-    (ref) => UserRepositoryLocal(
+    (ref) => LocalUserRepository(
       localDataService: ref.read(localDataServiceProvider),
     ),
   ),
   itineraryConfigRepositoryProvider.overrideWithValue(
-    ItineraryConfigRepositoryMemory(),
+    MemoryItineraryConfigRepository(),
   ),
   localDataServiceProvider.overrideWithValue(LocalDataService()),
 ];
@@ -147,6 +148,6 @@ final providersLocal = <Override>[
 /// Overrides for remote (staging) configuration. Empty because remote is default.
 final providersRemote = <Override>[
   itineraryConfigRepositoryProvider.overrideWithValue(
-    ItineraryConfigRepositoryMemory(),
+    MemoryItineraryConfigRepository(),
   ),
 ];

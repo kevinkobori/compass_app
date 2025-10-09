@@ -8,8 +8,8 @@ import 'package:compass_app/domain/models/continent/continent.dart';
 import 'package:result_dart/result_dart.dart';
 
 /// Local data source with all possible continents.
-class ContinentRepositoryLocal implements ContinentRepository {
-  ContinentRepositoryLocal({required LocalDataService localDataService})
+class LocalContinentRepository implements ContinentRepository {
+  LocalContinentRepository({required LocalDataService localDataService})
     : _localDataService = localDataService;
 
   final LocalDataService _localDataService;
